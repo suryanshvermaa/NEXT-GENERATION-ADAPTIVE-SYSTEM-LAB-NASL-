@@ -9,3 +9,5 @@ mongo-data
 .env
 .env.local
 *.env*
+
+/src/generated/prisma

@@ -1,7 +1,6 @@
 import express, { Request, Response } from "express";
 import "dotenv/config";
 import router from "./routes";
-import dbConnect from "./config/db";
 import cors from "cors";
 import response from "./utils/response";
 import errorHandler from "./middlewares/error.middleware";
@@ -14,11 +13,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/", router);
-
-//db connection
-dbConnect().catch(() => {
-	process.exit(1);
-});
 
 /**
  * @description health check route
