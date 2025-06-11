@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import asyncHandler from "../utils/asyncHandler";
 import response from "../utils/response";
-import { getUploadImageURL } from "../s3";
 
 /**
  * @description Create a new user
@@ -11,6 +10,5 @@ import { getUploadImageURL } from "../s3";
  * @param {Response} res
  */
 export const createUser = asyncHandler(async (req: Request, res: Response) => {
-	const url=await getUploadImageURL("myScreenshot.png");
-	response(res, 201, "user created", { url });
+	response(res, 201, "user created", { user: "testing uer" });
 });
