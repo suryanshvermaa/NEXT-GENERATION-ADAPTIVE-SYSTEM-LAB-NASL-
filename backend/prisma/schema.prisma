@@ -85,7 +85,7 @@ model GroupMoment{
   updateAt DateTime @updatedAt
 }
 
-model Highlights{
+model Highlight{
   id Int @unique @id @default(autoincrement())
   highlight String
   description String
@@ -94,7 +94,7 @@ model Highlights{
   createdAt DateTime @default(now())
 }
 
-model RecentUpdates{
+model RecentUpdate{
   id Int @unique @id @default(autoincrement())
   update String
   description String
