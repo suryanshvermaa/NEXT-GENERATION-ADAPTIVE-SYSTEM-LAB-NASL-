@@ -4,8 +4,8 @@ WORKDIR /build
 COPY package.json package.json
 RUN npm install
 COPY . .
-RUN npm run build
 RUN npx prisma generate
+RUN npm run build
 
 FROM node:23-alpine3.20 AS runner
 
