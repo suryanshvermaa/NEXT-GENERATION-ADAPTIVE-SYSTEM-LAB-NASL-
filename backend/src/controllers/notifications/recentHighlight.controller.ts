@@ -26,7 +26,9 @@ export const createRecentUpdate = asyncHandler(
 		});
 		if (!newrecentUpdate)
 			throw new AppError("Error in creating recentUpdate", 400);
-		response(res, 201, "recentUpdate created", { recentUpdate: newrecentUpdate });
+		response(res, 201, "recentUpdate created", {
+			recentUpdate: newrecentUpdate,
+		});
 	}
 );
 
@@ -66,7 +68,8 @@ export const getrecentUpdates = asyncHandler(
 				createdAt: "desc",
 			},
 		});
-		if (!recentUpdates) throw new AppError("recentUpdates are not found", 400);
+		if (!recentUpdates)
+			throw new AppError("recentUpdates are not found", 400);
 		response(res, 200, "recentUpdates fetched successfully", {
 			recentUpdates,
 		});
