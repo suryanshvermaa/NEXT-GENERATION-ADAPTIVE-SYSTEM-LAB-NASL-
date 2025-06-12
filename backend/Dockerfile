@@ -12,7 +12,7 @@ FROM node:23-alpine3.20 AS runner
 WORKDIR /app
 COPY --from=builder /build/dist ./dist
 COPY --from=builder /build/package.json ./package.json
-COPY --from=builder /build/generated /generated
+COPY --from=builder /build/generated ./generated
 
 ENV NODE_ENV=production
 RUN npm install --omit=dev --ignore-scripts
