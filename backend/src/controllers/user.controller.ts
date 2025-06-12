@@ -5,6 +5,7 @@ import { AppError } from "../utils/error";
 import prisma from "../config/db";
 import bcrypt from "bcryptjs";
 import { createToken } from "../middlewares/auth.middleware";
+import { signedUrl } from "../s3";
 
 /**
  * @description Create a new user
@@ -64,4 +65,27 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 		60 * 24
 	); //for 24 hours
 	response(res, 200, "login successful", { token });
+});
+
+/**
+ * @description Create a new user
+ * @route GET /api/user/profile
+ * @access Private
+ * @param req
+ * @param res
+ */
+export const profile = asyncHandler(async (req: Request, res: Response) => {
+	const userId = req.user?.userId as number;
+	if (!userId) throw new AppError("userid not found", 401);
+	const user = await prisma.user.findUnique({
+		where: {
+			id: userId,
+		},
+	});
+	const userObj = {
+		name: user?.name,
+		email: user?.email,
+		profileImage: await signedUrl(user?.profileImage as string, 10),
+	};
+	response(res, 200, "profile fetched successfully", { user: userObj });
 });

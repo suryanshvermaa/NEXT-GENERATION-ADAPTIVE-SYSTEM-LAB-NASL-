@@ -16,21 +16,24 @@ export const uploadImageURL = async (imageName: string): Promise<string> => {
 			Key: `nasl/${Date.now().toString() + imageName}`,
 		});
 		const signedUrl = await getSignedUrl(s3client, putImageCommand, {
-			expiresIn: 60 * 100,
+			expiresIn: 60 * 5,
 		});
 		if (!signedUrl) reject("signed url not found");
 		resolve(signedUrl);
 	});
 };
 
-export const signedUrl = async (imageUrl: string): Promise<string> => {
+export const signedUrl = async (
+	imageUrl: string,
+	time: number
+): Promise<string> => {
 	return new Promise(async (resolve, reject) => {
 		const getImageCommand = new GetObjectCommand({
 			Bucket,
 			Key: imageUrl,
 		});
 		const signedImageUrl = await getSignedUrl(s3client, getImageCommand, {
-			expiresIn: 60 * 2,
+			expiresIn: 60 * time,
 		});
 		if (!signedImageUrl) reject("signed url not found");
 		resolve(signedImageUrl);
