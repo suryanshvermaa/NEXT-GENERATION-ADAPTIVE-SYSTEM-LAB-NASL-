@@ -11,6 +11,59 @@ This document provides detailed information about all available API endpoints, t
 - [Image Routes](#image-routes)
 - [Health Check](#health-check)
 
+### Note:-
+  In routes, which required imageURL in which you have to do first these steps before calling api.
+  - Call firts upload image route it will give you an protected Url.
+  - Use this url and with put request upload image to this url.
+  - After this request to this api with imageurl.
+
+## Image Routes
+Base path: `/api/image`
+
+### Upload Image
+- **Method:** POST
+- **Path:** `/api/image/uploadURL`
+- **Auth Required:** Yes
+- **Request Body (multipart/form-data):**
+  ```json
+  {
+    "imageName": "FileName.jpg(imageName ends with your image extension name)"
+  }
+  ```
+- **Success Response (201):**
+  ```json
+  {
+    "imageUploadingUrl": "string",
+    "imageUrl":"string",
+  }
+  ```
+- **Error Responses:**
+  - `400` - Invalid file type
+  - `401` - Unauthorized
+  - `413` - File too large
+  - `500` - Server error
+
+### Delete Image
+- **Method:** DELETE
+- **Path:** `/api/image/deleteImage`
+- **Auth Required:** Yes
+- **Request Body:**
+  ```json
+  {
+    "imageURL": "string"
+  }
+  ```
+- **Success Response (200):**
+  ```json
+  {
+    "message": "Image deleted successfully"
+  }
+  ```
+- **Error Responses:**
+  - `401` - Unauthorized
+  - `404` - Image not found
+  - `500` - Server error
+
 ## User Routes
 Base path: `/api/user`
 
@@ -475,52 +528,6 @@ Base path: `/api/highlight`
   }
   ```
 - **Error Responses:**
-  - `500` - Server error
-
-## Image Routes
-Base path: `/api/image`
-
-### Upload Image
-- **Method:** POST
-- **Path:** `/api/image/uploadURL`
-- **Auth Required:** Yes
-- **Request Body (multipart/form-data):**
-  ```json
-  {
-    "image": "File"
-  }
-  ```
-- **Success Response (201):**
-  ```json
-  {
-    "url": "string"
-  }
-  ```
-- **Error Responses:**
-  - `400` - Invalid file type
-  - `401` - Unauthorized
-  - `413` - File too large
-  - `500` - Server error
-
-### Delete Image
-- **Method:** DELETE
-- **Path:** `/api/image/deleteImage`
-- **Auth Required:** Yes
-- **Request Body:**
-  ```json
-  {
-    "url": "string"
-  }
-  ```
-- **Success Response (200):**
-  ```json
-  {
-    "message": "Image deleted successfully"
-  }
-  ```
-- **Error Responses:**
-  - `401` - Unauthorized
-  - `404` - Image not found
   - `500` - Server error
 
 ## Health Check
