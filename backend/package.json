@@ -1,5 +1,5 @@
 {
-	"name": "NEXT-GENERATION-ADAPTIVE-SYSTEM-LAB(NASL)/backend",
+	"name": "next-generation-adaptive-system-lab-nasl-backend",
 	"version": "1.0.0",
 	"description": "",
 	"main": "dist/index.js",
