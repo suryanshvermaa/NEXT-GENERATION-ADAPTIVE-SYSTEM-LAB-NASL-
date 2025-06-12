@@ -56,7 +56,9 @@ export const updateResearchFacility = asyncHandler(
 		});
 		if (!updatedresearchFacility)
 			throw new AppError("Error in updating researchFacility", 400);
-		response(res, 201, "research Facility updated", { updatedresearchFacility });
+		response(res, 201, "research Facility updated", {
+			updatedresearchFacility,
+		});
 	}
 );
 
@@ -77,7 +79,8 @@ export const deleteResearchFacility = asyncHandler(
 				id,
 			},
 		});
-		if(researchFacility.imageURL) await deleteImage(researchFacility.imageURL);
+		if (researchFacility.imageURL)
+			await deleteImage(researchFacility.imageURL);
 		response(res, 200, "researchFacility deleted successfully", {});
 	}
 );
@@ -99,7 +102,8 @@ export const getResearchFacility = asyncHandler(
 				id: Number(id),
 			},
 		});
-		if (!researchFacility) throw new AppError("researchFacility not found", 400);
+		if (!researchFacility)
+			throw new AppError("researchFacility not found", 400);
 		response(res, 200, "researchFacility fetched successfully", {
 			researchFacility,
 		});
