@@ -1,9 +1,9 @@
-import asyncHandler from "../utils/asyncHandler";
+import asyncHandler from "../../utils/asyncHandler";
 import { Request, Response } from "express";
-import { AppError } from "../utils/error";
-import prisma from "../config/db";
-import response from "../utils/response";
-import { deleteImage } from "../s3";
+import { AppError } from "../../utils/error";
+import prisma from "../../config/db";
+import response from "../../utils/response";
+import { deleteImage } from "../../s3";
 
 /**
  *
