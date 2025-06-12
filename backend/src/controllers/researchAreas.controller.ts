@@ -56,7 +56,7 @@ export const updateResearchArea = asyncHandler(
 		});
 		if (!updatedResearchArea)
 			throw new AppError("Error in updating researchArea", 400);
-		response(res, 201, "research Area created", { updatedResearchArea });
+		response(res, 201, "research Area updated", { updatedResearchArea });
 	}
 );
 
