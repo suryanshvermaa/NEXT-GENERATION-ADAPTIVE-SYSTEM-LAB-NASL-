@@ -14,7 +14,8 @@ COPY --from=builder /build/dist ./dist
 COPY --from=builder /build/package.json ./package.json
 COPY --from=builder /build/generated /generated
 
-RUN npm install --omit=dev
+ENV NODE_ENV=production
+RUN npm install --omit=dev --ignore-scripts
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nodejs
