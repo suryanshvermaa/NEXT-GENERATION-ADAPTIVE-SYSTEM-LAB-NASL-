@@ -7,44 +7,45 @@ import { deleteImage } from "../../s3";
 
 /**
  *
- * @description create research area
- * @route POST /api/researchArea/createReasearchArea
+ * @description create highlight
+ * @route POST /api/highlight/create
  * @access Private
  * @param req
  * @param res
  */
-export const createReasearchArea = asyncHandler(
+export const createHighlight = asyncHandler(
 	async (req: Request, res: Response) => {
-		const { name, description, imageURL } = req.body;
-		if (!name || !description || !imageURL)
+		const { highlight, description, date, link } = req.body;
+		if (!highlight || !description || !date)
 			throw new AppError("All fields are required", 400);
-		const researchArea = await prisma.researchArea.create({
+		const newHighlight = await prisma.highlight.create({
 			data: {
-				name,
+				highlight,
 				description,
-				imageURL,
+				date,
+                link,
 			},
 		});
-		if (!researchArea)
-			throw new AppError("Error in creating researchArea", 400);
-		response(res, 201, "research Area created", { researchArea });
+		if (!newHighlight)
+			throw new AppError("Error in creating highlight", 400);
+		response(res, 201, "highlight created", { highlight:newHighlight });
 	}
 );
 
 /**
  *
  * @description update research area
- * @route POST /api/researchArea/updateResearchArea
+ * @route POST /api/highlight/updatehighlight
  * @access Private
  * @param req
  * @param res
  */
-export const updateResearchArea = asyncHandler(
+export const updatehighlight = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { name, description, imageURL, id } = req.body;
 		if (!id || !name || !description || !imageURL)
 			throw new AppError("all fields are required", 400);
-		const updatedResearchArea = await prisma.researchArea.update({
+		const updatedhighlight = await prisma.highlight.update({
 			where: {
 				id: id as number,
 			},
@@ -54,54 +55,54 @@ export const updateResearchArea = asyncHandler(
 				description,
 			},
 		});
-		if (!updatedResearchArea)
-			throw new AppError("Error in updating researchArea", 400);
-		response(res, 201, "research Area updated", { updatedResearchArea });
+		if (!updatedhighlight)
+			throw new AppError("Error in updating highlight", 400);
+		response(res, 201, "research Area updated", { updatedhighlight });
 	}
 );
 
 /**
  *
  * @description delete research area
- * @route POST /api/researchArea/deleteResearchArea
+ * @route POST /api/highlight/deletehighlight
  * @access Private
  * @param req
  * @param res
  */
-export const deleteResearchArea = asyncHandler(
+export const deletehighlight = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { id } = req.body;
 		if (!id) throw new AppError("Id is required", 400);
-		const researchArea = await prisma.researchArea.delete({
+		const highlight = await prisma.highlight.delete({
 			where: {
 				id,
 			},
 		});
-		await deleteImage(researchArea.imageURL);
-		response(res, 200, "researchArea deleted successfully", {});
+		await deleteImage(highlight.imageURL);
+		response(res, 200, "highlight deleted successfully", {});
 	}
 );
 
 /**
  *
  * @description fetching research area
- * @route POST /api/researchArea/getResearchArea?id="idofresearchArea"
+ * @route POST /api/highlight/gethighlight?id="idofhighlight"
  * @access Private
  * @param req
  * @param res
  */
-export const getResearchArea = asyncHandler(
+export const gethighlight = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { id } = req.query;
 		if (!id) throw new AppError("id is required", 400);
-		const researchArea = await prisma.researchArea.findUnique({
+		const highlight = await prisma.highlight.findUnique({
 			where: {
 				id: Number(id),
 			},
 		});
-		if (!researchArea) throw new AppError("researchArea not found", 400);
-		response(res, 200, "researchArea fetched successfully", {
-			researchArea,
+		if (!highlight) throw new AppError("highlight not found", 400);
+		response(res, 200, "highlight fetched successfully", {
+			highlight,
 		});
 	}
 );
@@ -109,22 +110,22 @@ export const getResearchArea = asyncHandler(
 /**
  *
  * @description getReasearchAreas
- * @route POST /api/researchArea/getReasearchAreas
+ * @route POST /api/highlight/getReasearchAreas
  * @access Private
  * @param req
  * @param res
  */
 export const getReasearchAreas = asyncHandler(
 	async (req: Request, res: Response) => {
-		const researchAreas = await prisma.researchArea.findMany({
+		const highlights = await prisma.highlight.findMany({
 			orderBy: {
 				createdAt: "desc",
 			},
 		});
-		if (!researchAreas)
+		if (!highlights)
 			throw new AppError("Research Areas are not found", 400);
 		response(res, 200, "Research Areas fetched successfully", {
-			researchAreas,
+			highlights,
 		});
 	}
 );
