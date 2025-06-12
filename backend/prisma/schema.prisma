@@ -16,3 +16,11 @@ model User{
   createdAt DateTime @default(now())
   updateAt DateTime @updatedAt
 }
+
+model PhotoGallery{
+  id Int @unique @default(autoincrement())
+  imageURL String
+  tags  String[]
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+}
