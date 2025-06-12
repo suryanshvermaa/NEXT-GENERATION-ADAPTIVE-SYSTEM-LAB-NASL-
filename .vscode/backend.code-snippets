@@ -1,0 +1,33 @@
+{
+  "Controller": {
+    "prefix": ["controller", "con"],
+    "body": [
+      "/**",
+      "*",
+      "* @description creating user",
+      "* @route POST /api/image/creatUser",
+      "* @access Private",
+      "* @param req",
+      "* @param res",
+      "*/",
+      "export const ${1:createUser} = asyncHandler(",
+      "   async (req: Request, res: Response) => {",
+      "       ${2}",
+      "   }",
+      ");"
+    ],
+    "description": "Controller"
+  },
+  "router": {
+    "prefix": "router,route",
+    "body": [
+      "import {Router} from 'express';",
+      "const ${1:user}Router=Router();",
+      "",
+      "${1:user}Router",
+      ".get('/',)",
+      "",
+      "export default ${1:user}Router;"
+    ]
+  }
+}
