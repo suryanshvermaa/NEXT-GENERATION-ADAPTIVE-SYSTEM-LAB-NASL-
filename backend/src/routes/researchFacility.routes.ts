@@ -6,12 +6,13 @@ import {
 	getResearchFacility,
 	updateResearchFacility,
 } from "../controllers/research/researchFacility.controller";
+import { auth } from "../middlewares/auth.middleware";
 const researchFacilityRouter = Router();
 
 researchFacilityRouter
-	.post("/createResearchFacility", createResearchFacility)
-	.put("/updateResearchFacility", updateResearchFacility)
-	.delete("/deleteResearchFacility", deleteResearchFacility)
+	.post("/createResearchFacility", auth, createResearchFacility)
+	.put("/updateResearchFacility", auth, updateResearchFacility)
+	.delete("/deleteResearchFacility", auth, deleteResearchFacility)
 	.get("/getResearchFacility", getResearchFacility)
 	.get("/getReasearchFacilities", getReasearchFacilities);
 

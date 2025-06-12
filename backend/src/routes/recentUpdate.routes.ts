@@ -4,11 +4,12 @@ import {
 	deleterecentUpdate,
 	getrecentUpdates,
 } from "../controllers/notifications/recentHighlight.controller";
+import { auth } from "../middlewares/auth.middleware";
 const recentUpdateRouter = Router();
 
 recentUpdateRouter
-	.post("/create", createRecentUpdate)
-	.delete("/delete", deleterecentUpdate)
+	.post("/create", auth, createRecentUpdate)
+	.delete("/delete", auth, deleterecentUpdate)
 	.get("/getrecentUpdates", getrecentUpdates);
 
 export default recentUpdateRouter;

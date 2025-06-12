@@ -3,10 +3,11 @@ import {
 	deleteUploadedImage,
 	uploadImage,
 } from "../controllers/image.controller";
+import { auth } from "../middlewares/auth.middleware";
 const imageRouter = Router();
 
 imageRouter
-	.post("/uploadURL", uploadImage)
-	.delete("/deleteImage", deleteUploadedImage);
+	.post("/uploadURL", auth, uploadImage)
+	.delete("/deleteImage", auth, deleteUploadedImage);
 
 export default imageRouter;
