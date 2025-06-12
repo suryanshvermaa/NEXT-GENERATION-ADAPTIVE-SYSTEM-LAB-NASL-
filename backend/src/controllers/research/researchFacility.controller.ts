@@ -16,7 +16,7 @@ import { deleteImage } from "../../s3";
 export const createResearchFacility = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { name, description, imageURL } = req.body;
-		if (!name || description)
+		if (!name || !description)
 			throw new AppError("All fields are required", 400);
 		const researchFacility = await prisma.researchFacility.create({
 			data: {
