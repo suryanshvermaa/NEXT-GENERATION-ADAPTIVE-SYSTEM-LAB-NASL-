@@ -1,0 +1,57 @@
+{
+    "axios:get": {
+      "prefix": ["axios:get", "get:axios"],
+      "body": [
+        "axios.get(`${import.meta.env.VITE_API_URL}/api/${1}`,{",
+        "    headers:{",
+        "      Authorization:`Bearer ${localStorage.getItem('token')}`",
+        "    }",
+        "})"
+      ],
+      "description": "Axios"
+    },
+    "axios:post": {
+      "prefix": ["axios:post", "post:axios"],
+      "body": [
+        "axios.post(`${import.meta.env.VITE_API_URL}/api/${1}`,{",
+        "    //body",
+        "    ${2}",
+        "},{",
+        "      headers:{",
+        "        Authorization:`Bearer ${localStorage.getItem('token')}`",
+        "      }",
+        "  })"
+      ],
+      "description": "Axios"
+    },
+    "axios:put": {
+      "prefix": ["axios:put", "put:axios"],
+      "body": [
+        "axios.put(`${import.meta.env.VITE_API_URL}/api/${1}`,{",
+        "    //body",
+        "    ${2}",
+        "},{",
+        "      headers:{",
+        "        Authorization:`Bearer ${localStorage.getItem('token')}`",
+        "      }",
+        "  })"
+      ],
+      "description": "Axios"
+    },
+    "axios:delete": {
+      "prefix": ["axios:delete", "get:delete"],
+      "body": [
+        "axios.delete(`${import.meta.env.VITE_API_URL}/api/${1}`,{",
+        "    //body",
+        "    ${2}",
+        "},{",
+        "      headers:{",
+        "        Authorization:`Bearer ${localStorage.getItem('token')}`",
+        "      }",
+        "  })"
+      ],
+      "description": "Axios"
+    },
+
+  }
+  
