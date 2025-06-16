@@ -7,98 +7,81 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-model User{
-  id Int @id @unique @default(autoincrement())
-  name String
-  email String @unique
-  password String
+
+model User {
+  id           Int      @id @unique @default(autoincrement())
+  name         String
+  email        String   @unique
+  createdAt    DateTime @default(now())
+  password     String
   profileImage String?
-  createdAt DateTime @default(now())
-  updateAt DateTime @updatedAt
+  updateAt     DateTime @updatedAt
 }
 
-model PhotoGallery{
-  id Int @unique @id @default(autoincrement())
-  imageURL String
-  tags  String[]
+model PhotoGallery {
+  id        Int      @id @unique @default(autoincrement())
+  imageURL  String
+  tags      String[]
   createdAt DateTime @default(now())
-  updateAt DateTime @updatedAt
+  updateAt  DateTime @updatedAt
 }
 
-model ResearchArea{
-  id Int @unique @default(autoincrement())
-  name String
+model ResearchArea {
+  id          Int      @unique @default(autoincrement())
+  name        String
   description String
-  imageURL String
-  createdAt DateTime @default(now())
-  updateAt DateTime @updatedAt
+  imageURL    String
+  createdAt   DateTime @default(now())
+  updateAt    DateTime @updatedAt
 }
 
 model ResearchFacility {
-  id           Int   @id @default(autoincrement())
-  name         String
-  description  String   @db.Text
-  imageURL     String?
-  createdAt    DateTime @default(now())
-  updateAt DateTime @updatedAt
-}
-
-model People{
-  id Int @id @unique @default(autoincrement())
-  name String
+  id          Int      @id @default(autoincrement())
+  name        String
   description String
-  linkedIn String?
-  createdAt    DateTime @default(now())
-  updateAt DateTime @updatedAt
+  imageURL    String?
+  createdAt   DateTime @default(now())
+  updateAt    DateTime @updatedAt
 }
 
-model Publication{
-  id Int @id @unique @default(autoincrement())
+model People {
+  id          Int      @id @unique @default(autoincrement())
+  name        String
+  description String
+  linkedIn    String?
+  createdAt   DateTime @default(now())
+  updateAt    DateTime @updatedAt
+}
+
+model Publication {
+  id          Int      @id @unique @default(autoincrement())
   publication String
   description String
-  createdAt    DateTime @default(now())
-  updateAt DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updateAt    DateTime @updatedAt
 }
 
-model Outreach{
-  id Int @id @unique @default(autoincrement())
-  outreach String
+model Outreach {
+  id          Int      @id @unique @default(autoincrement())
+  outreach    String
   description String
-  createdAt    DateTime @default(now())
-  updateAt DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updateAt    DateTime @updatedAt
 }
 
-model Event{
-  id Int @id @unique @default(autoincrement())
-  event String
+model Event {
+  id          Int      @id @unique @default(autoincrement())
+  event       String
   description String
-  imageURL String
-  createdAt    DateTime @default(now())
-  updateAt DateTime @updatedAt
+  imageURL    String
+  createdAt   DateTime @default(now())
+  updateAt    DateTime @updatedAt
 }
 
-model GroupMoment{
-  id Int @unique @id @default(autoincrement())
-  imageURL String
-  tags  String[]
+model GroupMoment {
+  id        Int      @id @unique @default(autoincrement())
+  imageURL  String
+  tags      String[]
   createdAt DateTime @default(now())
-  updateAt DateTime @updatedAt
-}
-
-model Highlight{
-  id Int @unique @id @default(autoincrement())
-  highlight String
-  description String
-  link String?
-  date String
-  createdAt DateTime @default(now())
-}
-
-model RecentUpdate{
-  id Int @unique @id @default(autoincrement())
-  update String
-  description String
-  link String?
-  date String
-  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
 }
