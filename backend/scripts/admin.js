@@ -1,5 +1,6 @@
 const {PrismaClient} = require("../generated/prisma");
 const readline = require("readline");
+const bcrypt=require("bcryptjs");
 
 const prisma = new PrismaClient();
 
@@ -33,7 +34,7 @@ async function createAdmin() {
 	const user = await prisma.user.create({
 		data: {
 			email,
-			password,
+			password:await bcrypt.hash(password,10),
 			name,
 			profileImage,
 		},
