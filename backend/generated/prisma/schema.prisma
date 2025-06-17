@@ -12,9 +12,9 @@ model User {
   id           Int      @id @unique @default(autoincrement())
   name         String
   email        String   @unique
+  createdAt    DateTime @default(now())
   password     String
   profileImage String?
-  createdAt    DateTime @default(now())
   updateAt     DateTime @updatedAt
 }
 
@@ -38,7 +38,7 @@ model ResearchArea {
 model ResearchFacility {
   id          Int      @id @default(autoincrement())
   name        String
-  description String   @db.Text
+  description String
   imageURL    String?
   createdAt   DateTime @default(now())
   updateAt    DateTime @updatedAt
