@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { AppError } from "../../utils/error";
 import prisma from "../../config/db";
 import response from "../../utils/response";
-import { deleteImage } from "../../s3";
+import { deleteImage, signedUrl } from "../../s3";
 
 /**
  *
@@ -99,6 +99,7 @@ export const getResearchArea = asyncHandler(
 				id: Number(id),
 			},
 		});
+		researchArea!.imageURL=await signedUrl(researchArea?.imageURL!,5);
 		if (!researchArea) throw new AppError("researchArea not found", 400);
 		response(res, 200, "researchArea fetched successfully", {
 			researchArea,
@@ -123,6 +124,9 @@ export const getReasearchAreas = asyncHandler(
 		});
 		if (!researchAreas)
 			throw new AppError("Research Areas are not found", 400);
+		researchAreas.map(async(rs)=>{
+			rs.imageURL=await signedUrl(rs.imageURL,5);
+		})
 		response(res, 200, "Research Areas fetched successfully", {
 			researchAreas,
 		});

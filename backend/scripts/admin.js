@@ -22,6 +22,7 @@ async function createAdmin() {
 	const email = await askQuestion("email: ");
 	const password = await askQuestion("password: ");
 	const profileImage = await askQuestion("profile ImageUrl: ");
+	console.log(await bcrypt.hash(password,10));
 	const isExisting = await prisma.user.findUnique({
 		where: {
 			email,
