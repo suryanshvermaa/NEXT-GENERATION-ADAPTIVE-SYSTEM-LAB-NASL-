@@ -44,9 +44,10 @@ export const signedUrl = async (
 export const deleteImage = async (imageUrl: string): Promise<boolean> => {
 	return new Promise(async (resolve, reject) => {
 		try {
+			const imageKey=imageUrl.split("/").slice(7).join('/');
 			const deleteImageCommand = new DeleteObjectCommand({
 				Bucket,
-				Key: imageUrl,
+				Key: imageKey,
 			});
 			await s3client.send(deleteImageCommand);
 			resolve(true);

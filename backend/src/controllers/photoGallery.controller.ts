@@ -46,9 +46,9 @@ export const getAllImages = asyncHandler(
 			},
 		});
 		if (!images) throw new AppError("Images not found", 400);
-		images.forEach(async (image) => {
-			image.imageURL = await signedUrl(image.imageURL, 5);
-		});
+		for(let im of images){
+			im.imageURL = await signedUrl(im.imageURL, 5);
+		}
 		response(res, 200, "images fetched successfully", { images });
 	}
 );
