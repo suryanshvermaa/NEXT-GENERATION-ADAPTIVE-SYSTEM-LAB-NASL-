@@ -28,9 +28,10 @@ export const signedUrl = async (
 	time: number
 ): Promise<string> => {
 	return new Promise(async (resolve, reject) => {
+		const imageKey=imageUrl.split("/").slice(7).join('/');
 		const getImageCommand = new GetObjectCommand({
 			Bucket,
-			Key: imageUrl,
+			Key: imageKey,
 		});
 		const signedImageUrl = await getSignedUrl(s3client, getImageCommand, {
 			expiresIn: 60 * time,
