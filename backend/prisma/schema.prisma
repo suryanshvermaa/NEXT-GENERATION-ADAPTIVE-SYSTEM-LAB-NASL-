@@ -85,3 +85,21 @@ model GroupMoment {
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
 }
+
+model Highlight{
+  id Int @unique @id @default(autoincrement())
+  highlight String
+  description String
+  link String?
+  date String
+  createdAt DateTime @default(now())
+}
+
+model RecentUpdate{
+  id Int @unique @id @default(autoincrement())
+  update String
+  description String
+  link String?
+  date String
+  createdAt DateTime @default(now())
+}
