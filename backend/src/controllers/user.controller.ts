@@ -6,6 +6,7 @@ import prisma from "../config/db";
 import bcrypt from "bcryptjs";
 import { createToken } from "../middlewares/auth.middleware";
 import { signedUrl } from "../s3";
+import { getUserInfo } from "../auth/googleAuth";
 
 /**
  * @description Create a new user
@@ -89,3 +90,18 @@ export const profile = asyncHandler(async (req: Request, res: Response) => {
 	};
 	response(res, 200, "profile fetched successfully", { user: userObj });
 });
+
+export const loginWithGoogle=asyncHandler(async(req:Request,res:Response)=>{
+	const {code}=req.body;
+	if(!code) throw new AppError("Please provide code",400);
+	const {email}=await getUserInfo(code);
+	if(!email) throw new AppError("Unathorised",401);
+	const user=await prisma.user.findUnique({
+		where:{
+			email
+		}
+	})
+	if(!user) throw new AppError("Unauthorised",401);
+	const token=await createToken({userId:user.id,email:user.email},60*24);
+	response(res,200,"login successful",{token});
+})
