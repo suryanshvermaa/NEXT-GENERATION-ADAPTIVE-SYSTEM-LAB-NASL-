@@ -8,22 +8,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id           Int      @id @unique @default(autoincrement())
-  name         String
-  email        String   @unique
-  createdAt    DateTime @default(now())
-  password     String
-  profileImage String?
-  updateAt     DateTime @updatedAt
+enum Role{
+  ADMIN
+  USER
 }
 
-model PhotoGallery {
-  id        Int      @id @unique @default(autoincrement())
-  imageURL  String
-  tags      String[]
-  createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
+model User {
+  id           Int      @id @unique @default(autoincrement())
+  name         String?
+  email        String   @unique
+  role         Role     @default(USER)
+  password     String? // in case of google auth, password is not needed
+  profileImage String?
+  designation   String?
+  social Json[] //array of json object
+  contactNumber String?
+  about       String?
+  status      String?
+  journals Journal_Paper[]
+  conferencePapers Conference_Paper[]
+  bookChapters Book_Chapter[]
+  books Book[]
+  patents Patent[]
+  projects Project[]
+  createdAt    DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
 }
 
 model ResearchArea {
@@ -32,7 +41,7 @@ model ResearchArea {
   description String
   imageURL    String
   createdAt   DateTime @default(now())
-  updateAt    DateTime @updatedAt
+  updatedAt    DateTime @default(now()) @updatedAt
 }
 
 model ResearchFacility {
@@ -41,24 +50,89 @@ model ResearchFacility {
   description String
   imageURL    String?
   createdAt   DateTime @default(now())
-  updateAt    DateTime @updatedAt
+  updatedAt    DateTime @default(now()) @updatedAt
 }
 
-model People {
-  id          Int      @id @unique @default(autoincrement())
-  name        String
-  description String
-  linkedIn    String?
-  createdAt   DateTime @default(now())
-  updateAt    DateTime @updatedAt
+// Journal Papers : Title	Authors	Journal	Volume	Year	Publication Date	Quartile	DOI
+model Journal_Paper{
+  id         Int      @id @unique @default(autoincrement())
+  title      String
+  authors  User[]
+  journal    String
+  volume     String?
+  year       Int
+  publicationDate DateTime?
+  quartile   String?
+  doi        String?
+  createdAt  DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 }
-
-model Publication {
+// Conference Papers: Title	Authors	Conference	Location	Year	Pages	Indexing DOI
+model Conference_Paper {
+  id         Int      @id @unique @default(autoincrement())
+  title      String
+  authors    User[]
+  conference String
+  location   String?
+  year       Int
+  pages      String?
+  indexing   String?
+  doi        String?
+  createdAt  DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+}
+// Book Chapters : Chapter Title	Book Title	Authors	Scopus	DOI	Publisher	Year
+model Book_Chapter {
+  id         Int      @id @unique @default(autoincrement())
+  chapterTitle String
+  bookTitle  String
+  authors    User[]
+  scopus     String?
+  doi        String?
+  publisher  String?
+  year       Int
+  createdAt  DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+}
+//Books : Title	Authors	Publisher	Scopus	DOI	ISBN	Year
+model Book {
+  id         Int      @id @unique @default(autoincrement())
+  title      String
+  authors    User[]
+  publisher  String?
+  scopus     String?
+  doi        String?
+  isbn       String?
+  year       Int
+  createdAt  DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+}
+//Projects: Title	Agency	Role	Outlay (₹)	Duration	PI Institute	Status	Funds Received
+model Project {
   id          Int      @id @unique @default(autoincrement())
-  publication String
-  description String
+  title       String
+  agency      String
+  role        String
+  outlay      Float
+  duration    String
+  pi User @relation(fields: [piInstitute], references: [id], onDelete: Cascade)
+  piInstitute Int
+  status      String
+  fundsReceived Float?
   createdAt   DateTime @default(now())
-  updateAt    DateTime @updatedAt
+  updatedAt    DateTime @default(now()) @updatedAt
+}
+//Patents : Title	Type	Grant No	Grant Date	Publication Date	Inventors
+model Patent {
+  id          Int      @id @unique @default(autoincrement())
+  title       String
+  type        String
+  grantNo     String
+  grantDate   DateTime?
+  publicationDate DateTime?
+  inventors  User[]
+  createdAt   DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
 }
 
 model Outreach {
@@ -66,7 +140,7 @@ model Outreach {
   outreach    String
   description String
   createdAt   DateTime @default(now())
-  updateAt    DateTime @updatedAt
+  updatedAt    DateTime @default(now()) @updatedAt
 }
 
 model Event {
@@ -75,15 +149,7 @@ model Event {
   description String
   imageURL    String
   createdAt   DateTime @default(now())
-  updateAt    DateTime @updatedAt
-}
-
-model GroupMoment {
-  id        Int      @id @unique @default(autoincrement())
-  imageURL  String
-  tags      String[]
-  createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  updatedAt    DateTime @default(now()) @updatedAt
 }
 
 model Highlight{
@@ -93,6 +159,7 @@ model Highlight{
   link String?
   date String
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model RecentUpdate{
@@ -102,4 +169,14 @@ model RecentUpdate{
   link String?
   date String
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model PhotoGallery {
+  id        Int      @id @unique @default(autoincrement())
+  imageURL  String
+  tags      String[]
+  groupMoment Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 }
