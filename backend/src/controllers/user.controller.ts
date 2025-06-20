@@ -208,3 +208,39 @@ export const updateProfile = asyncHandler(
 		});
 	}
 );
+
+/**
+ *
+ * @description searching user
+ * @route GET /api/user/search/?query="search term"
+ * @access Private
+ * @param req
+ * @param res
+ */
+export const searchingUserByEmail = asyncHandler(
+	async (req: Request, res: Response) => {
+		const { query } = req.query;
+		if (!query || typeof query !== "string")
+			throw new AppError("Please provide a valid search term", 400);
+		const users = await prisma.user.findMany({
+			where: {
+				email: {
+					contains: query,
+					mode: "insensitive",
+				},
+			},
+			select: {
+				id: true,
+				name: true,
+				email: true,
+				profileImage: true,
+			},
+			//limited to 10 results
+			take: 5,
+		});
+		if (users.length === 0) {
+			return response(res, 404, "No users found", { users: [] });
+		}
+		response(res, 200, "Users found successfully", { users });
+	}
+);
