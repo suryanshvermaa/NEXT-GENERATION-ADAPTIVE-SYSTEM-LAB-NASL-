@@ -33,7 +33,7 @@ const auth = asyncHandler(
 	}
 );
 
-const adminAuth= asyncHandler(
+export const adminAuth= asyncHandler(
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		const token =
 			req.headers?.["token"] ||
