@@ -3,7 +3,7 @@
 //   navbarDiv.id = 'navbar-placeholder';
 //   document.body.insertBefore(navbarDiv, document.body.firstChild);
 
-    fetch("/htmlFiles/reuse/navbar.html")
+    fetch("/frontend/reuse/navbar.html")
     .then(res => res.text())
     .then(html => {
     document.getElementById('navbar-placeholder').innerHTML = html;
