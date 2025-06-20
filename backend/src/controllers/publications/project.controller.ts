@@ -98,7 +98,7 @@ export const getProjectById = asyncHandler(
 
 /**
  * @description updating a project by ID
- * @route PUT /api/project/:id
+ * @route PUT /api/project/update/:id
  * @access Private
  * @param req
  * @param res
