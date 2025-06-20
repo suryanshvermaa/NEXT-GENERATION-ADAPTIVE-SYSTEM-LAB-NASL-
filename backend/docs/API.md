@@ -11,6 +11,7 @@ This document provides detailed information about all available API endpoints, t
 - [Highlights Routes](#highlights-routes)
 - [Image Routes](#image-routes)
 - [Health Check](#health-check)
+- [Publications Routes](#publications-routes)
 
 ### Note:-
 
@@ -574,3 +575,325 @@ Base path: `/api/highlight`
     ```
 - **Error Responses:**
     - `500` - Server error
+
+## Publications Routes
+
+### Book Routes
+
+Base path: `/api/book`
+
+#### Create Book
+- **Method:** POST
+- **Path:** `/api/book/create`
+- **Auth Required:** Yes
+- **Request Body:**
+    ```json
+    {
+      "title": "string",
+      "authors": ["number"],
+      "publisher": "string (optional)",
+      "scopus": "string (optional)",
+      "doi": "string (optional)",
+      "isbn": "string (optional)",
+      "year": "number"
+    }
+    ```
+- **Success Response (201):**
+    ```json
+    { "book": { /* book object */ } }
+    ```
+- **Error Responses:**
+    - `400` - Missing required fields
+    - `401` - Unauthorized
+    - `500` - Server error
+
+#### Get All Books
+- **Method:** GET
+- **Path:** `/api/book/get-all`
+- **Auth Required:** No
+- **Success Response (200):**
+    ```json
+    { "books": [ /* array of book objects */ ] }
+    ```
+- **Error Responses:**
+    - `500` - Server error
+
+#### Get Book By ID
+- **Method:** GET
+- **Path:** `/api/book/:id`
+- **Auth Required:** No
+- **Success Response (200):**
+    ```json
+    { "book": { /* book object */ } }
+    ```
+- **Error Responses:**
+    - `404` - Book not found
+    - `500` - Server error
+
+#### Update Book
+- **Method:** PUT
+- **Path:** `/api/book/:id`
+- **Auth Required:** Yes
+- **Request Body:**
+    ```json
+    {
+      "title": "string",
+      "authors": ["number"],
+      "publisher": "string (optional)",
+      "scopus": "string (optional)",
+      "doi": "string (optional)",
+      "isbn": "string (optional)",
+      "year": "number"
+    }
+    ```
+- **Success Response (200):**
+    ```json
+    { "book": { /* updated book object */ } }
+    ```
+- **Error Responses:**
+    - `404` - Book not found
+    - `500` - Server error
+
+#### Delete Book
+- **Method:** DELETE
+- **Path:** `/api/book/:id`
+- **Auth Required:** Yes
+- **Success Response (200):**
+    ```json
+    { "book": { /* deleted book object */ } }
+    ```
+- **Error Responses:**
+    - `404` - Book not found
+    - `500` - Server error
+
+#### Get All Books By User ID
+- **Method:** POST
+- **Path:** `/api/book/get-all-by-user-id`
+- **Auth Required:** Yes
+- **Request Body:**
+    ```json
+    { "userId": "number" }
+    ```
+- **Success Response (200):**
+    ```json
+    { "books": [ /* array of book objects */ ] }
+    ```
+- **Error Responses:**
+    - `404` - No books found for this user
+    - `500` - Server error
+
+---
+
+### Book Chapter Routes
+
+Base path: `/api/book-chapter`
+
+#### Create Book Chapter
+- **Method:** POST
+- **Path:** `/api/book-chapter/create`
+- **Auth Required:** Yes
+- **Request Body:**
+    ```json
+    {
+      "chapterTitle": "string",
+      "bookTitle": "string",
+      "authors": ["number"],
+      "scopus": "string (optional)",
+      "doi": "string (optional)",
+      "publisher": "string",
+      "year": "number"
+    }
+    ```
+- **Success Response (201):**
+    ```json
+    { "bookChapter": { /* book chapter object */ } }
+    ```
+- **Error Responses:**
+    - `400` - Missing required fields
+    - `401` - Unauthorized
+    - `500` - Server error
+
+#### Get All Book Chapters
+- **Method:** GET
+- **Path:** `/api/book-chapter/get-all`
+- **Auth Required:** No
+- **Success Response (200):**
+    ```json
+    { "bookChapters": [ /* array of book chapter objects */ ] }
+    ```
+- **Error Responses:**
+    - `500` - Server error
+
+#### Get Book Chapter By ID
+- **Method:** GET
+- **Path:** `/api/book-chapter/:id`
+- **Auth Required:** No
+- **Success Response (200):**
+    ```json
+    { "bookChapter": { /* book chapter object */ } }
+    ```
+- **Error Responses:**
+    - `404` - Book chapter not found
+    - `500` - Server error
+
+#### Update Book Chapter
+- **Method:** PUT
+- **Path:** `/api/book-chapter/:id`
+- **Auth Required:** Yes
+- **Request Body:**
+    ```json
+    {
+      "chapterTitle": "string",
+      "bookTitle": "string",
+      "authors": ["number"],
+      "scopus": "string (optional)",
+      "doi": "string (optional)",
+      "publisher": "string",
+      "year": "number"
+    }
+    ```
+- **Success Response (200):**
+    ```json
+    { "bookChapter": { /* updated book chapter object */ } }
+    ```
+- **Error Responses:**
+    - `404` - Book chapter not found
+    - `500` - Server error
+
+#### Delete Book Chapter
+- **Method:** DELETE
+- **Path:** `/api/book-chapter/:id`
+- **Auth Required:** Yes
+- **Success Response (200):**
+    ```json
+    { "bookChapter": { /* deleted book chapter object */ } }
+    ```
+- **Error Responses:**
+    - `404` - Book chapter not found
+    - `500` - Server error
+
+#### Get All Book Chapters By User ID
+- **Method:** POST
+- **Path:** `/api/book-chapter/get-all-by-user-id`
+- **Auth Required:** Yes
+- **Request Body:**
+    ```json
+    { "userId": "number" }
+    ```
+- **Success Response (200):**
+    ```json
+    { "bookChapters": [ /* array of book chapter objects */ ] }
+    ```
+- **Error Responses:**
+    - `404` - No book chapters found for this user
+    - `500` - Server error
+
+---
+
+### Conference Paper Routes
+
+Base path: `/api/conference-paper`
+
+#### Create Conference Paper
+- **Method:** POST
+- **Path:** `/api/conference-paper/create`
+- **Auth Required:** Yes
+- **Request Body:**
+    ```json
+    {
+      "title": "string",
+      "authors": ["number"],
+      "conference": "string",
+      "location": "string",
+      "year": "number",
+      "pages": "string",
+      "indexing": "string",
+      "doi": "string"
+    }
+    ```
+- **Success Response (201):**
+    ```json
+    { "conferencePaper": { /* conference paper object */ } }
+    ```
+- **Error Responses:**
+    - `400` - Missing required fields
+    - `401` - Unauthorized
+    - `500` - Server error
+
+#### Get All Conference Papers
+- **Method:** GET
+- **Path:** `/api/conference-paper/get-all`
+- **Auth Required:** No
+- **Success Response (200):**
+    ```json
+    { "conferencePapers": [ /* array of conference paper objects */ ] }
+    ```
+- **Error Responses:**
+    - `500` - Server error
+
+#### Get Conference Paper By ID
+- **Method:** GET
+- **Path:** `/api/conference-paper/:id`
+- **Auth Required:** No
+- **Success Response (200):**
+    ```json
+    { "conferencePaper": { /* conference paper object */ } }
+    ```
+- **Error Responses:**
+    - `404` - Conference paper not found
+    - `500` - Server error
+
+#### Update Conference Paper
+- **Method:** PUT
+- **Path:** `/api/conference-paper/:id`
+- **Auth Required:** Yes
+- **Request Body:**
+    ```json
+    {
+      "title": "string",
+      "authors": ["number"],
+      "conference": "string",
+      "location": "string",
+      "year": "number",
+      "pages": "string",
+      "indexing": "string",
+      "doi": "string"
+    }
+    ```
+- **Success Response (200):**
+    ```json
+    { "conferencePaper": { /* updated conference paper object */ } }
+    ```
+- **Error Responses:**
+    - `404` - Conference paper not found
+    - `500` - Server error
+
+#### Delete Conference Paper
+- **Method:** DELETE
+- **Path:** `/api/conference-paper/:id`
+- **Auth Required:** Yes
+- **Success Response (200):**
+    ```json
+    { "conferencePaper": { /* deleted conference paper object */ } }
+    ```
+- **Error Responses:**
+    - `404` - Conference paper not found
+    - `500` - Server error
+
+#### Get All Conference Papers By User ID
+- **Method:** POST
+- **Path:** `/api/conference-paper/get-all-by-user-id`
+- **Auth Required:** Yes
+- **Request Body:**
+    ```json
+    { "userId": "number" }
+    ```
+- **Success Response (200):**
+    ```json
+    { "conferencePapers": [ /* array of conference paper objects */ ] }
+    ```
+- **Error Responses:**
+    - `404` - No conference papers found for this user
+    - `500` - Server error
+
+// ... (continue with Journal Paper, Patent, Project, Photo Gallery, and any missing endpoints)
