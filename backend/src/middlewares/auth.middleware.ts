@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../utils/error";
 import asyncHandler from "../utils/asyncHandler";
+import prisma from "../config/db";
+import { Role } from "../../generated/prisma";
 
 export interface ITokenPayload {
 	userId: string | number;
@@ -30,6 +32,28 @@ const auth = asyncHandler(
 		next();
 	}
 );
+
+const adminAuth= asyncHandler(
+	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+		const token =
+			req.headers?.["token"] ||
+			req.body?.["token"] ||
+			req.params?.["token"] ||
+			req.query?.["token"] ||
+			req.headers.authorization?.split(" ")[1] ||
+			"";
+		if (!token) throw new AppError("Unauthorised", 401);
+		const data = await verifyToken(token);
+		const user=await prisma.user.findUnique({
+			where:{
+				id: data.userId as number
+			}
+		})
+		if(!user || user.role!==Role.ADMIN) throw new AppError("Unauthorised", 401);
+		req.user = data;
+		next();
+	}
+)
 
 /**
  * Creates a JWT token with the provided data and expiration time
