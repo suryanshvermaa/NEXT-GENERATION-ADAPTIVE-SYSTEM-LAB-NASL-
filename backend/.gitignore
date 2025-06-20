@@ -10,5 +10,4 @@ mongo-data
 .env.local
 *.env*
 cert
-
-/src/generated/prisma
+generated/
