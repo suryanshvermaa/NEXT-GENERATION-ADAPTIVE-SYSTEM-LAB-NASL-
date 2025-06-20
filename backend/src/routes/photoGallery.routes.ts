@@ -5,13 +5,13 @@ import {
 	getAllImages,
 	getAllImagesOfGroupMoment,
 } from "../controllers/photoGallery.controller";
-import { auth } from "../middlewares/auth.middleware";
+import { adminAuth } from "../middlewares/auth.middleware";
 const photoGalleryRouter = Router();
 
 photoGalleryRouter
-	.post("/addImage", auth, addImage)
+	.post("/addImage", adminAuth, addImage)
 	.get("/getImages", getAllImages)
-	.delete("/deleteImage", auth, deleteGalleryImage)
+	.delete("/deleteImage", adminAuth, deleteGalleryImage)
 	.get("/getGroupMomentImages", getAllImagesOfGroupMoment);
 
 export default photoGalleryRouter;
