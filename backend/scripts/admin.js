@@ -1,6 +1,6 @@
-const {PrismaClient} = require("../generated/prisma");
+const { PrismaClient } = require("../generated/prisma");
 const readline = require("readline");
-const bcrypt=require("bcryptjs");
+const bcrypt = require("bcryptjs");
 
 const prisma = new PrismaClient();
 
@@ -22,7 +22,7 @@ async function createAdmin() {
 	const email = await askQuestion("email: ");
 	const password = await askQuestion("password: ");
 	const profileImage = await askQuestion("profile ImageUrl: ");
-	console.log(await bcrypt.hash(password,10));
+	console.log(await bcrypt.hash(password, 10));
 	const isExisting = await prisma.user.findUnique({
 		where: {
 			email,
@@ -35,7 +35,7 @@ async function createAdmin() {
 	const user = await prisma.user.create({
 		data: {
 			email,
-			password:await bcrypt.hash(password,10),
+			password: await bcrypt.hash(password, 10),
 			name,
 			profileImage,
 		},

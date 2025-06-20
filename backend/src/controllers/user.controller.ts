@@ -8,9 +8,9 @@ import { createToken } from "../middlewares/auth.middleware";
 import { signedUrl } from "../s3";
 import { getUserInfo } from "../auth/googleAuth";
 
-enum Role{
+enum Role {
 	USER,
-	ADMIN
+	ADMIN,
 }
 
 /**
@@ -21,26 +21,25 @@ enum Role{
  * @param res
  */
 export const createUser = asyncHandler(async (req: Request, res: Response) => {
-	const { name, email, profileImage="",password=""} = req.body;
-	let {role=Role.USER}=req.body;
-	if(role=="admin") role=Role.ADMIN;
-	if (!name || !email)
-		throw new AppError("All fields are required", 400);
+	const { name, email, profileImage = "", password = "" } = req.body;
+	let { role = Role.USER } = req.body;
+	if (role == "admin") role = Role.ADMIN;
+	if (!name || !email) throw new AppError("All fields are required", 400);
 	const isExisting = await prisma.user.findUnique({
 		where: {
 			email,
 		},
 	});
 	if (isExisting) throw new AppError("email already in use", 400);
-	let pass="";
-	if(password)  pass=await bcrypt.hash(password, 10);
+	let pass = "";
+	if (password) pass = await bcrypt.hash(password, 10);
 	const user = await prisma.user.create({
 		data: {
 			name,
 			email,
 			password: pass,
 			profileImage,
-			role
+			role,
 		},
 	});
 	return response(res, 201, `${name} is ceated successfully`, {
@@ -68,7 +67,8 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 		},
 	});
 	if (!user) throw new AppError("User not found", 400);
-	if(user.password=="") throw new AppError("You have only google login access",400);
+	if (user.password == "")
+		throw new AppError("You have only google login access", 400);
 	const isCorrectPassword = await bcrypt.compare(password, user.password!);
 	if (!isCorrectPassword) throw new AppError("Password is incorrect", 401);
 	const token = await createToken(
@@ -92,9 +92,9 @@ export const profile = asyncHandler(async (req: Request, res: Response) => {
 		where: {
 			id: userId as number,
 		},
-		select:{
-			name:true,
-			email:true,
+		select: {
+			name: true,
+			email: true,
 			profileImage: true,
 			about: true,
 			designation: true,
@@ -104,88 +104,107 @@ export const profile = asyncHandler(async (req: Request, res: Response) => {
 			books: true,
 		},
 	});
-	const userCountData=await prisma.user.findUnique({
-		where:{
+	const userCountData = await prisma.user.findUnique({
+		where: {
 			id: userId as number,
-		},include:{
-			_count:{
+		},
+		include: {
+			_count: {
 				select: {
-					books:true,
+					books: true,
 					bookChapters: true,
 					conferencePapers: true,
 					journals: true,
 					patents: true,
-					projects:true,
-				}
-			}
-		}
-	})
-	response(res, 200, "profile fetched successfully", { user:{...user,...userCountData} });
+					projects: true,
+				},
+			},
+		},
+	});
+	response(res, 200, "profile fetched successfully", {
+		user: { ...user, ...userCountData },
+	});
 });
 
-export const loginWithGoogle=asyncHandler(async(req:Request,res:Response)=>{
-	const {code}=req.body;
-	if(!code) throw new AppError("Please provide code",400);
-	const {email}=await getUserInfo(code);
-	if(!email) throw new AppError("Unathorised",401);
-	const user=await prisma.user.findUnique({
-		where:{
-			email
-		}
-	})
-	if(!user) throw new AppError("Unauthorised",401);
-	const token=await createToken({userId:user.id,email:user.email},60*24);// for 24 hour
-	response(res,200,"login successful",{token});
-})
+export const loginWithGoogle = asyncHandler(
+	async (req: Request, res: Response) => {
+		const { code } = req.body;
+		if (!code) throw new AppError("Please provide code", 400);
+		const { email } = await getUserInfo(code);
+		if (!email) throw new AppError("Unathorised", 401);
+		const user = await prisma.user.findUnique({
+			where: {
+				email,
+			},
+		});
+		if (!user) throw new AppError("Unauthorised", 401);
+		const token = await createToken(
+			{ userId: user.id, email: user.email },
+			60 * 24
+		); // for 24 hour
+		response(res, 200, "login successful", { token });
+	}
+);
 
 /**
-*
-* @description updating profile
-* @route POST /api/image/updateProfile
-* @access Private
-* @param req
-* @param res
-*/
+ *
+ * @description updating profile
+ * @route POST /api/image/updateProfile
+ * @access Private
+ * @param req
+ * @param res
+ */
 export const updateProfile = asyncHandler(
-   async (req: Request, res: Response) => {
-	   const {name,profileImage,contactNumber,linkedin,twitter,google,about}=req.body;
-	   const social=[
-		{
-			id: 1,
-			social: "linkedin",
-			url: linkedin,
-		},
-		{
-			id: 2,
-			social: "twitter",
-			url: twitter,
-		},
-		{
-			id: 3,
-			social: "google",
-			url: google,}
-	   ];
-	   const updatedUser=await prisma.user.update({
-		where:{
-			id: req.user?.userId as number,
-		},
-		data:{
+	async (req: Request, res: Response) => {
+		const {
 			name,
 			profileImage,
 			contactNumber,
-			social,
-			about
-		},
-		select:{
-			password: false,
-			patents: false,
-			books: false,
-			bookChapters: false,
-			conferencePapers: false,
-			journals: false,
-			projects: false,
-		}
-	   })
-	   response(res, 200, "Profile updated successfully", { user: updatedUser });
-   }
+			linkedin,
+			twitter,
+			google,
+			about,
+		} = req.body;
+		const social = [
+			{
+				id: 1,
+				social: "linkedin",
+				url: linkedin,
+			},
+			{
+				id: 2,
+				social: "twitter",
+				url: twitter,
+			},
+			{
+				id: 3,
+				social: "google",
+				url: google,
+			},
+		];
+		const updatedUser = await prisma.user.update({
+			where: {
+				id: req.user?.userId as number,
+			},
+			data: {
+				name,
+				profileImage,
+				contactNumber,
+				social,
+				about,
+			},
+			select: {
+				password: false,
+				patents: false,
+				books: false,
+				bookChapters: false,
+				conferencePapers: false,
+				journals: false,
+				projects: false,
+			},
+		});
+		response(res, 200, "Profile updated successfully", {
+			user: updatedUser,
+		});
+	}
 );
