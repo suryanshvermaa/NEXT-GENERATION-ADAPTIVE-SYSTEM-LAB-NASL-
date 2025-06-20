@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .register-container {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 450px;
+    }
+
+    .register-container h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #2d3436;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    input[type="file"] {
+      padding: 8px;
+    }
+
+    .register-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #0984e3;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .register-btn:hover {
+      background-color:  #254D70;
+    }
+
+    .form-footer {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .form-footer a {
+      color: #0984e3;
+      text-decoration: none;
+    }
+
+    .form-footer a:hover {
+      text-decoration: underline;
+    }
+    button{
+        color:  #254D70;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="register-container">
+    <h2>Register</h2>
+
+    <form id="register-form" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" required placeholder="Enter your full name">
+      </div>
+
+      <div class="form-group">
+        <label for="profile">Profile Image</label>
+        <input type="file" id="profile" name="profile" accept="image/*" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" required placeholder="Enter your email">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Create Password</label>
+        <input type="password" id="password" name="password" required placeholder="Enter password">
+      </div>
+
+      <button type="submit" class="register-btn">Register</button>
+    </form>
+
+    <div class="form-footer">
+      <p>Already have an account? <a href="login.html">Login here</a></p>
+    </div>
+  </div>
+
+<!-- JAVASCRIPT -->
+<script>
+  document.getElementById("register-form").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const file = document.getElementById("profile").files[0];
+
+    if (!file) {
+      return alert("Please select a profile image.");
+    }
+
+    try {
+      // STEP 1: Get upload URL
+      const token = localStorage.getItem("authToken"); // assuming you're using token auth
+      const uploadRes = await fetch('https://next-generation-adaptive-system-lab-nasl.onrender.com/api/image/uploadURL', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ imageName: file.name })
+      });
+
+      const res = await uploadRes.json();
+      const data = res.data;
+
+      console.log(data);
+      const{ imageUploadingUrl , imageUrl } = data;
+      console.log(imageUploadingUrl);
+      console.log(imageUrl);
+
+      // 2. Upload the image to the upload URL
+      await fetch(imageUploadingUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': file.type
+        },
+        body: file
+      });
+
+      console.log("Form Data:", { imageUrl });
+      // STEP 3: Send user data with profileImage URL
+      const createUserRes = await fetch("https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/createUser", {
+        method: "POST",
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json' // required by API
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          profileImage: imageUrl
+        })
+      });
+
+      const result = await createUserRes.json();
+
+      if (createUserRes.ok) {
+        alert("User registered successfully!");
+        window.location.href = "/users/login.html";
+      } else {
+        alert(result.message || "Registration failed.");
+      }
+
+    } catch (error) {
+      console.error("Registration error:", error);
+      alert("An error occurred. Please try again.");
+    }
+  });
+</script>
+
+</body>
+</html>
