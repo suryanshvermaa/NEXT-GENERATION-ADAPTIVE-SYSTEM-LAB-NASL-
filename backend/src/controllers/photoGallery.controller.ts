@@ -13,12 +13,13 @@ import { deleteImage, signedUrl } from "../s3";
  * @param res
  */
 export const addImage = asyncHandler(async (req: Request, res: Response) => {
-	const { imageUrl, tags } = req.body;
+	const { imageUrl, tags, groupMoment = false } = req.body;
 	if (!imageUrl) throw new AppError("image Url and tags both required", 400);
 	const galleryImage = await prisma.photoGallery.create({
 		data: {
 			imageURL: imageUrl,
 			tags: (tags as string).split(",").map((tag) => tag.trim()),
+			groupMoment,
 		},
 	});
 	if (!galleryImage) throw new AppError("error in creating image", 400);
@@ -36,6 +37,9 @@ export const addImage = asyncHandler(async (req: Request, res: Response) => {
 export const getAllImages = asyncHandler(
 	async (req: Request, res: Response) => {
 		const images = await prisma.photoGallery.findMany({
+			where: {
+				groupMoment: false,
+			},
 			select: {
 				id: true,
 				imageURL: true,
@@ -46,7 +50,38 @@ export const getAllImages = asyncHandler(
 			},
 		});
 		if (!images) throw new AppError("Images not found", 400);
-		for(let im of images){
+		for (let im of images) {
+			im.imageURL = await signedUrl(im.imageURL, 5);
+		}
+		response(res, 200, "images fetched successfully", { images });
+	}
+);
+
+/**
+ *
+ * @description creating user
+ * @route POST /api/image/creatUser
+ * @access Private
+ * @param req
+ * @param res
+ */
+export const getAllImagesOfGroupMoment = asyncHandler(
+	async (req: Request, res: Response) => {
+		const images = await prisma.photoGallery.findMany({
+			where: {
+				groupMoment: true,
+			},
+			select: {
+				id: true,
+				imageURL: true,
+				tags: true,
+			},
+			orderBy: {
+				createdAt: "desc",
+			},
+		});
+		if (!images) throw new AppError("Images not found", 400);
+		for (let im of images) {
 			im.imageURL = await signedUrl(im.imageURL, 5);
 		}
 		response(res, 200, "images fetched successfully", { images });

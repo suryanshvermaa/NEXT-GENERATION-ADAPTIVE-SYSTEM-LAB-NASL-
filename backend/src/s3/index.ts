@@ -28,7 +28,7 @@ export const signedUrl = async (
 	time: number
 ): Promise<string> => {
 	return new Promise(async (resolve, reject) => {
-		const imageKey=imageUrl.split("/").slice(7).join('/');
+		const imageKey = imageUrl.split("/").slice(7).join("/");
 		const getImageCommand = new GetObjectCommand({
 			Bucket,
 			Key: imageKey,
@@ -44,7 +44,7 @@ export const signedUrl = async (
 export const deleteImage = async (imageUrl: string): Promise<boolean> => {
 	return new Promise(async (resolve, reject) => {
 		try {
-			const imageKey=imageUrl.split("/").slice(7).join('/');
+			const imageKey = imageUrl.split("/").slice(7).join("/");
 			const deleteImageCommand = new DeleteObjectCommand({
 				Bucket,
 				Key: imageKey,
