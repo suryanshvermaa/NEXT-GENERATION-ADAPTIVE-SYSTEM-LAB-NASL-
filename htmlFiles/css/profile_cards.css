@@ -1,0 +1,91 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #ffffff;
+  margin: 0;
+  padding: 40px 20px;
+}
+
+/* Shared page title style */
+.page-title {
+    margin-top: 4rem;
+    font-weight: 700;
+  text-align: center;
+  margin-bottom: 40px;
+  color: #254D70;
+  letter-spacing: 1.5px;
+  font-size: 2.5rem;
+}
+
+/* Shared card container */
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+}
+
+/* Card style */
+.card-box {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  width: 280px;
+  overflow: hidden;
+  text-align: center;
+  transition: transform 0.2s;
+  padding: 20px;
+}
+
+/* Image wrapper */
+.card-image-wrapper {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  margin-bottom: 15px;
+}
+
+/* Image style */
+.card-image {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* Description area */
+.card-description {
+  padding: 10px;
+}
+
+.card-description h3 {
+  font-size: 1.3rem;
+  color: #254D70;
+}
+
+.card-description p {
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.5;
+}
+.card-action {
+  text-align: center;
+  margin-top: 5px;
+}
+
+.view-profile-btn {
+  padding: 5px 10px;
+  background-color: #254D70;
+  color: #fff;
+  font-weight: 500;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.view-profile-btn:hover {
+  background-color: #1e3d5a;
+  transform: translateY(-2px);
+  color: #fff;
+}
