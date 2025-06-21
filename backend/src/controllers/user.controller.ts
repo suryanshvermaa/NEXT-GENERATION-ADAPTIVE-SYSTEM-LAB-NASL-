@@ -76,7 +76,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 		{ userId: user.id, email: user.email },
 		60 * 24
 	); //for 24 hours
-	response(res, 200, "login successful", { token , user: {user,profileImage: user.profileImage?await signedUrl(user.profileImage,4):"",password:"Not visible for security"} });
+	response(res, 200, "login successful", { token , user: {...user,profileImage: user.profileImage?await signedUrl(user.profileImage,4):"",password:"Not visible for security"} });
 });
 
 /**
@@ -124,7 +124,7 @@ export const profile = asyncHandler(async (req: Request, res: Response) => {
 		},
 	});
 	response(res, 200, "profile fetched successfully", {
-		user: { ...user, ...userCountData, profileImage:user?.profileImage?await signedUrl(user.profileImage,4):""},
+		user: { ...user, ...userCountData, profileImage:user?.profileImage?await signedUrl(user.profileImage,4):"",password:"Not visible for security" },
 	});
 });
 
@@ -144,7 +144,7 @@ export const loginWithGoogle = asyncHandler(
 			{ userId: user.id, email: user.email },
 			60 * 24
 		); // for 24 hour
-		response(res, 200, "login successful", { token, user: {user,profileImage: user.profileImage?await signedUrl(user.profileImage,4):"",password:"Google login not have password"} });
+		response(res, 200, "login successful", { token, user: {...user,profileImage: user.profileImage?await signedUrl(user.profileImage,4):"",password:"Google login not have password"} });
 	}
 );
 
@@ -191,22 +191,13 @@ export const updateProfile = asyncHandler(
 			data: {
 				name,
 				profileImage,
-				contactNumber,
+				contactNumber:String(contactNumber),
 				social,
 				about,
-			},
-			select: {
-				password: false,
-				patents: false,
-				books: false,
-				bookChapters: false,
-				conferencePapers: false,
-				journals: false,
-				projects: false,
-			},
+			}
 		});
 		response(res, 200, "Profile updated successfully", {
-			user: updatedUser,
+			user: {...updatedUser,password:"NOT VISIBLE FOR SECURITY", profileImage:updatedUser.profileImage?await signedUrl(updatedUser.profileImage,4):""},
 		});
 	}
 );
