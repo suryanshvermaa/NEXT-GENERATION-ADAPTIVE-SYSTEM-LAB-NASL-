@@ -27,7 +27,7 @@ export const createResearchFacility = asyncHandler(
 		});
 		if (!researchFacility)
 			throw new AppError("Error in creating researchFacility", 400);
-		response(res, 201, "research Facility created", { researchFacility });
+		response(res, 201, "research Facility created", { researchFacility:{...researchFacility,imageURL:await signedUrl(imageURL,3)} });
 	}
 );
 
@@ -57,7 +57,7 @@ export const updateResearchFacility = asyncHandler(
 		if (!updatedresearchFacility)
 			throw new AppError("Error in updating researchFacility", 400);
 		response(res, 201, "research Facility updated", {
-			updatedresearchFacility,
+			updatedresearchFacility:{...updatedresearchFacility,imageURL:await signedUrl(imageURL,3)},
 		});
 	}
 );

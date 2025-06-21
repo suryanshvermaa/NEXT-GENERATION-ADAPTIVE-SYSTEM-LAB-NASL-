@@ -139,7 +139,7 @@ export const getAllJournalPaper = asyncHandler(
 /**
  *
  * @description fetching journal papers by user id
- * @route GET /api/journal-paper/get-by-user
+ * @route GET /api/journal-paper/get-all-by-user-id
  * @access Private
  * @param req
  * @param res
@@ -194,14 +194,14 @@ export const getJournalPaperById = asyncHandler(
 /**
  *
  * @description deleting journal paper by id
- * @route DELETE /api/journal-paper/delete-by-id
+ * @route DELETE /api/journal-paper/:id
  * @access Private
  * @param req
  * @param res
  */
 export const deleteJournalPaperById = asyncHandler(
 	async (req: Request, res: Response) => {
-		const { id } = req.body;
+		const { id } = req.params;
 		if (!id) throw new AppError("Please provide id of journal paper", 400);
 		const journalPaper = await prisma.journal_Paper.delete({
 			where: {
