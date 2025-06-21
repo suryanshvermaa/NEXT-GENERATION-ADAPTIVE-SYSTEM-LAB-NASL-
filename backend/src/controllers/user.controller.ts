@@ -21,10 +21,10 @@ enum Role {
  * @param res
  */
 export const createUser = asyncHandler(async (req: Request, res: Response) => {
-	const { name, email, profileImage = "", password = "" } = req.body;
+	const { name, email, profileImage = "", password = "",designation } = req.body;
 	let { role = Role.USER } = req.body;
 	if (role == "admin") role = Role.ADMIN;
-	if (!name || !email) throw new AppError("All fields are required", 400);
+	if (!name || !email||!designation) throw new AppError("All fields are required", 400);
 	const isExisting = await prisma.user.findUnique({
 		where: {
 			email,
@@ -40,6 +40,7 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
 			password: pass,
 			profileImage,
 			role,
+			designation: designation
 		},
 	});
 	return response(res, 201, `${name} is ceated successfully`, {
