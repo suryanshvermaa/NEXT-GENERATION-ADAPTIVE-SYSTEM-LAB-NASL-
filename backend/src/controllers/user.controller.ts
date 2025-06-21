@@ -76,7 +76,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 		{ userId: user.id, email: user.email },
 		60 * 24
 	); //for 24 hours
-	response(res, 200, "login successful", { token });
+	response(res, 200, "login successful", { token , user: {user,profileImage: user.profileImage?await signedUrl(user.profileImage,4):"",password:"Not visible for security"} });
 });
 
 /**
@@ -144,7 +144,7 @@ export const loginWithGoogle = asyncHandler(
 			{ userId: user.id, email: user.email },
 			60 * 24
 		); // for 24 hour
-		response(res, 200, "login successful", { token });
+		response(res, 200, "login successful", { token, user: {user,profileImage: user.profileImage?await signedUrl(user.profileImage,4):"",password:"Google login not have password"} });
 	}
 );
 
