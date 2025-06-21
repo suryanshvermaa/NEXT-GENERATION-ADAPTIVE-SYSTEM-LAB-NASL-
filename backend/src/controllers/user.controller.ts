@@ -46,6 +46,7 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
 		user: {
 			name: user.name,
 			email: user.email,
+			role: user.role,
 		},
 	});
 });
@@ -102,6 +103,7 @@ export const profile = asyncHandler(async (req: Request, res: Response) => {
 			status: true,
 			contactNumber: true,
 			books: true,
+			role: true
 		},
 	});
 	const userCountData = await prisma.user.findUnique({
@@ -122,7 +124,7 @@ export const profile = asyncHandler(async (req: Request, res: Response) => {
 		},
 	});
 	response(res, 200, "profile fetched successfully", {
-		user: { ...user, ...userCountData },
+		user: { ...user, ...userCountData, profileImage:user?.profileImage?await signedUrl(user.profileImage,4):""},
 	});
 });
 
@@ -241,6 +243,6 @@ export const searchingUserByEmail = asyncHandler(
 		if (users.length === 0) {
 			return response(res, 404, "No users found", { users: [] });
 		}
-		response(res, 200, "Users found successfully", { users });
+		response(res, 200, "Users found successfully", { users:users.map(async(user)=>({...user,profileImage:await signedUrl(user.profileImage!,3)})) });
 	}
 );

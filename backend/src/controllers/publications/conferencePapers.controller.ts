@@ -11,7 +11,7 @@ import response from "../../utils/response";
  * @param req
  * @param res
  */
-export const createUser = asyncHandler(async (req: Request, res: Response) => {
+export const createConferencePaper = asyncHandler(async (req: Request, res: Response) => {
 	// Conference Papers: Title	Authors	Conference	Location	Year	Pages	Indexing DOI
 	const { title, authors, conference, location, year, pages, indexing, doi } =
 		req.body;

@@ -23,7 +23,7 @@ export const addImage = asyncHandler(async (req: Request, res: Response) => {
 		},
 	});
 	if (!galleryImage) throw new AppError("error in creating image", 400);
-	response(res, 201, "gallery image added", { galleryImage });
+	response(res, 201, "gallery image added", { galleryImage: {...galleryImage,imageUrl:await signedUrl(imageUrl,3)} });
 });
 
 /**
