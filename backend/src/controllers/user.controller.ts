@@ -240,3 +240,36 @@ export const searchingUserByEmail = asyncHandler(
 		response(res, 200, "Users found successfully", { users});
 	}
 );
+
+/**
+ * @description Get people by designation
+ * @route GET /api/user/getPeople?designation=designation
+ * @access Public
+ * @param req
+ * @param res
+ */
+export const getPeople=asyncHandler(async(req:Request,res:Response)=>{
+  const {designation} = req.query;
+  if(!designation) throw new AppError("Please provide designation",400);
+  const people = await prisma.user.findMany({
+	where: {
+	  designation:designation as string,
+	},
+	select: {
+	  id: true,
+	  name: true,
+	  email: true,
+	  profileImage: true,
+	  designation: true,
+	  about: true,
+	  role:true,
+	},
+  });
+  if (people.length === 0) {
+	return response(res, 404, "No people found", { people: [] });
+  }
+  for(let person of people){
+	person.profileImage=(person.profileImage)?await signedUrl(person.profileImage!, 4):"";
+  }
+  response(res, 200, "People found successfully", { people });
+})
