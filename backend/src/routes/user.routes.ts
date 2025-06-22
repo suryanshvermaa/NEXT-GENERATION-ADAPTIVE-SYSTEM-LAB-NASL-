@@ -4,6 +4,7 @@ import {
 	login,
 	loginWithGoogle,
 	profile,
+	searchingUserByEmail,
 	updateProfile,
 } from "../controllers/user.controller";
 import { adminAuth, auth } from "../middlewares/auth.middleware";
@@ -14,6 +15,7 @@ userRouter
 	.post("/login", login)
 	.get("/profile", auth, profile)
 	.post("/loginWithGoogle", loginWithGoogle)
-	.put("/updateProfile", auth, updateProfile);
+	.put("/updateProfile", auth, updateProfile)
+	.get("/search",searchingUserByEmail)
 
 export default userRouter;
