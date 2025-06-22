@@ -60,8 +60,8 @@ export const getAllImages = asyncHandler(
 /**
  *
  * @description creating user
- * @route POST /api/image/creatUser
- * @access Private
+ * @route POST /api/image/getGroupMomentImages
+ * @access Public
  * @param req
  * @param res
  */
