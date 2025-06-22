@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
 	createUser,
 	getPeople,
+	getProfileById,
 	login,
 	loginWithGoogle,
 	profile,
@@ -19,5 +20,6 @@ userRouter
 	.put("/updateProfile", auth, updateProfile)
 	.get("/search",searchingUserByEmail)
 	.get("getPeople",getPeople)
+	.get("profile/:userId",getProfileById);
 
 export default userRouter;
