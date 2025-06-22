@@ -273,3 +273,34 @@ export const getPeople=asyncHandler(async(req:Request,res:Response)=>{
   }
   response(res, 200, "People found successfully", { people });
 })
+/**
+ * @description Get profile by userId
+ * @route GET /api/user/profile/:userId
+ * @access Public
+ * @param req
+ */
+export const getProfileById=asyncHandler(
+	async(req:Request,res:Response,)=>{
+		const { userId } = req.params;
+		if (!userId) throw new AppError("Please provide userId", 400);
+		const user = await prisma.user.findUnique({
+			where: {
+				id: parseInt(userId),
+			},
+			select: {
+				name: true,
+				email: true,
+				profileImage: true,
+				about: true,
+				designation: true,
+				social: true,
+				status: true,
+				contactNumber: true,
+				role:true
+			},
+		});
+		if (!user) throw new AppError("User not found", 404);
+		user.profileImage = user.profileImage ? await signedUrl(user.profileImage, 4) : "";
+		response(res, 200, "Profile fetched successfully", { user });
+	}
+)
