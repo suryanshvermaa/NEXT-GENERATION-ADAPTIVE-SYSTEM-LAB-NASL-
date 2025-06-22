@@ -214,13 +214,13 @@ export const updateProfile = asyncHandler(
 export const searchingUserByEmail = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { query } = req.query;
-		if (!query || typeof query !== "string")
+		if (!query)
 			throw new AppError("Please provide a valid search term", 400);
 		const users = await prisma.user.findMany({
 			where: {
 				email: {
-					contains: query,
 					mode: "insensitive",
+					contains: query as string,
 				},
 			},
 			select: {
@@ -229,12 +229,14 @@ export const searchingUserByEmail = asyncHandler(
 				email: true,
 				profileImage: true,
 			},
-			//limited to 10 results
 			take: 5,
 		});
 		if (users.length === 0) {
 			return response(res, 404, "No users found", { users: [] });
 		}
-		response(res, 200, "Users found successfully", { users:users.map(async(user)=>({...user,profileImage:await signedUrl(user.profileImage!,3)})) });
+		for(let user of users){
+			user.profileImage=(user.profileImage)?await signedUrl(user.profileImage!, 4):"";
+		}
+		response(res, 200, "Users found successfully", { users});
 	}
 );

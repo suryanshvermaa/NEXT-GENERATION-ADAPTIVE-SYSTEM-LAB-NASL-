@@ -1,6 +1,7 @@
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
+  previewFeatures = ["fullTextSearchPostgres"]
 }
 
 datasource db {
@@ -16,7 +17,7 @@ enum Role{
 model User {
   id           Int      @id @unique @default(autoincrement())
   name         String?
-  email        String   @unique
+  email        String   @unique @db.Text
   role         Role     @default(USER)
   password     String? // in case of google auth, password is not needed
   profileImage String?
