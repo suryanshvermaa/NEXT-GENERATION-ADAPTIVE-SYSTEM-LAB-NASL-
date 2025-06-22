@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
 	createUser,
+	getPeople,
 	login,
 	loginWithGoogle,
 	profile,
@@ -17,5 +18,6 @@ userRouter
 	.post("/loginWithGoogle", loginWithGoogle)
 	.put("/updateProfile", auth, updateProfile)
 	.get("/search",searchingUserByEmail)
+	.get("getPeople",getPeople)
 
 export default userRouter;
