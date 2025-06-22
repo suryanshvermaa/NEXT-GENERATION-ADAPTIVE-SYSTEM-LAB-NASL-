@@ -3,6 +3,7 @@ import asyncHandler from "../../utils/asyncHandler";
 import { AppError } from "../../utils/error";
 import prisma from "../../config/db";
 import response from "../../utils/response";
+import { signedUrl } from "../../s3";
 
 /**
  *
@@ -42,8 +43,10 @@ export const createJournalPaper = asyncHandler(
 			data: {
 				title,
 				journal,
-				authors,
-				publicationDate,
+				authors:{
+					connect: authors.map((authorId: number) => ({ id: authorId })),
+				},
+				publicationDate:new Date(publicationDate),
 				volume,
 				year,
 				quartile,
@@ -99,8 +102,10 @@ export const updateJournalPaper = asyncHandler(
 			data: {
 				title,
 				journal,
-				authors,
-				publicationDate,
+				authors:{
+					connect: authors.map((authorId: number) => ({ id: authorId })),
+				},
+				publicationDate:new Date(publicationDate),
 				volume,
 				year,
 				quartile,
@@ -127,7 +132,24 @@ export const getAllJournalPaper = asyncHandler(
 			orderBy: {
 				createdAt: "desc",
 			},
+			include:{
+				authors: {
+					select:{
+						id:true,
+						name: true,
+						email: true,
+						role: true,
+						profileImage: true,
+						designation:true,
+					}
+				}
+			}
 		});
+		for(let paper of journalPapers){
+			for(let author of paper.authors){
+				author.profileImage=author.profileImage?await signedUrl(author.profileImage!,3):"";
+			}
+		}
 		if (!journalPapers || journalPapers.length === 0)
 			throw new AppError("No journal papers found", 404);
 		response(res, 200, "Journal papers fetched successfully", {
@@ -157,7 +179,18 @@ export const getJounalPapersByUserId = asyncHandler(
 			},
 			orderBy: {
 				createdAt: "desc",
-			},
+			},include:{
+				authors: {
+					select:{
+						id:true,
+						name: true,
+						email: true,
+						role: true,
+						profileImage: true,
+						designation:true,
+					}
+				}
+			}
 		});
 		if (!journalPapers || journalPapers.length === 0)
 			throw new AppError("No journal papers found for this user", 404);
@@ -183,6 +216,18 @@ export const getJournalPaperById = asyncHandler(
 			where: {
 				id: Number(id),
 			},
+			include:{
+				authors: {
+					select:{
+						id:true,
+						name: true,
+						email: true,
+						role: true,
+						profileImage: true,
+						designation:true,
+					}
+				}
+			}
 		});
 		if (!journalPaper) throw new AppError("Journal paper not found", 404);
 		response(res, 200, "Journal paper fetched successfully", {

@@ -3,11 +3,16 @@ import { Request, Response } from "express";
 import { AppError } from "../../utils/error";
 import prisma from "../../config/db";
 import response from "../../utils/response";
+import { signedUrl } from "../../s3";
+
 
 /**
- * @description Creating book chapter
+ *
+ * @description creating book chapter
  * @route POST /api/book-chapter/create
  * @access Private
+ * @param req
+ * @param res
  */
 export const createBookChapter = asyncHandler(
 	async (req: Request, res: Response) => {
@@ -21,18 +26,25 @@ export const createBookChapter = asyncHandler(
 			year,
 		} = req.body;
 
-		if (!chapterTitle || !bookTitle || !authors || !year || !publisher) {
+		if (
+			!chapterTitle ||
+			!bookTitle ||
+			!authors ||
+			!publisher ||
+			!year
+		)
 			throw new AppError(
 				"Please provide all required fields: chapterTitle, bookTitle, authors, publisher, year",
 				400
 			);
-		}
 
 		const bookChapter = await prisma.book_Chapter.create({
 			data: {
 				chapterTitle,
 				bookTitle,
-				authors,
+				authors: {
+					connect: authors.map((authorId: number) => ({ id: authorId })),
+				},
 				scopus,
 				doi,
 				publisher,
@@ -47,45 +59,12 @@ export const createBookChapter = asyncHandler(
 );
 
 /**
- * @description Get all book chapters
- * @route GET /api/book-chapter/get-all
- * @access Public
- */
-export const getAllBookChapters = asyncHandler(
-	async (req: Request, res: Response) => {
-		const bookChapters = await prisma.book_Chapter.findMany();
-		response(res, 200, "Book chapters fetched successfully", {
-			bookChapters,
-		});
-	}
-);
-
-/**
- * @description Get book chapter by ID
- * @route GET /api/book-chapter/:id
- * @access Public
- */
-export const getBookChapterById = asyncHandler(
-	async (req: Request, res: Response) => {
-		const { id } = req.params;
-		const bookChapter = await prisma.book_Chapter.findUnique({
-			where: { id: Number(id) },
-		});
-
-		if (!bookChapter) {
-			throw new AppError("Book chapter not found", 404);
-		}
-
-		response(res, 200, "Book chapter fetched successfully", {
-			bookChapter,
-		});
-	}
-);
-
-/**
- * @description Update book chapter
+ *
+ * @description updating book chapter
  * @route PUT /api/book-chapter/:id
  * @access Private
+ * @param req
+ * @param res
  */
 export const updateBookChapter = asyncHandler(
 	async (req: Request, res: Response) => {
@@ -100,12 +79,28 @@ export const updateBookChapter = asyncHandler(
 			year,
 		} = req.body;
 
+		if (
+			!id ||
+			!chapterTitle ||
+			!bookTitle ||
+			!authors ||
+			!publisher ||
+			!year
+		)
+			throw new AppError(
+				"Please provide all required fields: id, chapterTitle, bookTitle, authors, publisher, year",
+				400
+			);
+
 		const bookChapter = await prisma.book_Chapter.update({
 			where: { id: Number(id) },
 			data: {
 				chapterTitle,
 				bookTitle,
-				authors,
+				authors: {
+					set: [],
+					connect: authors.map((authorId: number) => ({ id: authorId })),
+				},
 				scopus,
 				doi,
 				publisher,
@@ -120,13 +115,105 @@ export const updateBookChapter = asyncHandler(
 );
 
 /**
- * @description Delete book chapter
+ *
+ * @description fetching all book chapters
+ * @route GET /api/book-chapter/get-all
+ * @access Public
+ * @param req
+ * @param res
+ */
+export const getAllBookChapters = asyncHandler(
+	async (req: Request, res: Response) => {
+		const bookChapters = await prisma.book_Chapter.findMany({
+			orderBy: { createdAt: "desc" },
+			include: {
+				authors: {
+					select: {
+						id: true,
+						name: true,
+						email: true,
+						role: true,
+						profileImage: true,
+						designation: true,
+					},
+				},
+			},
+		});
+
+		if (!bookChapters || bookChapters.length === 0)
+			throw new AppError("No book chapters found", 404);
+		for (let bookChapter of bookChapters) {
+			if (bookChapter.authors) {
+				for (let author of bookChapter.authors) {
+					author.profileImage = author.profileImage
+						? await signedUrl(author.profileImage, 3)
+						: "";
+				}
+			}
+		}
+		response(res, 200, "Book chapters fetched successfully", {
+			bookChapters,
+		});
+	}
+);
+
+/**
+ *
+ * @description fetching book chapter by id
+ * @route GET /api/book-chapter/:id
+ * @access Public
+ * @param req
+ * @param res
+ */
+export const getBookChapterById = asyncHandler(
+	async (req: Request, res: Response) => {
+		const { id } = req.params;
+		if (!id) throw new AppError("Please provide id of book chapter", 400);
+
+		const bookChapter = await prisma.book_Chapter.findUnique({
+			where: { id: Number(id) },
+			include: {
+				authors: {
+					select: {
+						id: true,
+						name: true,
+						email: true,
+						role: true,
+						profileImage: true,
+						designation: true,
+					},
+				},
+			},
+		});
+
+		if (!bookChapter) throw new AppError("Book chapter not found", 404);
+
+		if (bookChapter.authors) {
+			for (let author of bookChapter.authors) {
+				author.profileImage = author.profileImage
+					? await signedUrl(author.profileImage, 3)
+					: "";
+			}
+		}
+		response(res, 200, "Book chapter fetched successfully", {
+			bookChapter,
+		});
+	}
+);
+
+/**
+ *
+ * @description deleting book chapter by id
  * @route DELETE /api/book-chapter/:id
  * @access Private
+ * @param req
+ * @param res
  */
 export const deleteBookChapter = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
+		if (!id) throw new AppError("Please provide id of book chapter", 400);
+
 		const bookChapter = await prisma.book_Chapter.delete({
 			where: { id: Number(id) },
 		});
@@ -138,28 +225,52 @@ export const deleteBookChapter = asyncHandler(
 );
 
 /**
- * @description Get all book chapters by user ID
- * @route POST /api/book-chapter/get-all-by-user-id
+ *
+ * @description fetching all book chapters by user id
+ * @route GET /api/book-chapter/get-all-by-user-id
  * @access Private
+ * @param req
+ * @param res
  */
 export const getAllBookChaptersByUserId = asyncHandler(
 	async (req: Request, res: Response) => {
-		const { userId } = req.body;
+		const userId = req.user?.userId;
+
+		if (!userId)
+			throw new AppError("User id is required", 400);
+
 		const bookChapters = await prisma.book_Chapter.findMany({
 			where: {
 				authors: {
 					some: {
-						id: userId,
+						id: userId as number,
 					},
 				},
 			},
 			orderBy: { createdAt: "desc" },
+			include: {
+				authors: {
+					select: {
+						id: true,
+						name: true,
+						email: true,
+						role: true,
+						profileImage: true,
+						designation: true,
+					},
+				},
+			},
 		});
 
-		if (!bookChapters || bookChapters.length === 0) {
+		if (!bookChapters || bookChapters.length === 0)
 			throw new AppError("No book chapters found for this user", 404);
+		for (let bookChapter of bookChapters) {
+			if (bookChapter.authors) {
+				for (let author of bookChapter.authors) {
+					author.profileImage = author.profileImage ? await signedUrl(author.profileImage, 3) : "";
+				}
+			}
 		}
-
 		response(res, 200, "Book chapters fetched successfully", {
 			bookChapters,
 		});
