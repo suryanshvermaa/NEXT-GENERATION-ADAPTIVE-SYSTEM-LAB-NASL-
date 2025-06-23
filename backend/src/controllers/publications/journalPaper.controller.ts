@@ -19,21 +19,16 @@ export const createJournalPaper = asyncHandler(
 			title,
 			journal,
 			authors,
-			publicationDate,
-			volume,
-			year,
-			quartile,
-			doi,
+			publicationDate=new Date(),
+			volume=null,
+			year=null,
+			quartile=null,
+			doi=null,
 		} = req.body;
 		if (
 			!title ||
 			!journal ||
-			!authors ||
-			!publicationDate ||
-			!volume ||
-			!year ||
-			!quartile ||
-			!doi
+			!authors
 		)
 			throw new AppError(
 				"Please provide all required fields: title, journal, authors, publicationDate, volume, year, quartile, doi",
@@ -74,22 +69,17 @@ export const updateJournalPaper = asyncHandler(
 			title,
 			journal,
 			authors,
-			publicationDate,
-			volume,
-			year,
-			quartile,
-			doi,
+			publicationDate=new Date(),
+			volume=null,
+			year=null,
+			quartile=null,
+			doi=null,
 		} = req.body;
 		if (
 			!id ||
 			!title ||
 			!journal ||
-			!authors ||
-			!publicationDate ||
-			!volume ||
-			!year ||
-			!quartile ||
-			!doi
+			!authors
 		)
 			throw new AppError(
 				"Please provide all required fields: id, title, journal, authors, publicationDate, volume, year, quartile, doi",
