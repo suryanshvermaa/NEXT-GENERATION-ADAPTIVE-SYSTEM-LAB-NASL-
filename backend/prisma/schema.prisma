@@ -61,7 +61,7 @@ model Journal_Paper{
   authors  User[]
   journal    String
   volume     String?
-  year       Int
+  year       Int?
   publicationDate DateTime?
   quartile   String?
   doi        String?
