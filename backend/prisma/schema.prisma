@@ -137,10 +137,11 @@ model Patent {
   updatedAt    DateTime @default(now()) @updatedAt
 }
 
-model Outreach {
+model OutreachOrCourses {
   id          Int      @id @unique @default(autoincrement())
-  outreach    String
-  description String
+  title    String
+  content String
+  type String
   createdAt   DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt
 }
