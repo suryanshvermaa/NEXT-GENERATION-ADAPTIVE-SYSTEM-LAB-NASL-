@@ -19,7 +19,7 @@ userRouter
 	.post("/loginWithGoogle", loginWithGoogle)
 	.put("/updateProfile", auth, updateProfile)
 	.get("/search", searchingUserByEmail)
-	.get("getPeople", getPeople)
-	.get("profile/:userId", getProfileById);
+	.get("/getPeople", getPeople)
+	.get("/profile/:userId", getProfileById);
 
 export default userRouter;
