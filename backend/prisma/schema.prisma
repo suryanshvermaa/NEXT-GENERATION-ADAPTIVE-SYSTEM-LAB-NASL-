@@ -32,6 +32,7 @@ model User {
   books Book[]
   patents Patent[]
   projects Project[]
+  publications Publication[]
   createdAt    DateTime @default(now())
   updatedAt     DateTime @default(now()) @updatedAt
 }
@@ -180,4 +181,14 @@ model PhotoGallery {
   groupMoment Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
+}
+
+model Publication{
+  id         Int      @id @unique @default(autoincrement())
+  title       String
+  authors     User[]
+  content     String
+  type String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 }
