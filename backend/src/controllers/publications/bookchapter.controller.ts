@@ -20,18 +20,16 @@ export const createBookChapter = asyncHandler(
 			chapterTitle,
 			bookTitle,
 			authors,
-			scopus,
-			doi,
-			publisher,
-			year,
+			scopus=null,
+			doi=null,
+			publisher=null,
+			year=null,
 		} = req.body;
 
 		if (
 			!chapterTitle ||
 			!bookTitle ||
-			!authors ||
-			!publisher ||
-			!year
+			!authors
 		)
 			throw new AppError(
 				"Please provide all required fields: chapterTitle, bookTitle, authors, publisher, year",
@@ -73,10 +71,10 @@ export const updateBookChapter = asyncHandler(
 			chapterTitle,
 			bookTitle,
 			authors,
-			scopus,
-			doi,
-			publisher,
-			year,
+			scopus=null,
+			doi=null,
+			publisher=null,
+			year=null,
 		} = req.body;
 
 		if (

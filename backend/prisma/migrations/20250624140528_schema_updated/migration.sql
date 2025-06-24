@@ -1,0 +1,19 @@
+-- AlterTable
+ALTER TABLE "Book" ALTER COLUMN "year" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "Book_Chapter" ALTER COLUMN "year" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "Conference_Paper" ALTER COLUMN "year" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "Patent" ALTER COLUMN "type" DROP NOT NULL,
+ALTER COLUMN "grantNo" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "Project" ALTER COLUMN "agency" DROP NOT NULL,
+ALTER COLUMN "role" DROP NOT NULL,
+ALTER COLUMN "outlay" DROP NOT NULL,
+ALTER COLUMN "duration" DROP NOT NULL,
+ALTER COLUMN "status" DROP NOT NULL;

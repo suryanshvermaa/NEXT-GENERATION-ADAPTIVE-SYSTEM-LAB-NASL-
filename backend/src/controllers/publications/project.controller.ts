@@ -16,13 +16,13 @@ export const createProject = asyncHandler(
 	async (req: Request, res: Response) => {
 		const {
 			title,
-			agency,
-			role,
-			outlay,
-			duration,
+			agency=null,
+			role=null,
+			outlay=null,
+			duration=null,
 			pi,
-			status,
-			fundsReceived,
+			status=null,
+			fundsReceived=null,
 		} = req.body;
 		if (
 			!title ||
@@ -83,23 +83,18 @@ export const updateProject = asyncHandler(
 		const { id } = req.params;
 		const {
 			title,
-			agency,
-			role,
-			outlay,
-			duration,
+			agency=null,
+			role=null,
+			outlay=null,
+			duration=null,
 			pi,
-			status,
-			fundsReceived,
+			status=null,
+			fundsReceived=null,
 		} = req.body;
 		if (
 			!id ||
 			!title ||
-			!agency ||
-			!role ||
-			!outlay ||
-			!duration ||
-			!pi ||
-			!status
+			!pi 
 		) {
 			throw new AppError(
 				"Please provide all required fields: id, title, agency, role, outlay, duration, pi, status",

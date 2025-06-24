@@ -13,9 +13,9 @@ import { signedUrl } from "../../s3";
  * @param res
  */
 export const createBook = asyncHandler(async (req: Request, res: Response) => {
-	const { title, authors, publisher, scopus, doi, isbn, year } = req.body;
+	const { title, authors, publisher=null, scopus=null, doi=null, isbn=null, year=null } = req.body;
 
-	if (!title || !authors || !year) {
+	if (!title || !authors) {
 		throw new AppError("Please provide title, authors, and year", 400);
 	}
 
@@ -129,9 +129,9 @@ export const getBookById = asyncHandler(async (req: Request, res: Response) => {
  * @param res
  */
 export const updateBook = asyncHandler(async (req: Request, res: Response) => {
-	const { id, title, authors, publisher, scopus, doi, isbn, year } = req.body;
+	const { id, title, authors, publisher=null, scopus=null, doi=null, isbn=null, year=null } = req.body;
 
-	if (!id || !title || !authors || !year) {
+	if (!id || !title || !authors) {
 		throw new AppError("Please provide id, title, authors, and year", 400);
 	}
 

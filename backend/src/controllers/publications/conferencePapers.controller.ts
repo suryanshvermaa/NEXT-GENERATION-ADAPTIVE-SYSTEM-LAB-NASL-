@@ -19,11 +19,11 @@ export const createConferencePaper = asyncHandler(
 			title,
 			authors,
 			conference,
-			location,
-			year,
-			pages,
-			indexing,
-			doi,
+			location=null,
+			year=null,
+			pages=null,
+			indexing=null,
+			doi=null,
 		} = req.body;
 		if (
 			!title ||
@@ -86,11 +86,11 @@ export const updateConferencePaper = asyncHandler(
 			title,
 			authors,
 			conference,
-			location,
-			year,
-			pages,
-			indexing,
-			doi,
+			location=null,
+			year=null,
+			pages=null,
+			indexing=null,
+			doi=null,
 		} = req.body;
 		if (
 			!id ||

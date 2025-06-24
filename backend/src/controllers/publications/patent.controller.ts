@@ -15,11 +15,9 @@ import { signedUrl } from "../../s3";
  */
 export const createPatent = asyncHandler(
 	async (req: Request, res: Response) => {
-		const { title, type, grantNo, grantDate, publicationDate, inventors } = req.body;
+		const { title, type=null, grantNo=null, grantDate=null, publicationDate=null, inventors } = req.body;
 		if (
 			!title ||
-			!type ||
-			!grantNo ||
 			!inventors
 		)
 			throw new AppError(
@@ -64,12 +62,10 @@ export const createPatent = asyncHandler(
  */
 export const updatePatent = asyncHandler(
 	async (req: Request, res: Response) => {
-		const { id, title, type, grantNo, grantDate, publicationDate, inventors } = req.body;
+		const { id, title, type=null, grantNo=null, grantDate=null, publicationDate=null, inventors } = req.body;
 		if (
 			!id ||
 			!title ||
-			!type ||
-			!grantNo ||
 			!inventors
 		)
 			throw new AppError(
