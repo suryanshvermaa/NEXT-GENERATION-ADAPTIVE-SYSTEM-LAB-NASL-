@@ -131,7 +131,7 @@ export const getPublications = asyncHandler(
 			},
 		});
 		for (let publication of publications) {
-			for (let author of publication as any) {
+			for (let author of publication.authors) {
 				author.profileImage = author.profileImage
 					? await signedUrl(author.profileImage, 3)
 					: "";
@@ -143,7 +143,7 @@ export const getPublications = asyncHandler(
 
 /**
  * @description fetching a single project by ID
- * @route GET /api/project/:id
+ * @route GET /api/publication/:id
  * @access Public
  * @param req
  * @param res
@@ -229,7 +229,7 @@ export const getAllPublicationsByAuthorId = asyncHandler(
 			},
 		});
 		for (let publication of publications) {
-			for (let author of publication as any) {
+			for (let author of publication.authors) {
 				author.profileImage = author.profileImage
 					? await signedUrl(author.profileImage!, 3)
 					: "";
