@@ -33,7 +33,7 @@ const auth = asyncHandler(
 	}
 );
 
-export const adminAuth= asyncHandler(
+export const adminAuth = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		const token =
 			req.headers?.["token"] ||
@@ -44,16 +44,17 @@ export const adminAuth= asyncHandler(
 			"";
 		if (!token) throw new AppError("Unauthorised", 401);
 		const data = await verifyToken(token);
-		const user=await prisma.user.findUnique({
-			where:{
-				id: data.userId as number
-			}
-		})
-		if(!user || user.role!==Role.ADMIN) throw new AppError("Unauthorised", 401);
+		const user = await prisma.user.findUnique({
+			where: {
+				id: data.userId as number,
+			},
+		});
+		if (!user || user.role !== Role.ADMIN)
+			throw new AppError("Unauthorised", 401);
 		req.user = data;
 		next();
 	}
-)
+);
 
 /**
  * Creates a JWT token with the provided data and expiration time

@@ -16,13 +16,13 @@ export const createProject = asyncHandler(
 	async (req: Request, res: Response) => {
 		const {
 			title,
-			agency=null,
-			role=null,
-			outlay=null,
-			duration=null,
+			agency = null,
+			role = null,
+			outlay = null,
+			duration = null,
 			pi,
-			status=null,
-			fundsReceived=null,
+			status = null,
+			fundsReceived = null,
 		} = req.body;
 		if (
 			!title ||
@@ -46,7 +46,7 @@ export const createProject = asyncHandler(
 				outlay,
 				duration,
 				pi: {
-					connect: { id: pi }
+					connect: { id: pi },
 				},
 				status,
 				fundsReceived,
@@ -60,12 +60,15 @@ export const createProject = asyncHandler(
 						role: true,
 						profileImage: true,
 						designation: true,
-					}
-				}
-			}
+					},
+				},
+			},
 		});
 		if (project.pi && project.pi.profileImage) {
-			project.pi.profileImage = await signedUrl(project.pi.profileImage, 3);
+			project.pi.profileImage = await signedUrl(
+				project.pi.profileImage,
+				3
+			);
 		}
 		response(res, 201, "Project created successfully", { project });
 	}
@@ -83,19 +86,15 @@ export const updateProject = asyncHandler(
 		const { id } = req.params;
 		const {
 			title,
-			agency=null,
-			role=null,
-			outlay=null,
-			duration=null,
+			agency = null,
+			role = null,
+			outlay = null,
+			duration = null,
 			pi,
-			status=null,
-			fundsReceived=null,
+			status = null,
+			fundsReceived = null,
 		} = req.body;
-		if (
-			!id ||
-			!title ||
-			!pi 
-		) {
+		if (!id || !title || !pi) {
 			throw new AppError(
 				"Please provide all required fields: id, title, agency, role, outlay, duration, pi, status",
 				400
@@ -110,7 +109,7 @@ export const updateProject = asyncHandler(
 				outlay,
 				duration,
 				pi: {
-					connect: { id: pi }
+					connect: { id: pi },
 				},
 				status,
 				fundsReceived,
@@ -124,12 +123,15 @@ export const updateProject = asyncHandler(
 						role: true,
 						profileImage: true,
 						designation: true,
-					}
-				}
-			}
+					},
+				},
+			},
 		});
 		if (project.pi && project.pi.profileImage) {
-			project.pi.profileImage = await signedUrl(project.pi.profileImage, 3);
+			project.pi.profileImage = await signedUrl(
+				project.pi.profileImage,
+				3
+			);
 		}
 		response(res, 200, "Project updated successfully", { project });
 	}
@@ -155,21 +157,27 @@ export const getAllProjects = asyncHandler(
 						role: true,
 						profileImage: true,
 						designation: true,
-					}
-				}
-			}
+					},
+				},
+			},
 		});
 		for (let project of projects) {
 			if (project.pi && project.pi.profileImage) {
-				project.pi.profileImage = await signedUrl(project.pi.profileImage, 3);
+				project.pi.profileImage = await signedUrl(
+					project.pi.profileImage,
+					3
+				);
 			}
 		}
 		if (!projects || projects.length === 0)
 			throw new AppError("No projects found", 404);
-		
+
 		for (let project of projects) {
 			if (project.pi && project.pi.profileImage) {
-				project.pi.profileImage = await signedUrl(project.pi.profileImage, 3);
+				project.pi.profileImage = await signedUrl(
+					project.pi.profileImage,
+					3
+				);
 			}
 		}
 		response(res, 200, "Projects fetched successfully", { projects });
@@ -198,13 +206,16 @@ export const getProjectById = asyncHandler(
 						role: true,
 						profileImage: true,
 						designation: true,
-					}
-				}
-			}
+					},
+				},
+			},
 		});
 		if (!project) throw new AppError("Project not found", 404);
 		if (project.pi && project.pi.profileImage) {
-			project.pi.profileImage = await signedUrl(project.pi.profileImage, 3);
+			project.pi.profileImage = await signedUrl(
+				project.pi.profileImage,
+				3
+			);
 		}
 		response(res, 200, "Project fetched successfully", { project });
 	}
@@ -253,13 +264,16 @@ export const getAllProjectsByPiId = asyncHandler(
 						role: true,
 						profileImage: true,
 						designation: true,
-					}
-				}
-			}
+					},
+				},
+			},
 		});
 		for (let project of projects) {
 			if (project.pi && project.pi.profileImage) {
-				project.pi.profileImage = await signedUrl(project.pi.profileImage, 3);
+				project.pi.profileImage = await signedUrl(
+					project.pi.profileImage,
+					3
+				);
 			}
 		}
 		if (!projects || projects.length === 0)
@@ -269,7 +283,10 @@ export const getAllProjectsByPiId = asyncHandler(
 		}
 		for (let project of projects) {
 			if (project.pi && project.pi.profileImage) {
-				project.pi.profileImage = await signedUrl(project.pi.profileImage, 3);
+				project.pi.profileImage = await signedUrl(
+					project.pi.profileImage,
+					3
+				);
 			}
 		}
 		response(res, 200, "Projects fetched successfully", { projects });

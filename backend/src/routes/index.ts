@@ -32,6 +32,6 @@ router
 	.use("/patent", patentRouter)
 	.use("/photo-gallery", photoGalleryRouter)
 	.use("/event", eventRouter)
-	.use("/publication",publicationRouter)
+	.use("/publication", publicationRouter);
 
 export default router;

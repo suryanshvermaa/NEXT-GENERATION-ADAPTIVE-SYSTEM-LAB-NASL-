@@ -1,4 +1,3 @@
-
 # 📚 Publication API Documentation
 
 This API allows creating, updating, retrieving, and deleting publications with author information.
@@ -7,9 +6,11 @@ All responses follow a consistent format:
 
 ```json
 {
-  "status": true,
-  "message": "Descriptive message",
-  "data": { /* payload */ }
+	"status": true,
+	"message": "Descriptive message",
+	"data": {
+		/* payload */
+	}
 }
 ```
 
@@ -23,38 +24,40 @@ All responses follow a consistent format:
 Creates a new publication.
 
 ### 📝 Request Body
+
 ```json
 {
-  "title": "Publication Title",
-  "authors": [1, 2],
-  "content": "Main content of the publication",
-  "type": "journal"
+	"title": "Publication Title",
+	"authors": [1, 2],
+	"content": "Main content of the publication",
+	"type": "journal"
 }
 ```
 
 ### ✅ Success Response
+
 ```json
 {
-  "status": true,
-  "message": "Publication created successfully",
-  "data": {
-    "publication": {
-      "id": 1,
-      "title": "Publication Title",
-      "content": "Main content of the publication",
-      "type": "journal",
-      "authors": [
-        {
-          "id": 1,
-          "name": "Author Name",
-          "email": "author@example.com",
-          "role": "Researcher",
-          "profileImage": "signed_url",
-          "designation": "Professor"
-        }
-      ]
-    }
-  }
+	"status": true,
+	"message": "Publication created successfully",
+	"data": {
+		"publication": {
+			"id": 1,
+			"title": "Publication Title",
+			"content": "Main content of the publication",
+			"type": "journal",
+			"authors": [
+				{
+					"id": 1,
+					"name": "Author Name",
+					"email": "author@example.com",
+					"role": "Researcher",
+					"profileImage": "signed_url",
+					"designation": "Professor"
+				}
+			]
+		}
+	}
 }
 ```
 
@@ -68,28 +71,33 @@ Creates a new publication.
 Updates a publication by ID.
 
 ### 🔗 URL Parameters
+
 - `id`: ID of the publication to update
 
 ### 📝 Request Body
+
 ```json
 {
-  "title": "Updated Title",
-  "authors": [1, 3]
+	"title": "Updated Title",
+	"authors": [1, 3]
 }
 ```
 
 ### ✅ Success Response
+
 ```json
 {
-  "status": true,
-  "message": "Project updated successfully",
-  "data": {
-    "publication": {
-      "id": 1,
-      "title": "Updated Title",
-      "authors": [/* updated author list */]
-    }
-  }
+	"status": true,
+	"message": "Project updated successfully",
+	"data": {
+		"publication": {
+			"id": 1,
+			"title": "Updated Title",
+			"authors": [
+				/* updated author list */
+			]
+		}
+	}
 }
 ```
 
@@ -103,23 +111,27 @@ Updates a publication by ID.
 Fetches all publications optionally filtered by type.
 
 ### 🧩 Query Parameters
+
 - `type`: (optional) Filter by type (e.g., `journal`, `conference`)
 
 ### ✅ Success Response
+
 ```json
 {
-  "status": true,
-  "message": "Projects fetched successfully",
-  "data": {
-    "publications": [
-      {
-        "id": 1,
-        "title": "Sample Title",
-        "type": "journal",
-        "authors": [/* author list */]
-      }
-    ]
-  }
+	"status": true,
+	"message": "Projects fetched successfully",
+	"data": {
+		"publications": [
+			{
+				"id": 1,
+				"title": "Sample Title",
+				"type": "journal",
+				"authors": [
+					/* author list */
+				]
+			}
+		]
+	}
 }
 ```
 
@@ -133,20 +145,24 @@ Fetches all publications optionally filtered by type.
 Fetches a single publication by its ID.
 
 ### 🔗 URL Parameters
+
 - `id`: ID of the publication
 
 ### ✅ Success Response
+
 ```json
 {
-  "status": true,
-  "message": "Project fetched successfully",
-  "data": {
-    "publication": {
-      "id": 1,
-      "title": "Sample Title",
-      "authors": [/* author list */]
-    }
-  }
+	"status": true,
+	"message": "Project fetched successfully",
+	"data": {
+		"publication": {
+			"id": 1,
+			"title": "Sample Title",
+			"authors": [
+				/* author list */
+			]
+		}
+	}
 }
 ```
 
@@ -160,19 +176,21 @@ Fetches a single publication by its ID.
 Deletes a publication by its ID.
 
 ### 🔗 URL Parameters
+
 - `id`: ID of the publication
 
 ### ✅ Success Response
+
 ```json
 {
-  "status": true,
-  "message": "Project deleted successfully",
-  "data": {
-    "publication": {
-      "id": 1,
-      "title": "Deleted Publication"
-    }
-  }
+	"status": true,
+	"message": "Project deleted successfully",
+	"data": {
+		"publication": {
+			"id": 1,
+			"title": "Deleted Publication"
+		}
+	}
 }
 ```
 
@@ -186,23 +204,27 @@ Deletes a publication by its ID.
 Returns all publications by a specific author filtered by type.
 
 ### 🔗 URL Parameters
-- `authorid`: ID of the author  
+
+- `authorid`: ID of the author
 - `type`: Publication type (e.g., `journal`, `conference`)
 
 ### ✅ Success Response
+
 ```json
 {
-  "status": true,
-  "message": "Projects fetched successfully",
-  "data": {
-    "publications": [
-      {
-        "id": 1,
-        "title": "Author's Publication",
-        "authors": [/* author list */]
-      }
-    ]
-  }
+	"status": true,
+	"message": "Projects fetched successfully",
+	"data": {
+		"publications": [
+			{
+				"id": 1,
+				"title": "Author's Publication",
+				"authors": [
+					/* author list */
+				]
+			}
+		]
+	}
 }
 ```
 

@@ -27,7 +27,12 @@ export const createReasearchArea = asyncHandler(
 		});
 		if (!researchArea)
 			throw new AppError("Error in creating researchArea", 400);
-		response(res, 201, "research Area created", { researchArea:{...researchArea,imageURL:await signedUrl(imageURL,3)} });
+		response(res, 201, "research Area created", {
+			researchArea: {
+				...researchArea,
+				imageURL: await signedUrl(imageURL, 3),
+			},
+		});
 	}
 );
 
@@ -56,7 +61,12 @@ export const updateResearchArea = asyncHandler(
 		});
 		if (!updatedResearchArea)
 			throw new AppError("Error in updating researchArea", 400);
-		response(res, 201, "research Area updated", { updatedResearchArea:{...updatedResearchArea,imageURL:await signedUrl(imageURL,3)} });
+		response(res, 201, "research Area updated", {
+			updatedResearchArea: {
+				...updatedResearchArea,
+				imageURL: await signedUrl(imageURL, 3),
+			},
+		});
 	}
 );
 

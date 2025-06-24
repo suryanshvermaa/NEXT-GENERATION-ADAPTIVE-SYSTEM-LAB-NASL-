@@ -37,7 +37,7 @@ async function createAdmin() {
 			password: await bcrypt.hash(password, 10),
 			name,
 			profileImage,
-			role: "ADMIN"
+			role: "ADMIN",
 		},
 	});
 	return user;

@@ -5,7 +5,6 @@ import prisma from "../../config/db";
 import response from "../../utils/response";
 import { signedUrl } from "../../s3";
 
-
 /**
  *
  * @description creating book chapter
@@ -20,17 +19,13 @@ export const createBookChapter = asyncHandler(
 			chapterTitle,
 			bookTitle,
 			authors,
-			scopus=null,
-			doi=null,
-			publisher=null,
-			year=null,
+			scopus = null,
+			doi = null,
+			publisher = null,
+			year = null,
 		} = req.body;
 
-		if (
-			!chapterTitle ||
-			!bookTitle ||
-			!authors
-		)
+		if (!chapterTitle || !bookTitle || !authors)
 			throw new AppError(
 				"Please provide all required fields: chapterTitle, bookTitle, authors, publisher, year",
 				400
@@ -41,7 +36,9 @@ export const createBookChapter = asyncHandler(
 				chapterTitle,
 				bookTitle,
 				authors: {
-					connect: authors.map((authorId: number) => ({ id: authorId })),
+					connect: authors.map((authorId: number) => ({
+						id: authorId,
+					})),
 				},
 				scopus,
 				doi,
@@ -71,10 +68,10 @@ export const updateBookChapter = asyncHandler(
 			chapterTitle,
 			bookTitle,
 			authors,
-			scopus=null,
-			doi=null,
-			publisher=null,
-			year=null,
+			scopus = null,
+			doi = null,
+			publisher = null,
+			year = null,
 		} = req.body;
 
 		if (
@@ -97,7 +94,9 @@ export const updateBookChapter = asyncHandler(
 				bookTitle,
 				authors: {
 					set: [],
-					connect: authors.map((authorId: number) => ({ id: authorId })),
+					connect: authors.map((authorId: number) => ({
+						id: authorId,
+					})),
 				},
 				scopus,
 				doi,
@@ -234,8 +233,7 @@ export const getAllBookChaptersByUserId = asyncHandler(
 	async (req: Request, res: Response) => {
 		const userId = req.user?.userId;
 
-		if (!userId)
-			throw new AppError("User id is required", 400);
+		if (!userId) throw new AppError("User id is required", 400);
 
 		const bookChapters = await prisma.book_Chapter.findMany({
 			where: {
@@ -265,7 +263,9 @@ export const getAllBookChaptersByUserId = asyncHandler(
 		for (let bookChapter of bookChapters) {
 			if (bookChapter.authors) {
 				for (let author of bookChapter.authors) {
-					author.profileImage = author.profileImage ? await signedUrl(author.profileImage, 3) : "";
+					author.profileImage = author.profileImage
+						? await signedUrl(author.profileImage, 3)
+						: "";
 				}
 			}
 		}

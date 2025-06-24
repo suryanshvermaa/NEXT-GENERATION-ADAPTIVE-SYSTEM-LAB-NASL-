@@ -21,10 +21,17 @@ enum Role {
  * @param res
  */
 export const createUser = asyncHandler(async (req: Request, res: Response) => {
-	const { name, email, profileImage = "", password = "",designation } = req.body;
+	const {
+		name,
+		email,
+		profileImage = "",
+		password = "",
+		designation,
+	} = req.body;
 	let { role = Role.USER } = req.body;
 	if (role == "admin") role = Role.ADMIN;
-	if (!name || !email||!designation) throw new AppError("All fields are required", 400);
+	if (!name || !email || !designation)
+		throw new AppError("All fields are required", 400);
 	const isExisting = await prisma.user.findUnique({
 		where: {
 			email,
@@ -40,7 +47,7 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
 			password: pass,
 			profileImage,
 			role,
-			designation: designation
+			designation: designation,
 		},
 	});
 	return response(res, 201, `${name} is ceated successfully`, {
@@ -77,7 +84,16 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 		{ userId: user.id, email: user.email },
 		60 * 24
 	); //for 24 hours
-	response(res, 200, "login successful", { token , user: {...user,profileImage: user.profileImage?await signedUrl(user.profileImage,4):"",password:"Not visible for security"} });
+	response(res, 200, "login successful", {
+		token,
+		user: {
+			...user,
+			profileImage: user.profileImage
+				? await signedUrl(user.profileImage, 4)
+				: "",
+			password: "Not visible for security",
+		},
+	});
 });
 
 /**
@@ -104,7 +120,7 @@ export const profile = asyncHandler(async (req: Request, res: Response) => {
 			status: true,
 			contactNumber: true,
 			books: true,
-			role: true
+			role: true,
 		},
 	});
 	const userCountData = await prisma.user.findUnique({
@@ -125,7 +141,14 @@ export const profile = asyncHandler(async (req: Request, res: Response) => {
 		},
 	});
 	response(res, 200, "profile fetched successfully", {
-		user: { ...user, ...userCountData, profileImage:user?.profileImage?await signedUrl(user.profileImage,4):"",password:"Not visible for security" },
+		user: {
+			...user,
+			...userCountData,
+			profileImage: user?.profileImage
+				? await signedUrl(user.profileImage, 4)
+				: "",
+			password: "Not visible for security",
+		},
 	});
 });
 
@@ -145,7 +168,16 @@ export const loginWithGoogle = asyncHandler(
 			{ userId: user.id, email: user.email },
 			60 * 24
 		); // for 24 hour
-		response(res, 200, "login successful", { token, user: {...user,profileImage: user.profileImage?await signedUrl(user.profileImage,4):"",password:"Google login not have password"} });
+		response(res, 200, "login successful", {
+			token,
+			user: {
+				...user,
+				profileImage: user.profileImage
+					? await signedUrl(user.profileImage, 4)
+					: "",
+				password: "Google login not have password",
+			},
+		});
 	}
 );
 
@@ -192,13 +224,19 @@ export const updateProfile = asyncHandler(
 			data: {
 				name,
 				profileImage,
-				contactNumber:String(contactNumber),
+				contactNumber: String(contactNumber),
 				social,
 				about,
-			}
+			},
 		});
 		response(res, 200, "Profile updated successfully", {
-			user: {...updatedUser,password:"NOT VISIBLE FOR SECURITY", profileImage:updatedUser.profileImage?await signedUrl(updatedUser.profileImage,4):""},
+			user: {
+				...updatedUser,
+				password: "NOT VISIBLE FOR SECURITY",
+				profileImage: updatedUser.profileImage
+					? await signedUrl(updatedUser.profileImage, 4)
+					: "",
+			},
 		});
 	}
 );
@@ -234,10 +272,12 @@ export const searchingUserByEmail = asyncHandler(
 		if (users.length === 0) {
 			return response(res, 404, "No users found", { users: [] });
 		}
-		for(let user of users){
-			user.profileImage=(user.profileImage)?await signedUrl(user.profileImage!, 4):"";
+		for (let user of users) {
+			user.profileImage = user.profileImage
+				? await signedUrl(user.profileImage!, 4)
+				: "";
 		}
-		response(res, 200, "Users found successfully", { users});
+		response(res, 200, "Users found successfully", { users });
 	}
 );
 
@@ -248,39 +288,41 @@ export const searchingUserByEmail = asyncHandler(
  * @param req
  * @param res
  */
-export const getPeople=asyncHandler(async(req:Request,res:Response)=>{
-  const {designation} = req.query;
-  if(!designation) throw new AppError("Please provide designation",400);
-  const people = await prisma.user.findMany({
-	where: {
-	  designation:designation as string,
-	},
-	select: {
-	  id: true,
-	  name: true,
-	  email: true,
-	  profileImage: true,
-	  designation: true,
-	  about: true,
-	  role:true,
-	},
-  });
-  if (people.length === 0) {
-	return response(res, 404, "No people found", { people: [] });
-  }
-  for(let person of people){
-	person.profileImage=(person.profileImage)?await signedUrl(person.profileImage!, 4):"";
-  }
-  response(res, 200, "People found successfully", { people });
-})
+export const getPeople = asyncHandler(async (req: Request, res: Response) => {
+	const { designation } = req.query;
+	if (!designation) throw new AppError("Please provide designation", 400);
+	const people = await prisma.user.findMany({
+		where: {
+			designation: designation as string,
+		},
+		select: {
+			id: true,
+			name: true,
+			email: true,
+			profileImage: true,
+			designation: true,
+			about: true,
+			role: true,
+		},
+	});
+	if (people.length === 0) {
+		return response(res, 404, "No people found", { people: [] });
+	}
+	for (let person of people) {
+		person.profileImage = person.profileImage
+			? await signedUrl(person.profileImage!, 4)
+			: "";
+	}
+	response(res, 200, "People found successfully", { people });
+});
 /**
  * @description Get profile by userId
  * @route GET /api/user/profile/:userId
  * @access Public
  * @param req
  */
-export const getProfileById=asyncHandler(
-	async(req:Request,res:Response,)=>{
+export const getProfileById = asyncHandler(
+	async (req: Request, res: Response) => {
 		const { userId } = req.params;
 		if (!userId) throw new AppError("Please provide userId", 400);
 		const user = await prisma.user.findUnique({
@@ -296,18 +338,20 @@ export const getProfileById=asyncHandler(
 				social: true,
 				status: true,
 				contactNumber: true,
-				role:true,
-				publications:{
-					select:{
+				role: true,
+				publications: {
+					select: {
 						id: true,
 						title: true,
-						type: true
-					}
-				}
-			}
+						type: true,
+					},
+				},
+			},
 		});
 		if (!user) throw new AppError("User not found", 404);
-		user.profileImage = user.profileImage ? await signedUrl(user.profileImage, 4) : "";
+		user.profileImage = user.profileImage
+			? await signedUrl(user.profileImage, 4)
+			: "";
 		response(res, 200, "Profile fetched successfully", { user });
 	}
-)
+);
