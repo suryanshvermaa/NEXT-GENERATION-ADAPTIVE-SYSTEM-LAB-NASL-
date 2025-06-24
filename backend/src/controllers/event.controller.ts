@@ -25,7 +25,9 @@ export const createEvent = asyncHandler(async (req: Request, res: Response) => {
 			imageURL,
 		},
 	});
-	return response(res, 201, "Event created successfully", {newEvent: {...newEvent, imageURL: await signedUrl(imageURL, 3)}});
+	return response(res, 201, "Event created successfully", {
+		newEvent: { ...newEvent, imageURL: await signedUrl(imageURL, 3) },
+	});
 });
 
 /**
@@ -50,7 +52,12 @@ export const updateEvent = asyncHandler(async (req: Request, res: Response) => {
 			imageURL,
 		},
 	});
-	return response(res, 200, "Event updated successfully", {updatedEvent: {...updatedEvent, imageURL: await signedUrl(imageURL, 3)}});
+	return response(res, 200, "Event updated successfully", {
+		updatedEvent: {
+			...updatedEvent,
+			imageURL: await signedUrl(imageURL, 3),
+		},
+	});
 });
 
 /**
@@ -84,7 +91,12 @@ export const getAllEvents = asyncHandler(
 				createdAt: "desc",
 			},
 		});
-		return response(res, 200, "Events fetched successfully", {events: events.map(async(event) => ({...event, imageURL:await signedUrl(event.imageURL, 3)}))});
+		return response(res, 200, "Events fetched successfully", {
+			events: events.map(async (event) => ({
+				...event,
+				imageURL: await signedUrl(event.imageURL, 3),
+			})),
+		});
 	}
 );
 /**
@@ -104,6 +116,8 @@ export const getEventById = asyncHandler(
 		if (!event) {
 			throw new AppError("Event not found", 404);
 		}
-		return response(res, 200, "Event fetched successfully", {event: {...event, imageURL: await signedUrl(event.imageURL, 3)}});
+		return response(res, 200, "Event fetched successfully", {
+			event: { ...event, imageURL: await signedUrl(event.imageURL, 3) },
+		});
 	}
 );

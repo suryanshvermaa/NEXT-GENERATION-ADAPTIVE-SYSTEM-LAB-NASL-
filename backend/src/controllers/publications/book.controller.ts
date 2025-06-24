@@ -13,7 +13,15 @@ import { signedUrl } from "../../s3";
  * @param res
  */
 export const createBook = asyncHandler(async (req: Request, res: Response) => {
-	const { title, authors, publisher=null, scopus=null, doi=null, isbn=null, year=null } = req.body;
+	const {
+		title,
+		authors,
+		publisher = null,
+		scopus = null,
+		doi = null,
+		isbn = null,
+		year = null,
+	} = req.body;
 
 	if (!title || !authors) {
 		throw new AppError("Please provide title, authors, and year", 400);
@@ -40,9 +48,9 @@ export const createBook = asyncHandler(async (req: Request, res: Response) => {
 					role: true,
 					profileImage: true,
 					designation: true,
-				}
-			}
-		}
+				},
+			},
+		},
 	});
 
 	response(res, 201, "Book created successfully", { book });
@@ -69,14 +77,16 @@ export const getAllBooks = asyncHandler(async (req: Request, res: Response) => {
 					role: true,
 					profileImage: true,
 					designation: true,
-				}
-			}
-		}
+				},
+			},
+		},
 	});
 
-	for(let book of books) {
-		for(let author of book.authors) {
-			author.profileImage = author.profileImage ? await signedUrl(author.profileImage, 3) : "";
+	for (let book of books) {
+		for (let author of book.authors) {
+			author.profileImage = author.profileImage
+				? await signedUrl(author.profileImage, 3)
+				: "";
 		}
 	}
 
@@ -105,9 +115,9 @@ export const getBookById = asyncHandler(async (req: Request, res: Response) => {
 					role: true,
 					profileImage: true,
 					designation: true,
-				}
-			}
-		}
+				},
+			},
+		},
 	});
 
 	if (!book) {
@@ -115,7 +125,9 @@ export const getBookById = asyncHandler(async (req: Request, res: Response) => {
 	}
 	if (book.authors) {
 		for (let author of book.authors) {
-			author.profileImage = author.profileImage ? await signedUrl(author.profileImage, 3) : "";
+			author.profileImage = author.profileImage
+				? await signedUrl(author.profileImage, 3)
+				: "";
 		}
 	}
 	response(res, 200, "Book fetched successfully", { book });
@@ -129,7 +141,16 @@ export const getBookById = asyncHandler(async (req: Request, res: Response) => {
  * @param res
  */
 export const updateBook = asyncHandler(async (req: Request, res: Response) => {
-	const { id, title, authors, publisher=null, scopus=null, doi=null, isbn=null, year=null } = req.body;
+	const {
+		id,
+		title,
+		authors,
+		publisher = null,
+		scopus = null,
+		doi = null,
+		isbn = null,
+		year = null,
+	} = req.body;
 
 	if (!id || !title || !authors) {
 		throw new AppError("Please provide id, title, authors, and year", 400);
@@ -157,13 +178,15 @@ export const updateBook = asyncHandler(async (req: Request, res: Response) => {
 					role: true,
 					profileImage: true,
 					designation: true,
-				}
-			}
-		}
+				},
+			},
+		},
 	});
 	if (book.authors) {
 		for (let author of book.authors) {
-			author.profileImage = author.profileImage ? await signedUrl(author.profileImage, 3) : "";
+			author.profileImage = author.profileImage
+				? await signedUrl(author.profileImage, 3)
+				: "";
 		}
 	}
 	response(res, 200, "Book updated successfully", { book });
@@ -194,39 +217,43 @@ export const deleteBook = asyncHandler(async (req: Request, res: Response) => {
  * @param req
  * @param res
  */
-export const getAllBooksByUserId = asyncHandler(async (req: Request, res: Response) => {
-	const userId = req.user?.userId;
+export const getAllBooksByUserId = asyncHandler(
+	async (req: Request, res: Response) => {
+		const userId = req.user?.userId;
 
-	const books = await prisma.book.findMany({
-		where: {
-			authors: {
-				some: {
-					id: userId as number,
-				}
-			}
-		},
-		orderBy: { createdAt: "desc" },
-		include: {
-			authors: {
-				select: {
-					id: true,
-					name: true,
-					email: true,
-					role: true,
-					profileImage: true,
-					designation: true,
-				}
+		const books = await prisma.book.findMany({
+			where: {
+				authors: {
+					some: {
+						id: userId as number,
+					},
+				},
+			},
+			orderBy: { createdAt: "desc" },
+			include: {
+				authors: {
+					select: {
+						id: true,
+						name: true,
+						email: true,
+						role: true,
+						profileImage: true,
+						designation: true,
+					},
+				},
+			},
+		});
+
+		if (!books || books.length === 0) {
+			throw new AppError("No books found for this user", 404);
+		}
+		for (let book of books) {
+			for (let author of book.authors) {
+				author.profileImage = author.profileImage
+					? await signedUrl(author.profileImage, 3)
+					: "";
 			}
 		}
-	});
-
-	if (!books || books.length === 0) {
-		throw new AppError("No books found for this user", 404);
+		response(res, 200, "Books fetched successfully", { books });
 	}
-	for (let book of books) {
-		for (let author of book.authors) {
-			author.profileImage = author.profileImage ? await signedUrl(author.profileImage, 3) : "";
-		}
-	}
-	response(res, 200, "Books fetched successfully", { books });
-});
+);

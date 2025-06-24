@@ -19,11 +19,11 @@ export const createConferencePaper = asyncHandler(
 			title,
 			authors,
 			conference,
-			location=null,
-			year=null,
-			pages=null,
-			indexing=null,
-			doi=null,
+			location = null,
+			year = null,
+			pages = null,
+			indexing = null,
+			doi = null,
 		} = req.body;
 		if (
 			!title ||
@@ -49,7 +49,9 @@ export const createConferencePaper = asyncHandler(
 				indexing,
 				doi,
 				authors: {
-					connect: authors.map((authorId: number) => ({ id: authorId })),
+					connect: authors.map((authorId: number) => ({
+						id: authorId,
+					})),
 				},
 			},
 			include: {
@@ -86,11 +88,11 @@ export const updateConferencePaper = asyncHandler(
 			title,
 			authors,
 			conference,
-			location=null,
-			year=null,
-			pages=null,
-			indexing=null,
-			doi=null,
+			location = null,
+			year = null,
+			pages = null,
+			indexing = null,
+			doi = null,
 		} = req.body;
 		if (
 			!id ||
@@ -119,7 +121,9 @@ export const updateConferencePaper = asyncHandler(
 				doi,
 				authors: {
 					set: [],
-					connect: authors.map((authorId: number) => ({ id: authorId })),
+					connect: authors.map((authorId: number) => ({
+						id: authorId,
+					})),
 				},
 			},
 			include: {
@@ -244,7 +248,8 @@ export const getAllConferencePapersByUserId = asyncHandler(
 export const getConferencePaperById = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { id } = req.query;
-		if (!id) throw new AppError("Please provide id of conference paper", 400);
+		if (!id)
+			throw new AppError("Please provide id of conference paper", 400);
 		const conferencePaper = await prisma.conference_Paper.findUnique({
 			where: { id: Number(id) },
 			include: {
@@ -286,7 +291,8 @@ export const getConferencePaperById = asyncHandler(
 export const deleteConferencePaperById = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
-		if (!id) throw new AppError("Please provide id of conference paper", 400);
+		if (!id)
+			throw new AppError("Please provide id of conference paper", 400);
 		const conferencePaper = await prisma.conference_Paper.delete({
 			where: { id: Number(id) },
 		});

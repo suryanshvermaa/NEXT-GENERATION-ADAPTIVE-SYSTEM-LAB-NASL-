@@ -17,4 +17,4 @@ eventRouter
 	.get("/all", getAllEvents)
 	.get("/:id", getEventById);
 
-export default eventRouter; 
+export default eventRouter;

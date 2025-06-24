@@ -15,11 +15,15 @@ import { signedUrl } from "../../s3";
  */
 export const createPatent = asyncHandler(
 	async (req: Request, res: Response) => {
-		const { title, type=null, grantNo=null, grantDate=null, publicationDate=null, inventors } = req.body;
-		if (
-			!title ||
-			!inventors
-		)
+		const {
+			title,
+			type = null,
+			grantNo = null,
+			grantDate = null,
+			publicationDate = null,
+			inventors,
+		} = req.body;
+		if (!title || !inventors)
 			throw new AppError(
 				"Please provide all required fields: title, type, grantNo, inventors",
 				400
@@ -30,7 +34,9 @@ export const createPatent = asyncHandler(
 				type,
 				grantNo,
 				grantDate: grantDate ? new Date(grantDate) : null,
-				publicationDate: publicationDate ? new Date(publicationDate) : null,
+				publicationDate: publicationDate
+					? new Date(publicationDate)
+					: null,
 				inventors: {
 					connect: inventors.map((id: number) => ({ id })),
 				},
@@ -62,12 +68,16 @@ export const createPatent = asyncHandler(
  */
 export const updatePatent = asyncHandler(
 	async (req: Request, res: Response) => {
-		const { id, title, type=null, grantNo=null, grantDate=null, publicationDate=null, inventors } = req.body;
-		if (
-			!id ||
-			!title ||
-			!inventors
-		)
+		const {
+			id,
+			title,
+			type = null,
+			grantNo = null,
+			grantDate = null,
+			publicationDate = null,
+			inventors,
+		} = req.body;
+		if (!id || !title || !inventors)
 			throw new AppError(
 				"Please provide all required fields: id, title, type, grantNo, inventors",
 				400
@@ -79,7 +89,9 @@ export const updatePatent = asyncHandler(
 				type,
 				grantNo,
 				grantDate: grantDate ? new Date(grantDate) : null,
-				publicationDate: publicationDate ? new Date(publicationDate) : null,
+				publicationDate: publicationDate
+					? new Date(publicationDate)
+					: null,
 				inventors: {
 					connect: inventors.map((id: number) => ({ id })),
 				},
@@ -167,7 +179,7 @@ export const deletePatent = asyncHandler(
  * @param req
  * @param res
  */
-export const  getAllPatentsByInventorId= asyncHandler(
+export const getAllPatentsByInventorId = asyncHandler(
 	async (req: Request, res: Response) => {
 		const userId = req.user?.userId;
 		const patents = await prisma.patent.findMany({
