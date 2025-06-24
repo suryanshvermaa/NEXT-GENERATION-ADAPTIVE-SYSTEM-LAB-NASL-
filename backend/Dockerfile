@@ -5,6 +5,7 @@ COPY package.json package.json
 RUN npm install
 COPY . .
 RUN npx prisma generate
+RUN npx prisma migrate deploy
 RUN npm run build
 
 FROM node:23-alpine3.20 AS runner
