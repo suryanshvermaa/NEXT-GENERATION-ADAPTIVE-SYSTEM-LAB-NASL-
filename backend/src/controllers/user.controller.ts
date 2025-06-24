@@ -296,8 +296,15 @@ export const getProfileById=asyncHandler(
 				social: true,
 				status: true,
 				contactNumber: true,
-				role:true
-			},
+				role:true,
+				publications:{
+					select:{
+						id: true,
+						title: true,
+						type: true
+					}
+				}
+			}
 		});
 		if (!user) throw new AppError("User not found", 404);
 		user.profileImage = user.profileImage ? await signedUrl(user.profileImage, 4) : "";
