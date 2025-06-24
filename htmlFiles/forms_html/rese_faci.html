@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css?family=Arvo&display=swap" rel="stylesheet">
   </head>
   <body>
-    <h2 class="">Research Area</h2>
+    <h2 class="">Research Facility</h2>
     
     <form onsubmit="submitForm(event)">
 
@@ -107,8 +107,8 @@
 
       console.log("Form Data:", { name, description, imageUrl });
 
-      // 3. Submit the research area
-      const response = await fetch('https://next-generation-adaptive-system-lab-nasl.onrender.com/api/researchArea/createReasearchArea', {
+      // 3. Submit the research facilities
+      const response = await fetch('https://next-generation-adaptive-system-lab-nasl.onrender.com/api/researchFacility/createResearchFacility', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -125,10 +125,10 @@
 
       if (response.ok) {
         console.log(result);
-        alert("Research area created successfully!");
+        alert("Research Facility created successfully!");
         // Reset form if needed
       } else {
-        alert(result.message || "Failed to create research area");
+        alert(result.message || "Failed to create research facility");
       }
 
     } catch (err) {

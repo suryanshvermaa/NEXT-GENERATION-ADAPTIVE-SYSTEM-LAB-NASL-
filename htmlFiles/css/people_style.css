@@ -130,7 +130,7 @@ button[type="submit"].btn {
 }
 
 input[type="text"],
-input[type="url"] {
+input[type="url"],input[type="email"],input[type="password"],input[type="number"],input[type="date"]{
   width: 100%;
   padding: 10px 15px;
   margin-top: 10px;
@@ -138,4 +138,74 @@ input[type="url"] {
   border-radius: 8px;
   font-size: 14px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+select {
+  width: 100%;
+  padding: 10px 15px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background-color: #fff;
+  color: #333;
+  appearance: none; /* Removes default arrow styling in most browsers */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='10'%3E%3Cpath fill='%236c63ff' d='M7 10L0 0h14z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 10px;
+  cursor: pointer;
+}
+
+/* select:focus {
+  border-color: #6c63ff;
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15);
+  outline: none;
+} */
+
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  background-color: #e1ecf4;
+  color: #0366d6;
+  padding: 5px 10px;
+  border-radius: 20px;
+  margin: 4px;
+  font-size: 14px;
+  position: relative;
+  transition: background 0.2s;
+}
+
+.tag-pill:hover {
+  background-color: #d0e3f3;
+}
+
+.tag-pill .remove-tag {
+  background: none;
+  border: none;
+  color: #0366d6;
+  font-weight: bold;
+  font-size: 16px;
+  margin-left: 8px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+
+.tag-pill .remove-tag:hover {
+  color: #c00;
+}
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.checkbox-wrapper label {
+  margin-bottom: 0;
+  font-weight: 500;
+  color: #333;
+  font-size: 16px;
 }

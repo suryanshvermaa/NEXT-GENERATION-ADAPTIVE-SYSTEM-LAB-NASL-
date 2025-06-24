@@ -1,182 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Login Page</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f6fa;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .login-container {
-      background: white;
-      padding: 40px 30px;
-      border-radius: 10px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-      width: 100%;
-      max-width: 400px;
-    }
-
-    .login-container h2 {
-      text-align: center;
-      margin-bottom: 30px;
-      color: #2c3e50;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 6px;
-      color: #34495e;
-    }
-
-    input[type="email"],
-    input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 16px;
-    }
-
-    .login-btn {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      background-color: #1d3557;
-      color: white;
-      font-size: 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    .login-btn:hover {
-      background-color: #457b9d;
-    }
-
-    .form-footer {
-      text-align: center;
-      margin-top: 15px;
-      font-size: 14px;
-    }
-
-    .form-footer a {
-      color: #1d3557;
-      text-decoration: none;
-    }
-
-    .form-footer a:hover {
-      text-decoration: underline;
-    }
-    .google-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background-color: #fff;
-  color: #444;
-  border: 1px solid #ccc;
-  font-size: 15px;
-  padding: 10px;
-  width: 100%;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: box-shadow 0.3s ease;
-}
-
-.google-btn img {
-  width: 20px;
-  height: 20px;
-}
-
-.google-btn:hover {
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
-}
-
-  </style>
-</head>
-<body>
-
-  <div class="login-container">
-    <h2>Login</h2>
-    <form action="https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/login" method="post">
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <input type="email" id="email" name="email" required placeholder="Enter your email">
-      </div>
-
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required placeholder="Enter your password">
-      </div>
-
-      <button type="submit" class="login-btn">Login</button>
-    </form>
-  <div class="form-footer" style="margin-top: 20px;">
-    <button class="google-btn" type="button">
-    <img src="https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515358_10512.png" alt="Google logo">
-    Login with Google
-  </button>
-  </div>
-  </div>
-
-  <!-- Javascript -->
-<script>
-  document.querySelector("form").addEventListener("submit", async function(e) {
-    e.preventDefault(); // Prevent default form submission
-
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    try {
-      const res = await fetch("https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-      });
-
-      const result = await res.json();
-  
-      if (res.ok) {
-        // Save the token in localStorage
-        localStorage.setItem("authToken", result.data.token); // Make sure your backend sends the token in `data.token`
-
-        alert("Login successful! ");
-
-        // Redirect to index.html
-        window.location.href = "./index.html";
-      } else {
-        alert(result.message || "Login failed. Please try again.");
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
-    } catch (err) {
-      console.error("Login error:", err);
-      alert("Something went wrong. Please try again.");
-    }
-  });
-  //GOOGLE AUTHENTICATION
-  document.getElementById("google-login").addEventListener("click", function () {
-      // alert("Google login clicked! (You can implement Google OAuth here)");
-    });
-</script>
 
+      body {
+        font-family: Arial, sans-serif;
+        background: #f5f6fa;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
 
-</body>
+      .login-container {
+        background: white;
+        padding: 40px 30px;
+        border-radius: 10px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        width: 100%;
+        max-width: 400px;
+      }
+
+      .login-container h2 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #2c3e50;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 6px;
+        color: #34495e;
+      }
+
+      input[type="email"],
+      input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 16px;
+      }
+
+      .login-btn {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        background-color: #1d3557;
+        color: white;
+        font-size: 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .login-btn:hover {
+        background-color: #457b9d;
+      }
+
+      .form-footer {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 14px;
+      }
+
+      .form-footer a {
+        color: #1d3557;
+        text-decoration: none;
+      }
+
+      .form-footer a:hover {
+        text-decoration: underline;
+      }
+      .google-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background-color: #fff;
+        color: #444;
+        border: 1px solid #ccc;
+        font-size: 15px;
+        padding: 10px;
+        width: 100%;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: box-shadow 0.3s ease;
+      }
+
+      .google-btn img {
+        width: 20px;
+        height: 20px;
+      }
+
+      .google-btn:hover {
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <h2>Login</h2>
+      <form
+        action="https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/login"
+        method="post"
+      >
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            placeholder="Enter your email"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            placeholder="Enter your password"
+          />
+        </div>
+
+        <button type="submit" class="login-btn">Login</button>
+      </form>
+      <div class="form-footer" style="margin-top: 20px">
+        <!-- Google Sign-In integration -->
+        <div
+          id="g_id_onload"
+          data-client_id="358593758996-6qjvsjgc161svfo1qrop1tsec1fssua9.apps.googleusercontent.com"
+          data-callback="handleCredentialResponse"
+          data-context="signin"
+          data-auto_prompt="false"
+        ></div>
+
+        <div
+          class="g_id_signin"
+          data-type="standard"
+          data-shape="rectangular"
+          data-theme="outline"
+          data-text="signin_with"
+          data-size="large"
+          data-logo_alignment="left"
+        ></div>
+      </div>
+    </div>
+
+    <!-- Javascript -->
+    <script>
+      document
+        .querySelector("form")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault(); // Prevent default form submission
+
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          try {
+            const res = await fetch(
+              "https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/login",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, password }),
+              }
+            );
+
+            const result = await res.json();
+
+            if (res.ok) {
+              // Save the token and the user in localStorage
+              localStorage.setItem("authToken", result.data.token); // Make sure your backend sends the token in `data.token`
+              localStorage.setItem("user", JSON.stringify(result.data.user));
+              const user = JSON.parse(localStorage.getItem("user"));
+              console.log(user?.role);
+              alert("Login successful! ");
+
+              // Redirect to index.html
+              window.location.href = "/htmlFiles/index.html";
+            } else {
+              alert(result.message || "Login failed. Please try again.");
+            }
+          } catch (err) {
+            console.error("Login error:", err);
+            alert("Something went wrong. Please try again.");
+          }
+        });
+    </script>
+
+    <!-- Google Authentication -->
+    <script>
+      function handleCredentialResponse(response) {
+        // `response.credential` is the Google ID token
+        const idToken = response.credential;
+
+        // Exchange the token with your backend using the "code" (in this case, -->>>> credential)
+        fetch(
+          "https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/loginWithGoogle",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ code: idToken }), // `code` expected by your API
+          }
+        )
+          .then((res) => res.json())
+          .then((result) => {
+            if (result.token) {
+              localStorage.setItem("authToken", result.token);
+              alert("Google Login Successful!");
+              window.location.href = "/htmlFiles/index.html";
+            } else {
+              alert(result.message || "Google Login failed.");
+            }
+          })
+          .catch((error) => {
+            console.error("Google Login error:", error);
+            alert("Something went wrong during Google login.");
+          });
+      }
+    </script>
+  </body>
 </html>
