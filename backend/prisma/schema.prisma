@@ -75,7 +75,7 @@ model Conference_Paper {
   authors    User[]
   conference String
   location   String?
-  year       Int
+  year       Int?
   pages      String?
   indexing   String?
   doi        String?
@@ -91,7 +91,7 @@ model Book_Chapter {
   scopus     String?
   doi        String?
   publisher  String?
-  year       Int
+  year       Int?
   createdAt  DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 }
@@ -104,7 +104,7 @@ model Book {
   scopus     String?
   doi        String?
   isbn       String?
-  year       Int
+  year       Int?
   createdAt  DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 }
@@ -112,13 +112,13 @@ model Book {
 model Project {
   id          Int      @id @unique @default(autoincrement())
   title       String
-  agency      String
-  role        String
-  outlay      Float
-  duration    String
+  agency      String?
+  role        String?
+  outlay      Float?
+  duration    String?
   pi User @relation(fields: [piInstitute], references: [id], onDelete: Cascade)
   piInstitute Int
-  status      String
+  status      String?
   fundsReceived Float?
   createdAt   DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt
@@ -127,8 +127,8 @@ model Project {
 model Patent {
   id          Int      @id @unique @default(autoincrement())
   title       String
-  type        String
-  grantNo     String
+  type        String?
+  grantNo     String?
   grantDate   DateTime?
   publicationDate DateTime?
   inventors  User[]
