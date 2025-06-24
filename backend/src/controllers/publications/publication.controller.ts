@@ -15,7 +15,7 @@ import { signedUrl } from "../../s3";
 export const createPublication = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { title, authors, content, type } = req.body;
-		if (!title || authors || content || type) {
+		if (!title || !authors || !content || !type) {
 			throw new AppError("Please provide all required fields!", 400);
 		}
 		const publication = await prisma.publication.create({
@@ -64,7 +64,7 @@ export const updatePublication = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
 		const { title, authors } = req.body;
-		if (!id || !title || authors) {
+		if (!id || !title || !authors) {
 			throw new AppError("Please provide all required fields!", 400);
 		}
 		const publication = await prisma.publication.update({
