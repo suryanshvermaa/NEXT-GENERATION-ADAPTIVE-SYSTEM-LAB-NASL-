@@ -13,6 +13,7 @@ import projectRouter from "./project.routes";
 import patentRouter from "./patent.routes";
 import photoGalleryRouter from "./photoGallery.routes";
 import eventRouter from "./event.routes";
+import publicationRouter from "./publication.routes";
 
 const router = Router();
 
@@ -30,6 +31,7 @@ router
 	.use("/project", projectRouter)
 	.use("/patent", patentRouter)
 	.use("/photo-gallery", photoGalleryRouter)
-	.use("/event", eventRouter);
+	.use("/event", eventRouter)
+	.use("/publication",publicationRouter)
 
 export default router;
