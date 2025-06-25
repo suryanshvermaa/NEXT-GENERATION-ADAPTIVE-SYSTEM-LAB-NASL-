@@ -214,7 +214,7 @@
     <script>
       function handleCredentialResponse(response) {
         // `response.credential` is the Google ID token
-        const idToken = response.credential;
+        const idToken = response.code;
 
         // Exchange the token with your backend using the "code" (in this case, -->>>> credential)
         fetch(
