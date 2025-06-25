@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="/htmlFiles/css/people_style.css" />
+    <link rel="stylesheet" href="../css/people_style.css" />
     <link
       href="https://cdn.quilljs.com/1.3.6/quill.snow.css"
       rel="stylesheet"
@@ -244,7 +244,7 @@
           const result = await res.json();
           if (res.ok) {
             alert("User updated successfully!");
-            window.location.href = "/htmlFiles/users/profile.html";
+            window.location.href = "../users/profile.html";
           } else {
             alert(result.message || "Failed to update user.");
           }

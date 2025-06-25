@@ -2,14 +2,53 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mtech</title>
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile Page</title>
+
+  <!-- Bootstrap & Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
   <link href="../css/style.css" rel="stylesheet">
-  <link rel="stylesheet" href="../css/profile_cards.css">
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+    }
+    .profile-card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 30px;
+      margin-top: 120px;
+    }
+    .stats-box {
+      background-color: #254D70 ;
+      color: white;
+      border-radius: 8px;
+      text-align: center;
+      padding: 15px;
+      font-weight: 600;
+    }
+    .stats-box span {
+      font-size: 24px;
+      display: block;
+    }
+    .badge-icons img {
+      height: 40px;
+      margin-right: 10px;
+    }
+    .accordion-button {
+      background-color: #254D70 !important;
+      color: #fff;
+      font-weight: 600;
+    }
+  </style>
 </head>
 <body>
-    <div id="navbar-placeholder">
+
+<!-- NAVBAR -->
+<div id="navbar-placeholder">
       <div class="nav_bar">
   <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
     <div class="container-fluid">
@@ -207,11 +246,103 @@
 
 </div>
 
-  <h1 class="page-title">MTech/PG Students</h1>
+<!-- ✅ PROFILE CARD -->
+<div class="container profile-card mb-5">
+  <div class="row align-items-center">
+    <!-- Left: Profile Image -->
+    <div class="col-md-3 text-center">
+      <img src="" class="img-fluid rounded-circle mb-3" alt="Profile" style="width: 150px;" id="profile_icon">
+      <div class="badge-icons d-flex justify-content-center">
+        <a href="#" id="googleUrl"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzf-mFSVPG0NB4zca3DW3zh0EEgYKyyjrmNg&s" alt="Google"></a>
+        <a href="#" id="linkedInUrl"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/500px-LinkedIn_logo_initials.png" alt="linkedIn"></a>
 
-<div class="cards-container">
+        <a href="#" id="twitterUrl"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Logo_of_Twitter.svg/2491px-Logo_of_Twitter.svg.png" alt="Twitter"></a>
+      </div>
+    </div>
+
+    <!-- Middle: Info -->
+    <div class="col-md-6">
+      <h3 class="fw-bold" id="username"></h3>
+      <p class="mb-1" id="user_designation"><strong>Designation:</strong></p>
+      <p class="mb-1" id="user_email"><i class="fas fa-envelope"></i></p>
+      <p class="mb-1" id="user_contactNumber"><i class="fas fa-phone"></i></p>
+     
+    </div>
+
+    <!-- Right: Stats -->
+   <div class="col-md-3">
+  <div class="row g-3">
+    <div class="col-6">
+      <div class="stats-box"><span>5</span> Journals</div>
+    </div>
+    <div class="col-6">
+      <div class="stats-box"><span>3</span> Conference</div>
+    </div>
+    <div class="col-6">
+      <div class="stats-box"><span>2</span> Patents</div>
+    </div>
+    <div class="col-6">
+      <div class="stats-box"><span>1</span> Book</div>
+    </div>
+  </div>
 </div>
 
+  <!-- ABOUT Section -->
+  <div class="mt-4">
+    <h5 class="fw-bold">ABOUT</h5>
+    <p class="text-muted" id="user_about">
+      
+    </p>
+  </div>
+
+  <!-- Accordion Section -->
+  <div class="accordion mt-4" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingOne">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+          Journal Papers
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+        <div class="accordion-body" id="journalContainer">
+            
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingTwo">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Patents
+        </button>
+      </h2>
+      <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+        <div class="accordion-body"  id="patentContainer">
+
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingOne">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+            Conference
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+        <div class="accordion-body" id="conferenceContainer">
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- Footer -->
 <footer class="text-center text-lg-start text-white">
   <div class="container py-4">
     <div class="row my-2">
@@ -299,51 +430,73 @@
 </footer>
 
 
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.min.js"></script>
-  <script src="../js/navbar.js"></script>
-  <script src="../js/footer.js"></script>
-  <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const token = localStorage.getItem("authToken"); // optional if endpoint needs auth
-    const container = document.querySelector(".cards-container");
-    const designation = "MTech";
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/navbar.js"></script>
+<script src="../js/footer.js"></script>
+<script>
+  // const token = localStorage.getItem("authToken");
+  const urlParams = new URLSearchParams(window.location.search);
+const userId = urlParams.get("userId");
 
-    fetch(`https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/getPeople?designation=${encodeURIComponent(designation)}`)
-    .then(res => {
-      if (!res.ok) throw new Error("Failed to fetch PhD people");
-      return res.json();
-    })
-    .then(result => {
-      console.log(result.data.people)
-      const users  = result.data.people;
+if (!userId) {
+  alert("No user ID provided in URL.");
+  throw new Error("Missing user ID");
+}
 
-      users.forEach(user => {
-        const card = document.createElement("div");
-        card.className = "card-box";
+  fetch(`https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/profile/${encodeURIComponent(userId)}`)
+  .then(response => {
+    if (!response.ok) throw new Error("Failed to fetch profile");
+    return response.json();
+  })
+  .then(result => {
+    console.log(result);
+    const { user } = result.data;
+    // console.log(user); // for debugging
 
-        card.innerHTML = `
-          <div class="card-image-wrapper">
-            <img src="${user.profileImage || '../img/default-avatar.png'}" alt="${user.name}" class="card-image" />
-          </div>
-          <div class="card-description">
-            <h3>${user.name || "Unnamed"}</h3>
-            <p>${user.about || "No description provided."}</p>
-          </div>
-          <div class="card-action">
-            <a href="../users/personal.html?userId=${encodeURIComponent(user.id)}" class="btn view-profile-btn">View Profile</a>
-          </div>
-        `;
+    // Profile image
+    const profileImg = document.getElementById("profile_icon");
+    profileImg.src =  user.profileImage|| "/htmlFiles/img/default-avatar.png";
+    profileImg.alt = user.name || "Profile";
 
-        container.appendChild(card);
-      });
-    })
-    .catch(err => {
-      console.error("Error loading PhD users:", err);
-      container.innerHTML = `<p class="text-danger">Failed to load profiles.</p>`;
-    });
+    // Basic Info
+    document.getElementById("username").innerText = user.name || "No Name";
+    document.getElementById("user_email").innerHTML = `<i class="fas fa-envelope"></i> ${user.email || "N/A"}`;
+    document.getElementById("user_designation").innerHTML = `<strong>Designation:</strong> ${user.designation || "N/A"}`;
+    document.getElementById("user_contactNumber").innerHTML = `<i class="fas fa-phone"></i> ${user.contactNumber || "N/A"}`;
+
+    // About
+    document.getElementById("user_about").innerHTML = user.about || "<i>No about info provided.</i>";
+
+    // Social Links
+    const googleAnchor = document.getElementById("googleUrl");
+    const linkedInAnchor = document.getElementById("linkedInUrl");
+    const twitterAnchor = document.getElementById("twitterUrl");
+    if (user.social[2].url) {
+      googleAnchor.href = user.social[2].url;
+      googleAnchor.target = "_blank";
+    } else {
+      googleAnchor.style.display = "none";
+    }
+
+    if (user.social[1].url) {
+      linkedInAnchor.href = user.social[1].url;
+      linkedInAnchor.target = "_blank";
+    } else {
+      linkedInAnchor.style.display = "none";
+    }
+
+    if (user.social[0].url) {
+      twitterAnchor.href = user.social[0].url;
+      twitterAnchor.target = "_blank";
+    } else {
+      twitterAnchor.style.display = "none";
+    }
+
+  })
+  .catch(error => {
+    console.error("Error loading profile data:", error);
   });
 </script>
-
-</body>
+  </body>
 </html>

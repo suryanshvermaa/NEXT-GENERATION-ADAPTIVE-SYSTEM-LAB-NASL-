@@ -3,10 +3,22 @@
 //   navbarDiv.id = 'navbar-placeholder';
 //   document.body.insertBefore(navbarDiv, document.body.firstChild);
 
-fetch("/htmlFiles/reuse/navbar.html")
-  .then((res) => res.text())
-  .then((html) => {
-    document.getElementById("navbar-placeholder").innerHTML = html;
+// document.addEventListener("DOMContentLoaded", () => {
+//   const currentDepth = location.pathname.split("/").length - 1;
+
+//   // Go up N folders to get to site root
+//   const prefix = "../".repeat(currentDepth - 2); // adjust if needed
+
+//   document.querySelectorAll("[data-path]").forEach(link => {
+//     const relativePath = link.getAttribute("data-path");
+//     link.setAttribute("href", prefix + relativePath);
+//   });
+// });
+
+// fetch("/htmlFiles/reuse/navbar.html")
+//   .then((res) => res.text())
+//   .then((html) => {
+//     document.getElementById("navbar-placeholder").innerHTML = html;
 
     // Re-run navbar logic manually after DOM injection
     const authButton = document.getElementById("auth-button");
@@ -61,4 +73,3 @@ fetch("/htmlFiles/reuse/navbar.html")
       authButton.href = "/htmlFiles/users/login.html";
       profileButton.style.display = "none";
     }
-  });
