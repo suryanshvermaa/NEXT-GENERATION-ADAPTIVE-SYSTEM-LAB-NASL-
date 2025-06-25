@@ -1,16 +1,12 @@
-fetch("/htmlFiles/reuse/footer.html")
-  .then((res) => res.text())
-  .then((html) => {
-    document.getElementById("footer-placeholder").innerHTML = html;
 
     const create_userButton = document.getElementById("create-user");
-    const token = localStorage.getItem("authToken");
-    const userData = JSON.parse(localStorage.getItem("user"));
-    const userRole = userData?.role;
+    // const token = localStorage.getItem("authToken");
+    let user = JSON.parse(localStorage.getItem("user"));
+    let user_Role = user?.role;
+    console.log("FOOTER",user_Role)
 
-    if (userRole === "ADMIN") {
+    if (user_Role === "ADMIN") {
       document.getElementById("create-user").style.display = "block";
     } else {
       document.getElementById("create-user").style.display = "none";
     }
-  });

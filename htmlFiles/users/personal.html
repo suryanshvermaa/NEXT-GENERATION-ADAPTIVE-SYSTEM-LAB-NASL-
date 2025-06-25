@@ -43,6 +43,93 @@
       color: #fff;
       font-weight: 600;
     }
+    .card {
+        display: flex;
+        flex-direction: row;
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        padding: 20px;
+        gap: 25px;
+      }
+
+      .card img {
+        width: 280px;
+        height: auto;
+        object-fit: cover;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+
+      .card-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 10px;
+      }
+
+      .card-content h2 {
+        margin-bottom: 15px;
+        color: #254d70;
+        font-size: 1.7rem;
+        font-weight: 600;
+      }
+
+      .card-content p {
+        color: #444;
+        font-size: 1rem;
+        line-height: 1.7;
+      }
+
+      @media (max-width: 768px) {
+        .card {
+          flex-direction: column;
+          align-items: center;
+          padding: 20px;
+        }
+
+        .card img {
+          width: 100%;
+          max-width: 100%;
+          border-radius: 12px;
+        }
+
+        .card-content {
+          text-align: center;
+          padding: 20px 10px 0;
+        }
+        .card {
+          position: relative;
+        }
+
+        .card-icons {
+          cursor: pointer;
+          position: absolute;
+          top: 10px;
+          right: 15px;
+          display: flex;
+          gap: 10px;
+        }
+
+        .icon-btn {
+          background: none;
+          border: none;
+          text-decoration: none;
+          color: #666;
+          transition: color 0.3s;
+        }
+
+        .icon-btn:hover {
+          color: #254d70;
+        }
+
+        .icon-btn .material-symbols-outlined {
+          color: rgb(25, 22, 22);
+          font-size: 24px;
+        }}
   </style>
 </head>
 <body>
@@ -297,46 +384,51 @@
 
   <!-- Accordion Section -->
   <div class="accordion mt-4" id="accordionExample">
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="headingOne">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-          Journal Papers
-        </button>
-      </h2>
-      <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-        <div class="accordion-body" id="journalContainer">
-            
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="headingTwo">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          Patents
-        </button>
-      </h2>
-      <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-        <div class="accordion-body"  id="patentContainer">
-
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="headingOne">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-            Conference
-        </button>
-      </h2>
-      <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-        <div class="accordion-body" id="conferenceContainer">
-
-        </div>
+  <!-- Journal Accordion -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingJournal">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseJournal" aria-expanded="false" aria-controls="collapseJournal">
+        Journal Papers
+      </button>
+    </h2>
+    <div id="collapseJournal" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+      <div class="accordion-body" id="journalContainer">
+        <!-- Journal content loaded dynamically -->
       </div>
     </div>
   </div>
+
+  <!-- Patent Accordion -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingPatent">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapsePatent" aria-expanded="false" aria-controls="collapsePatent">
+        Patents
+      </button>
+    </h2>
+    <div id="collapsePatent" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+      <div class="accordion-body" id="patentContainer">
+        <!-- Patent content loaded dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Conference Accordion -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingConference">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseConference" aria-expanded="false" aria-controls="collapseConference">
+        Conference
+      </button>
+    </h2>
+    <div id="collapseConference" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+      <div class="accordion-body" id="conferenceContainer">
+        <!-- Conference content loaded dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
 </div>
 
 </div>
@@ -450,9 +542,9 @@ if (!userId) {
     return response.json();
   })
   .then(result => {
-    console.log(result);
+    // console.log(result);
     const { user } = result.data;
-    // console.log(user); // for debugging
+    let publications =  user.publications; // for debugging
 
     // Profile image
     const profileImg = document.getElementById("profile_icon");
@@ -493,8 +585,70 @@ if (!userId) {
       twitterAnchor.style.display = "none";
     }
 
+
+  // Publications
+  const typeToContainerId = {
+    journal: "journalContainer",
+    conference: "conferenceContainer",
+    patent: "patentContainer"
+  };
+  function fetchAndRender(type) {
+  const container = document.getElementById(typeToContainerId[type]);
+  container.innerHTML = `<p>Loading ${type}...</p>`;
+
+  // Example: Assuming `publications` is globally available or fetched somewhere else
+  // You must ensure this array is assigned before calling this function
+  // For now, assuming publications is globally available
+  const filteredPublications = publications.filter(paper => paper.type === type);
+
+  if (!filteredPublications || filteredPublications.length === 0) {
+    container.innerHTML = `<p>No ${type} found.</p>`;
+    return;
+  }
+
+  container.innerHTML = ""; // Clear existing content before rendering
+
+  filteredPublications.forEach((paper) => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    let adminButtons = "";
+    if (userRole === "ADMIN" || userRole === "USER") {
+      adminButtons = `
+        <div class="card-icons">
+          <a class="icon-btn edit-btn" data-id="${paper.id}" title="Edit">
+            <span class="material-symbols-outlined">edit_document</span>
+          </a>
+          <a class="icon-btn delete-btn" data-id="${paper.id}" title="Delete">
+            <span class="material-symbols-outlined">delete</span>
+          </a>
+        </div>`;
+    }
+
+    card.innerHTML = `
+      <div class="card-content toggle-wrapper" style="max-height: 150px; overflow: hidden; position: relative;">
+        <h2 style="text-align:center;">${paper.title}</h2>
+        <div style="display:none;" class="content-para">${paper.journal || paper.content || paper.description || ""}</div>
+      </div>
+      ${adminButtons}
+    `;
+
+    container.appendChild(card);
+  });
+}
+  // Setup event listeners for tab clicks
+  document.getElementById("collapseJournal").addEventListener("show.bs.collapse", () => {
+    fetchAndRender("journal");
+  });
+
+  document.getElementById("collapseConference").addEventListener("show.bs.collapse", () => {
+    fetchAndRender("conference");
+  });
+
+  document.getElementById("collapsePatent").addEventListener("show.bs.collapse", () => {
+    fetchAndRender("patent");
   })
-  .catch(error => {
+  }).catch(error => {
     console.error("Error loading profile data:", error);
   });
 </script>

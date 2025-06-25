@@ -417,7 +417,61 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.min.js"
       integrity="sha384-RuyvpeZCxMJCqVUGFI0Do1mQrods/hhxYlcVfGPOfQtPJh0JCw12tUAZ/Mv10S7D"
       crossorigin="anonymous"></script>
-    <script src="./js/navbar.js"></script>
+    <script>
+      const authButton = document.getElementById("auth-button");
+    const profileButton = document.getElementById("profile-button");
+    const token = localStorage.getItem("authToken");
+    const userData = JSON.parse(localStorage.getItem("user"));
+    const userRole = userData?.role;
+
+    console.log(userRole);
+
+    if (token) {
+      authButton.textContent = "Logout";
+      authButton.href = "";
+      profileButton.style.display = "inline-block";
+
+      authButton.addEventListener("click", () => {
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("user");
+        alert("Logged out successfully.");
+        location.reload();
+      });
+
+        fetch(
+          "https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/profile",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+          .then((response) => {
+            if (!response.ok) throw new Error("Failed to fetch profile");
+            return response.json();
+          })
+          .then((result) => {
+            const { user } = result.data;
+            if (user && user.profileImage) {
+              const profileImg = document.getElementById("profile_image");
+              profileImg.src = user.profileImage;
+              profileImg.alt = user.name || "Profile Image";
+              profileImg.style.width = "30px";
+              profileImg.style.height = "30px";
+              profileImg.style.borderRadius = "50%";
+              profileImg.style.objectFit = "cover";
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading profile image:", error);
+          });
+      }else {
+      authButton.textContent = "Login";
+      authButton.href = "./users/login.html";
+      profileButton.style.display = "none";
+    }
+
+    </script>
     <script src="./js/footer.js"></script>
       <!-- Javascript -->
 <script>
