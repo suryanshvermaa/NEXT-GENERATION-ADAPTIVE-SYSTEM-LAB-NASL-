@@ -31,7 +31,7 @@
 
     if (token) {
       authButton.textContent = "Logout";
-      authButton.href = "/htmlFiles/index.html";
+      authButton.href = "./index.html";
       profileButton.style.display = "inline-block";
 
       authButton.addEventListener("click", () => {
@@ -70,6 +70,6 @@
           });
       }else {
       authButton.textContent = "Login";
-      authButton.href = "/htmlFiles/users/login.html";
+      authButton.href = "../users/login.html";
       profileButton.style.display = "none";
     }
