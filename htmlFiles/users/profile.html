@@ -43,6 +43,93 @@
       color: #fff;
       font-weight: 600;
     }
+    .card {
+        display: flex;
+        flex-direction: row;
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        padding: 20px;
+        gap: 25px;
+      }
+
+      .card img {
+        width: 280px;
+        height: auto;
+        object-fit: cover;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+
+      .card-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 10px;
+      }
+
+      .card-content h2 {
+        margin-bottom: 15px;
+        color: #254d70;
+        font-size: 1.7rem;
+        font-weight: 600;
+      }
+
+      .card-content p {
+        color: #444;
+        font-size: 1rem;
+        line-height: 1.7;
+      }
+
+      @media (max-width: 768px) {
+        .card {
+          flex-direction: column;
+          align-items: center;
+          padding: 20px;
+        }
+
+        .card img {
+          width: 100%;
+          max-width: 100%;
+          border-radius: 12px;
+        }
+
+        .card-content {
+          text-align: center;
+          padding: 20px 10px 0;
+        }
+        .card {
+          position: relative;
+        }
+
+        .card-icons {
+          cursor: pointer;
+          position: absolute;
+          top: 10px;
+          right: 15px;
+          display: flex;
+          gap: 10px;
+        }
+
+        .icon-btn {
+          background: none;
+          border: none;
+          text-decoration: none;
+          color: #666;
+          transition: color 0.3s;
+        }
+
+        .icon-btn:hover {
+          color: #254d70;
+        }
+
+        .icon-btn .material-symbols-outlined {
+          color: rgb(25, 22, 22);
+          font-size: 24px;
+        }}
   </style>
 </head>
 <body>
@@ -273,16 +360,16 @@
    <div class="col-md-3">
   <div class="row g-3">
     <div class="col-6">
-      <div class="stats-box"><span>5</span> Journals</div>
+      <div class="stats-box"><span>0</span> Journals</div>
     </div>
     <div class="col-6">
-      <div class="stats-box"><span>3</span> Conference</div>
+      <div class="stats-box"><span>0</span> Conference</div>
     </div>
     <div class="col-6">
-      <div class="stats-box"><span>2</span> Patents</div>
+      <div class="stats-box"><span>0</span> Patents</div>
     </div>
     <div class="col-6">
-      <div class="stats-box"><span>1</span> Book</div>
+      <div class="stats-box"><span>0</span> Book</div>
     </div>
   </div>
 </div>
@@ -512,9 +599,9 @@ Update Profile
 </script>
 <script>
   // const token = localStorage.getItem("authToken");
-  let user = JSON.parse(localStorage.getItem("user")) || {};
+  let User = JSON.parse(localStorage.getItem("user")) || {};
   const authorId = parseInt(user?.id);
-  let user_Role = user?.role;
+  let User_Role = User?.role;
   console.log( user_Role, authorId )
 
   if (!authorId || isNaN(authorId)) {
