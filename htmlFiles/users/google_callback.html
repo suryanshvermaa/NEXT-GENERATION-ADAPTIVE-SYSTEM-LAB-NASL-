@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head><title>Google Callback</title></head>
+<body>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+
+    if (code) {
+      fetch("https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/loginWithGoogle", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ code }),
+      })
+      .then(res => res.json())
+      .then(result => {
+        if (result.token) {
+          localStorage.setItem("authToken", result.token);
+          alert("Login Successful");
+          window.location.href = "../index.html";
+        } else {
+          alert(result.message || "Login failed");
+        }
+      })
+      .catch(err => {
+        console.error("Error logging in:", err);
+      });
+    } else {
+      alert("No code found in URL.");
+    }
+  </script>
+</body>
+</html>
