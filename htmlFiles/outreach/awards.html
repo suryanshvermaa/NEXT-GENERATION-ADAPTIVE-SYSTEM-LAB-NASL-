@@ -1,14 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mtech</title>
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../css/style.css" rel="stylesheet">
-  <link rel="stylesheet" href="../css/profile_cards.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+
+    <link href="../css/style.css" rel="stylesheet" />
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background-color: #ffffff;
+        margin: 0;
+        padding-top: 6rem;
+      }
+
+      h1 {
+        color: #254d70;
+        text-align: center;
+        letter-spacing: 1.5px;
+        font-weight: 700;
+        margin-bottom: 50px;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        max-width: 1150px;
+        margin: auto;
+        padding: 0 1.5rem 4rem;
+      }
+
+      .card {
+        display: flex;
+        flex-direction: row;
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        padding: 20px;
+        gap: 25px;
+      }
+
+      .card img {
+        width: 280px;
+        height: auto;
+        object-fit: cover;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+
+      .card-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 10px;
+      }
+
+      .card-content h2 {
+        margin-bottom: 15px;
+        color: #254d70;
+        font-size: 1.7rem;
+        font-weight: 600;
+      }
+
+      .card-content p {
+        color: #444;
+        font-size: 1rem;
+        line-height: 1.7;
+      }
+
+      @media (max-width: 768px) {
+        .card {
+          flex-direction: column;
+          align-items: center;
+          padding: 20px;
+        }
+
+        .card img {
+          width: 100%;
+          max-width: 100%;
+          border-radius: 12px;
+        }
+
+        .card-content {
+          text-align: center;
+          padding: 20px 10px 0;
+        }
+        .card {
+          position: relative;
+        }
+
+        .card-icons {
+          cursor: pointer;
+          position: absolute;
+          top: 10px;
+          right: 15px;
+          display: flex;
+          gap: 10px;
+        }
+
+        .icon-btn {
+          background: none;
+          border: none;
+          text-decoration: none;
+          color: #666;
+          transition: color 0.3s;
+        }
+
+        .icon-btn:hover {
+          color: #254d70;
+        }
+
+        .icon-btn .material-symbols-outlined {
+          color: rgb(25, 22, 22);
+          font-size: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
     <div id="navbar-placeholder">
       <div class="nav_bar">
   <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
@@ -207,12 +328,20 @@
 
 </div>
 
-  <h1 class="page-title">MTech/PG Students</h1>
+    <h1>Awards</h1>
 
-<div class="cards-container">
-</div>
+    <div class="container" id="awardContainer"></div>
 
-<footer class="text-center text-lg-start text-white">
+    <a
+      href="../forms_html/outreach.html"
+      id="addButton"
+      class="btn btn-success mx-auto mb-4"
+      style="max-width: 200px; display: none"
+    >
+      + Add awards
+    </a>
+
+    <footer class="text-center text-lg-start text-white">
   <div class="container py-4">
     <div class="row my-2">
       <div class="col-lg-3 col-md-4 mb-4 mb-md-0">
@@ -298,52 +427,112 @@
   </div>
 </footer>
 
+    <!-- Scripts -->
+    <script src="../js/navbar.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.min.js"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.min.js"></script>
-  <script src="../js/navbar.js"></script>
-  <script src="../js/footer.js"></script>
-  <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const token = localStorage.getItem("authToken"); // optional if endpoint needs auth
-    const container = document.querySelector(".cards-container");
-    const designation = "MTech";
+    <script>
+      const container = document.getElementById("awardContainer");
+      document.getElementById("addButton").style.display = "none";
+      const type = "awards";
 
-    fetch(`https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/getPeople?designation=${encodeURIComponent(designation)}`)
-    .then(res => {
-      if (!res.ok) throw new Error("Failed to fetch PhD people");
-      return res.json();
-    })
-    .then(result => {
-      console.log(result.data.people)
-      const users  = result.data.people;
+      // 1. Get user role from localStorage
+      // let userRole = null;
+      try {
+        // const userData = JSON.parse(localStorage.getItem("user"));
+        userRole = userData?.role;
+        console.log("User role:", userRole);
+      } catch (err) {
+        console.error("Error reading user role from localStorage:", err);
+      }
 
-      users.forEach(user => {
-        const card = document.createElement("div");
-        card.className = "card-box";
+      if (userRole === "ADMIN" || userRole=== "USER") {
+        document.getElementById("addButton").style.display = "block";
+      }
 
-        card.innerHTML = `
-          <div class="card-image-wrapper">
-            <img src="${user.profileImage || '../img/default-avatar.png'}" alt="${user.name}" class="card-image" />
-          </div>
-          <div class="card-description">
-            <h3>${user.name || "Unnamed"}</h3>
-            <p>${user.about || "No description provided."}</p>
-          </div>
-          <div class="card-action">
-            <a href="../users/personal.html?userId=${encodeURIComponent(user.id)}" class="btn view-profile-btn">View Profile</a>
+      // 2. Fetch and render journal papers
+      fetch(
+        `https://next-generation-adaptive-system-lab-nasl.onrender.com/api/outreachorcourses/get-all?type=${encodeURIComponent(type)}`
+      )
+        .then((response) => {
+          if (!response.ok) throw new Error("Failed to fetch Patents ");
+          return response.json();
+        })
+        .then((result) => {
+          const { outreachorcourses } = result.data;
+          console.log("outoutreachorcourses:", outoutreachorcourses);
+
+          outoutreachorcourses.forEach((outreach) => {
+            const card = document.createElement("div");
+            card.className = "card";
+
+            // 3. Build action buttons only if user is ADMIN
+            let adminButtons = "";
+            if (userRole === "ADMIN" || userRole=== "USER") {
+              adminButtons = `
+          <div class="card-icons">
+            <a class="icon-btn edit-btn" data-id="${outreach.id}" title="Edit">
+              <span class="material-symbols-outlined">edit_document</span>
+            </a>
+            <a class="icon-btn delete-btn" data-id="${outreach.id}" title="Delete">
+              <span class="material-symbols-outlined">delete</span>
+            </a>
           </div>
         `;
+            }
 
-        container.appendChild(card);
-      });
-    })
-    .catch(err => {
-      console.error("Error loading PhD users:", err);
-      container.innerHTML = `<p class="text-danger">Failed to load profiles.</p>`;
-    });
-  });
-</script>
+            // 4. Inject card HTML
+            card.innerHTML = `
+            <div class="card-content toggle-wrapper" style="max-height: 150px; overflow: hidden; position: relative;">
+              <h2 style="text-align:center;">${outreach.title}</h2>
+              <div class="patent-details" style="display:none;">${outreach.content}</div>
+            ${adminButtons}
+          `;
 
-</body>
+            container.appendChild(card);
+          });
+
+          // 5. Setup delete button logic
+          if (userRole === "ADMIN") {
+            document.querySelectorAll(".delete-btn").forEach((btn) => {
+              btn.addEventListener("click", async function () {
+                const id = this.getAttribute("data-id");
+                const token = localStorage.getItem("authToken");
+
+                if (
+                  confirm("Are you sure you want to delete this patent?")
+                ) {
+                  try {
+                    const res = await fetch(
+                      `https://next-generation-adaptive-system-lab-nasl.onrender.com/api/outreachorcourses/${id}`,
+                      {
+                        method: "DELETE",
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                        },
+                      }
+                    );
+
+                    const data = await res.json();
+                    if (res.ok) {
+                      alert("Deleted successfully");
+                      location.reload();
+                    } else {
+                      alert(data.message || "Failed to delete");
+                    }
+                  } catch (err) {
+                    console.error("Delete Error:", err);
+                  }
+                }
+              });
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error loading patents:", error);
+        });
+    </script>
+  </body>
 </html>
