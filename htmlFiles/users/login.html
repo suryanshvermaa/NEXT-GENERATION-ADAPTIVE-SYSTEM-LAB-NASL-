@@ -145,7 +145,7 @@
       </form>
       <div class="form-footer" style="margin-top: 20px">
         <!-- Google Sign-In integration -->
-        <div
+        <!-- <div
           id="g_id_onload"
           data-client_id="358593758996-6qjvsjgc161svfo1qrop1tsec1fssua9.apps.googleusercontent.com"
           data-callback="handleCredentialResponse"
@@ -161,7 +161,21 @@
           data-text="signin_with"
           data-size="large"
           data-logo_alignment="left"
-        ></div>
+        ></div> -->
+        <a id="googleSignIn" class="btn btn-outline-danger">
+  Sign in with Google
+</a>
+
+<script>
+  document.getElementById("googleSignIn").addEventListener("click", () => {
+    const clientId = "358593758996-6qjvsjgc161svfo1qrop1tsec1fssua9.apps.googleusercontent.com";
+    const redirectUri = "./google_callback.html";
+
+    const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid%20email%20profile`;
+
+    window.location.href = url;
+  });
+</script>
       </div>
     </div>
 
@@ -211,12 +225,13 @@
     </script>
 
     <!-- Google Authentication -->
-    <script>
+    <!-- <script>
       function handleCredentialResponse(response) {
-        // `response.credential` is the Google ID token
-        const idToken = response.code;
+        
+        const idToken = response.credential;
+        console.log(response.credential);
 
-        // Exchange the token with your backend using the "code" (in this case, -->>>> credential)
+
         fetch(
           "https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/loginWithGoogle",
           {
@@ -224,7 +239,7 @@
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ code: idToken }), // `code` expected by your API
+            body: JSON.stringify({ code: idToken }), 
           }
         )
           .then((res) => res.json())
@@ -242,6 +257,6 @@
             alert("Something went wrong during Google login.");
           });
       }
-    </script>
+    </script> -->
   </body>
 </html>
