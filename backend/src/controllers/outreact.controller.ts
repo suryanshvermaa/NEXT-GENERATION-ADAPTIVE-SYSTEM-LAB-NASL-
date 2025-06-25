@@ -63,13 +63,13 @@ export const updateoutreachOrCourses = asyncHandler(
 export const getoutreachorcourses = asyncHandler(
     async (req: Request, res: Response) => {
         const type = req.query.type;
-        const outreachorcourses = await prisma.publication.findMany({
+        const outreachorcourses = await prisma.outreachOrCourses.findMany({
             where: {
                 type: type as string,
             },
             orderBy: { createdAt: "desc" }
         });
-        response(res, 200, "Projects fetched successfully", { outreachorcourses });
+        response(res, 200, "publications fetched successfully", { outreachorcourses });
     }
 );
 
@@ -102,7 +102,7 @@ export const deleteoutreachorcourses = asyncHandler(
     async (req: Request, res: Response) => {
         const { id } = req.params;
         if (!id) throw new AppError("Please provide id of project", 400);
-        const outreachorcourse = await prisma.publication.delete({
+        const outreachorcourse = await prisma.outreachOrCourses.delete({
             where: { id: Number(id) },
         });
         response(res, 200, "Project deleted successfully", { outreachorcourse });

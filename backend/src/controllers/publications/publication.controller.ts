@@ -151,7 +151,7 @@ export const getPublications = asyncHandler(
 export const getPublicationById = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
-		if (!id) throw new AppError("Please provide id of project", 400);
+		if (!id) throw new AppError("Please provide id of publications", 400);
 		const publication = await prisma.publication.findUnique({
 			where: { id: Number(id) },
 			include: {
@@ -186,7 +186,7 @@ export const getPublicationById = asyncHandler(
 export const deletePublication = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
-		if (!id) throw new AppError("Please provide id of project", 400);
+		if (!id) throw new AppError("Please provide id of publication", 400);
 		const publication = await prisma.publication.delete({
 			where: { id: Number(id) },
 		});
