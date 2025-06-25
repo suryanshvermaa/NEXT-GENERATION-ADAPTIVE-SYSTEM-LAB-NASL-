@@ -195,10 +195,11 @@
               localStorage.setItem("user", JSON.stringify(result.data.user));
               const user = JSON.parse(localStorage.getItem("user"));
               console.log(user?.role);
+              console.log(user);
               alert("Login successful! ");
 
               // Redirect to index.html
-              window.location.href = "/htmlFiles/index.html";
+              window.location.href = "../index.html";
             } else {
               alert(result.message || "Login failed. Please try again.");
             }
@@ -231,7 +232,7 @@
             if (result.token) {
               localStorage.setItem("authToken", result.token);
               alert("Google Login Successful!");
-              window.location.href = "/htmlFiles/index.html";
+              window.location.href = "../index.html";
             } else {
               alert(result.message || "Google Login failed.");
             }

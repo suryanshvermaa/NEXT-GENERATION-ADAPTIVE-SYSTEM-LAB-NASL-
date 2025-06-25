@@ -18,7 +18,7 @@
     />
   </head>
   <body>
-    <h2 class="">Add Journals</h2>
+    <h2 class="">Add Books</h2>
 
     <form action="" method="" onsubmit="submitForm(event)">
       <label for="title">Title:</label>
@@ -26,12 +26,13 @@
         type="text"
         id="title"
         name="title"
-        placeholder="Enter Title"
+        required
+        placeholder="Enter Book Title"
       />
 
-      <label for="text">Journal:</label>
+      <!-- <label for="text">Book Description:</label> -->
       <!-- Formatter -->
-      <div class="formatter">
+      <!-- <div class="formatter">
         <div id="toolbar">
           <select class="ql-header">
             <option value="1"></option>
@@ -43,29 +44,60 @@
           <button class="ql-underline"></button>
           <button class="ql-link"></button>
           <button class="ql-list" value="ordered"></button>
-          <button class="ql-list" value="bullet"></button>
+          <button class="ql-list" value="bullet"></button> -->
           <!-- Color pickers -->
-          <select class="ql-color"></select>
+          <!-- <select class="ql-color"></select>
           <select class="ql-background"></select>
 
           <button class="ql-clean"></button>
-        </div>
+        </div>  -->
         <!-- Editor (div) -->
-        <div id="editor" style="height: 150px"></div>
+        <!-- <div id="editor" style="height: 150px"></div>
         <textarea
           name="content"
           id="hiddenArea"
           style="display: none"
-        ></textarea>
-<br>
-        <select id="type" name="type" required>
-        <option value="">Select your type</option>
-        <option value="journal">Journal</option>
-        <option value="patent">Patent</option>
-        <option value="confernce">Conference Papers</option>
-        <option value="books">Books</option>
-      </select>
+        ></textarea> -->
 
+        <label for="publisher">Publisher:</label>
+        <input
+          type="text"
+          id="publisher"
+          name="publisher"
+          placeholder="Enter Publisher (optional)"
+        />
+
+        <label for="year">Year:</label>
+        <input
+          type="number"
+          id="year"
+          name="year"
+          placeholder="Enter Year (optional)"
+        />
+
+        <label for="scopus">Scopus:</label>
+        <input
+          type="text"
+          id="scopus"
+          name="scopus"
+          placeholder="Enter Scopus(optional)"
+        />
+
+        <label for="doi">Doi</label>
+        <input
+          type="text"
+          id="doi"
+          name="doi"
+          placeholder="Enter Doi (optional)"
+        />
+
+        <label for="pubDate">ISBN:</label>
+        <input
+          type="text"
+          id="isbn"
+          name="isbn"
+          placeholder="Enter ISBN (optional)"
+        />
 
         <label for="authorSearch">Add Authors:</label>
         <input
@@ -222,22 +254,29 @@
 
         const token = localStorage.getItem("authToken");
         const title = document.getElementById("title").value;
-        const content = quill.root.innerHTML;
+        const publisher = document.getElementById("publisher").value;
+        const year =  parseInt(document.getElementById("year").value);
+        // const book = quill.root.innerHTML;
+        const scopus = document.getElementById("scopus").value;
+        const doi = document.getElementById("doi").value;
+        const isbn = document.getElementById("isbn").value;
         const authors = JSON.parse(document.getElementById("authors").value);
-        const type = document.getElementById("type").value;
-        console.log(type);
 
         const payload = {
           title,
+          publisher,
+          year,
+
+          scopus,
+          doi,
+          isbn,
           authors,
-          content,
-          type,
         };
 
         console.log(payload)
         try {
           const response = await fetch(
-            "https://next-generation-adaptive-system-lab-nasl.onrender.com/api/publication/create",
+            "https://next-generation-adaptive-system-lab-nasl.onrender.com/api/book/create",
             {
               method: "POST",
               headers: {
@@ -249,14 +288,13 @@
           );
 
           const result = await response.json();
-          console.log(result)
 
           if (response.ok) {
             console.log(result);
-            alert(`${type} added successfully!`);
+            alert("Book added successfully!");
             // Reset form if needed
           } else {
-            alert(result.message || "Failed to create ");
+            alert(result.message || "Failed to create Book");
           }
         } catch (errror) {
           console.error("Error:", error);
