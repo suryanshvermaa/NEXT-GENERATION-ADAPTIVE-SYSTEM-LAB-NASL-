@@ -169,7 +169,7 @@
 <script>
   document.getElementById("googleSignIn").addEventListener("click", () => {
     const clientId = "358593758996-6qjvsjgc161svfo1qrop1tsec1fssua9.apps.googleusercontent.com";
-    const redirectUri = "./google_callback.html";
+    const redirectUri = "http://localhost:5500/htmlFiles/users/googleCallback.html";
 
     const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid%20email%20profile`;
 
