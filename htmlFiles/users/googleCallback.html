@@ -17,8 +17,7 @@
       })
       .then(res => res.json())
       .then(result => {
-        console.log(result)
-        if (result.token) {
+        if (result.data.token) {
           localStorage.setItem("authToken", result.token);
           alert("Login Successful");
           window.location.href = "../index.html";
