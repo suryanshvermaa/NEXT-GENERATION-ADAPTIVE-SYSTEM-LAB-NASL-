@@ -2,7 +2,7 @@
 (function(){
   // Edit these two values if you need different hosts
   var LOCAL = 'http://localhost:3000';
-  var PRODUCTION = 'https://next-generation-adaptive-system-lab-nasl.onrender.com';
+  var PRODUCTION = 'nasl-lab-backend-3is3rrn2i-suryansh-vermas-projects.vercel.app';
 
   var host = window.location.hostname;
   var API_BASE = (host === 'localhost' || host === '127.0.0.1') ? LOCAL : PRODUCTION;
