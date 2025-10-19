@@ -1,0 +1,59 @@
+version: "3.8"
+services:
+    nasl-backend:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: nasl_backend_container
+        ports:
+            - "3000:3000"
+        environment:
+            - PORT=3000
+            - AUTH_SECRET=suryanshauthsecret
+            - DATABASE_URL=postgres://suryansh:suryansh1234@postgres:5432/mydatabase
+            - ACCESS_KEY_ID=suryansh
+            - SECRET_ACCESS_KEY=suryansh
+            - S3_ENDPOINT=s3:9000
+            - S3_REGION=us-east-1
+            - S3_BUCKET=your_s3_bucket
+        depends_on:
+            - postgres
+            - s3
+        networks:
+            - nasl_network
+    postgres:
+        image: postgres:15.4
+        container_name: postgres_container
+        environment:
+            POSTGRES_USER: suryansh
+            POSTGRES_PASSWORD: suryansh1234
+            POSTGRES_DB: mydatabase
+        ports:
+            - "5432:5432"
+        volumes:
+            - ./postgres_data:/var/lib/postgresql/data
+        networks:
+            - nasl_network
+    s3:
+        image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+        container_name: minio
+        environment:
+            - MINIO_ROOT_USER=suryansh
+            - MINIO_ROOT_PASSWORD=suryansh
+        ports:
+            # Map the API port (for S3 clients)
+            - "9000:9000"
+            # Map the Console port (for the web UI)
+            - "9001:9001"
+        volumes:
+            - ./minio_data:/data
+        # The command to start the MinIO server and enable the console
+        command: server /data --console-address ":9001"
+        networks:
+            - nasl_network
+
+networks:
+    nasl_network:
+        driver: bridge
+        internal: true
+        name: nasl_network
