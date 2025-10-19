@@ -1,210 +1,212 @@
 # NEXT-GENERATION-ADAPTIVE-SYSTEM-LAB (NASL)
 
-A full-stack web application with a static HTML/CSS/JavaScript frontend and a Node.js + Express + TypeScript backend, using PostgreSQL (via Prisma ORM) and S3-compatible storage.
+Full-stack research lab website. Static HTML/CSS/JS frontend served from `htmlFiles/`, and a Node.js + Express + TypeScript backend in `backend/` with PostgreSQL (via Prisma) and S3-compatible storage (MinIO/AWS/Supabase).
 
 ---
 
-## Project Structure
+## Project structure
 
 ```
 .
-├── backend/          # Node.js, Express, TypeScript, Prisma, PostgreSQL, S3
-│   ├── src/          # Source code
-│   │   ├── controllers/  # API controllers
-│   │   ├── routes/       # API routes
-│   │   ├── middlewares/  # Express middlewares
-│   │   ├── config/       # Configuration files
-│   │   ├── utils/        # Utility functions
-│   │   ├── auth/         # Authentication logic
-│   │   ├── s3/           # S3 storage utilities
-│   │   └── types/        # TypeScript type definitions
-│   ├── prisma/       # Database schema and migrations
-│   ├── scripts/      # Utility scripts
-│   └── docs/         # API documentation
-├── htmlFiles/        # Static HTML frontend
-│   ├── css/          # Stylesheets
-│   ├── js/           # JavaScript files
-│   ├── assets/       # Images and media files
-│   ├── admin/        # Admin panel pages
-│   ├── users/        # User authentication pages
-│   ├── people/       # Team member pages
-│   ├── research/     # Research-related pages
-│   ├── forms_html/   # Form pages
-│   └── reuse/        # Reusable components
-├── .github/          # GitHub templates
-└── README.md         # Project documentation
+├── backend/                # Express 5 + TS + Prisma + S3
+│   ├── src/
+│   │   ├── auth/           # Google OAuth helper
+│   │   ├── config/         # Prisma + S3 clients
+│   │   ├── controllers/    # Business logic
+│   │   ├── middlewares/    # Auth, error handler, etc.
+│   │   ├── routes/         # Mounted under /api
+│   │   ├── s3/             # Presign helpers, deletion utils
+│   │   ├── types/          # Express TS augmentations
+│   │   └── utils/          # asyncHandler, response, etc.
+│   ├── prisma/             # schema.prisma + migrations/
+│   ├── generated/prisma/   # Prisma client output (generated)
+│   ├── docs/API.md         # Full REST reference
+│   ├── scripts/admin.js    # Create ADMIN user interactively
+│   ├── docker-compose.yml  # Postgres + MinIO + backend
+│   └── Dockerfile          # Multi-stage image (builder/runner)
+├── htmlFiles/              # Static frontend (no build step)
+│   ├── js/config.js        # Picks API base (local/prod) at runtime
+│   └── ...
+└── README.md
 ```
 
 ---
 
 ## Features
 
-### Backend API
-- **User Management**: Registration, login, profile management with Google OAuth
-- **Research Publications**: Journal papers, conference papers, book chapters, books, patents
-- **Research Areas & Facilities**: Management of research domains and lab facilities
-- **Projects**: Research project tracking with funding details
-- **Events & Outreach**: Event management and outreach activities
-- **Photo Gallery**: Image management with S3 storage
-- **Highlights & Updates**: Recent highlights and updates system
+Backend API modules:
+- Users (JWT + Google OAuth)
+- Images (S3 presigned upload/download/delete)
+- Recent Updates and Highlights
+- Research Areas and Facilities
+- Publications: Books, Book Chapters, Conference Papers, Journal Papers, Patents, Generic Publications
+- Projects
+- Photo Gallery and Events
+- Outreach or Courses
 
-### Frontend
-- **Responsive Design**: Bootstrap-based responsive layout
-- **Static Pages**: Fast-loading HTML pages for all sections
-- **Admin Panel**: Administrative interface for content management
-- **User Authentication**: Login/register pages with profile management
-- **Research Showcase**: Dedicated pages for research areas, facilities, and publications
-- **Team Pages**: Individual pages for different team categories (PhD, MTech, BTech, etc.)
+Frontend:
+- Static, responsive pages organized by section (admin, users, people, research, publications, outreach, media, etc.)
+- Runtime-configured API base via `htmlFiles/js/config.js`
 
 ---
 
-## Local Setup
+## Prerequisites
 
-### Prerequisites
-- Node.js (v18+ recommended)
-- pnpm (or npm/yarn)
-- PostgreSQL database (local or remote)
+- Node.js 18+
+- npm or pnpm
+- PostgreSQL 15+
+- Optional: Docker Desktop (for one-command infra with Postgres + MinIO)
 
 ---
 
-### 1. Clone the repository
-```bash
+## Quick start (Windows PowerShell)
+
+1) Clone and install backend deps
+
+```powershell
 git clone https://github.com/suryanshvermaa/NEXT-GENERATION-ADAPTIVE-SYSTEM-LAB-NASL-.git
-cd NEXT-GENERATION-ADAPTIVE-SYSTEM-LAB-NASL-
+cd NEXT-GENERATION-ADAPTIVE-SYSTEM-LAB-NASL-\backend
+npm install
 ```
 
----
+2) Configure environment (`backend/.env`)
 
-### 2. Backend Setup
+Copy `.env.example` to `.env` and fill values:
 
-```bash
-cd backend
-pnpm install # or npm install / yarn install
 ```
-
-#### Environment Variables
-Create a `.env` file in `backend/` (see `.env` example below):
-```
+# Server/runtime
+PRODUCTION_SERVER_TYPE=serverless or traditional
+NODE_ENV=development or production
 PORT=3000
-AUTH_SECRET=your_secret
-DATABASE_URL=your_postgres_url
+
+# Auth
+AUTH_SECRET=your_jwt_secret
+CLIENT_ID=your_google_oauth_client_id
+CLIENT_SECRET=your_google_oauth_client_secret
+
+# Database
+DATABASE_URL=postgres://user:pass@host:5432/dbname
+
+# S3 storage (use http URL for non-AWS providers)
 ACCESS_KEY_ID=your_s3_access_key
 SECRET_ACCESS_KEY=your_s3_secret_key
-S3_ENDPOINT=your_s3_endpoint
-S3_REGION=your_s3_region
+S3_ENDPOINT=http://localhost:9000
+S3_REGION=us-east-1
 S3_BUCKET=your_s3_bucket
 ```
 
-#### Database Setup
-- Update `DATABASE_URL` in `.env` with your PostgreSQL connection string.
-- Run Prisma migrations:
-```bash
-npx prisma migrate deploy
+Notes:
+- The backend expects `S3_ENDPOINT` to be a full URL (e.g., `http://s3:9000` in Docker or `http://localhost:9000` locally). The S3 client uses `forcePathStyle: true` for MinIO/Supabase compatibility.
+- Google OAuth redirect is currently set in code to `https://nasl-lab-nitp.vercel.app/users/googleCallback.html`. Update the OAuth client or adjust `src/auth/googleAuth.ts` for your environment.
+
+3) Database and Prisma
+
+```powershell
+npx prisma generate
+npx prisma migrate dev --name init
 ```
 
-#### Start Backend (Development)
-```bash
-pnpm dev # or npm run dev / yarn dev
+4) Run the backend (dev)
+
+```powershell
+npm run dev
 ```
 
-The backend API will be available at [http://localhost:3000](http://localhost:3000).
+API (dev): http://localhost:3000/api
+Health: http://localhost:3000/health
+
+5) Serve the frontend
+
+Use any static web server (Live Server extension recommended). The runtime script `htmlFiles/js/config.js` chooses API base by hostname:
+- `localhost` → `http://localhost:3000`
+- otherwise → `https://nasl-lab-backend.vercel.app`
+
+You can override at runtime by setting `window.NASL.API_BASE` before loading `config.js`.
 
 ---
 
-### 3. Frontend Setup
+## Run with Docker Compose (backend + Postgres + MinIO)
 
-The frontend is a static HTML application that can be served using any web server. For development:
+Inside `backend/`:
 
-#### Using Python (Simple HTTP Server)
-```bash
-cd htmlFiles
-python3 -m http.server 8000
+```powershell
+# Start Postgres and MinIO in background
+docker compose up -d postgres s3
+
+# First time only: create a bucket via MinIO Console (http://localhost:9001)
+# Login with MINIO_ROOT_USER/MINIO_ROOT_PASSWORD from compose (default: suryansh / suryansh)
+
+# Build and run backend
+docker compose up --build nasl-backend
 ```
 
-#### Using Node.js (http-server)
-```bash
-npm install -g http-server
-cd htmlFiles
-http-server -p 8000
-```
+Compose details:
+- Backend exposed on port 3000, service name `nasl-backend`
+- Postgres on 5432 with volume `./postgres_data`
+- MinIO API 9000, Console 9001 with volume `./minio_data`
 
-#### Using Live Server (VS Code Extension)
-- Install the "Live Server" extension in VS Code
-- Right-click on `htmlFiles/index.html` and select "Open with Live Server"
-
-The frontend will be available at [http://localhost:8000](http://localhost:8000) (or the port you specified).
+Environment tips when running in Compose:
+- `DATABASE_URL` host should be `postgres`
+- `S3_ENDPOINT` should be `http://s3:9000`
 
 ---
 
-## API Endpoints
+## Scripts
 
-The backend provides RESTful APIs for:
+From `backend/`:
+- `npm run dev` — Start dev server with nodemon
+- `npm run build` — TypeScript build to `dist/`
+- `npm start` — Run compiled server
+- `npm run lint` / `npm run lint:fix` — ESLint
+- `npm run format` — Prettier write
+- `npm run createAdmin` — Interactive admin user creation
 
-- **Authentication**: `/api/auth/*`
-- **Users**: `/api/users/*`
-- **Publications**: `/api/journals/*`, `/api/conferences/*`, `/api/books/*`, `/api/patents/*`
-- **Research**: `/api/research-areas/*`, `/api/research-facilities/*`
-- **Projects**: `/api/projects/*`
-- **Events**: `/api/events/*`
-- **Gallery**: `/api/photo-gallery/*`
-- **Highlights**: `/api/highlights/*`, `/api/recent-updates/*`
-
-For detailed API documentation, see `backend/docs/API.md`.
+Prisma:
+- `npx prisma generate`, `npx prisma migrate dev --name <name>`, `npx prisma studio`
 
 ---
 
-## Useful Scripts
+## API overview
 
-### Backend
-- `pnpm dev` — Start backend in development mode (with nodemon)
-- `pnpm build` — Build backend TypeScript
-- `pnpm start` — Start backend from build output
-- `pnpm lint` — Lint backend code
-- `pnpm format` — Format backend code
-- `pnpm createAdmin` — Create admin user
+Base path: `/api`
 
-### Frontend
-- Serve static files using any web server
-- No build process required (static HTML/CSS/JS)
+Routers mounted in `backend/src/routes/index.ts`:
+- `/user`
+- `/image`
+- `/recentUpdate`
+- `/highlight`
+- `/researchArea`
+- `/researchFacility`
+- `/book`
+- `/book-chapter`
+- `/conference-paper`
+- `/journal-paper`
+- `/project`
+- `/patent`
+- `/photo-gallery`
+- `/event`
+- `/publication`
+- `/outreachorcourses`
 
----
+Full endpoint details live in `backend/docs/API.md`.
 
-## Database Schema
+Health check: `GET /health` → `{ "message": "healty", "data": {} }`
 
-The application uses PostgreSQL with the following main entities:
-- **Users**: Researchers, students, and administrators
-- **Publications**: Journal papers, conference papers, books, chapters, patents
-- **Research**: Areas and facilities
-- **Projects**: Research projects with funding details
-- **Events**: Lab events and activities
-- **Gallery**: Photo management with tags
-- **Highlights**: Recent achievements and updates
-
----
-
-## Deployment
-
-### Backend
-- Build the TypeScript: `pnpm build`
-- Set up environment variables
-- Run database migrations
-- Start the server: `pnpm start`
-
-### Frontend
-- Deploy the `htmlFiles/` directory to any static hosting service
-- Update API endpoints in JavaScript files to point to your backend URL
+Auth:
+- JWT via `Authorization: Bearer <token>` (requires `AUTH_SECRET`)
+- Google OAuth via `POST /api/user/loginWithGoogle` with `{ code }`
 
 ---
 
-## Notes
-- The backend uses its own `node_modules` and lock files
-- Sensitive information (like `.env`) should **not** be committed
-- For S3, you can use AWS S3 or any compatible provider (e.g., Supabase Storage)
-- The frontend is completely static and can be served from any web server
-- Bootstrap 5 is used for responsive design
-- Google OAuth is supported for user authentication
+## Notes and conventions
+
+- The Prisma client is emitted to `backend/generated/prisma` and imported from there.
+- When deploying to Vercel, `backend/vercel.json` builds `src/index.ts` with `@vercel/node` and bundles Prisma assets.
+- In serverless environments, the app exports a handler and does not start an HTTP listener; locally it listens on `PORT` unless `PRODUCTION_SERVER_TYPE=serverless` or `VERCEL=1`.
+- Keep `.env` out of version control. Rotate secrets regularly.
 
 ---
 
 ## License
-This project is licensed under the ISC License. 
+
+ISC — see `backend/package.json`.
