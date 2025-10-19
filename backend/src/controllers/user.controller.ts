@@ -306,7 +306,7 @@ export const getPeople = asyncHandler(async (req: Request, res: Response) => {
 		},
 	});
 	if (people.length === 0) {
-		return response(res, 404, "No people found", { people: [] });
+		return response(res, 200, "No people found", { people: [] });
 	}
 	for (const person of people) {
 		person.profileImage = person.profileImage
