@@ -427,8 +427,9 @@
 </footer>
 
     <!-- Scripts -->
-    <script src="../js/navbar.js"></script>
-    <script src="../js/footer.js"></script>
+  <script src="../js/navbar.js"></script>
+  <script src="../js/footer.js"></script>
+  <script src="/js/config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.min.js"></script>
 
@@ -450,9 +451,7 @@
       }
 
       // 2. Fetch and render research facilities
-      fetch(
-        "https://next-generation-adaptive-system-lab-nasl.onrender.com/api/researchFacility/getReasearchFacilities"
-      )
+      fetch(`${window.NASL.API_BASE}/api/researchFacility/getReasearchFacilities`)
         .then((response) => {
           if (!response.ok)
             throw new Error("Failed to fetch research facilities");
@@ -503,8 +502,7 @@
                     )
                   ) {
                     try {
-                      const res = await fetch(
-                        "https://next-generation-adaptive-system-lab-nasl.onrender.com/api/researchFacility/deleteResearchFacility",
+                      const res = await fetch(`${window.NASL.API_BASE}/api/researchFacility/deleteResearchFacility`,
                         {
                           method: "DELETE",
                           headers: {

@@ -526,6 +526,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../js/navbar.js"></script>
 <script src="../js/footer.js"></script>
+<script src="/js/config.js"></script>
 <script>
   // const token = localStorage.getItem("authToken");
   const urlParams = new URLSearchParams(window.location.search);
@@ -536,7 +537,7 @@ if (!userId) {
   throw new Error("Missing user ID");
 }
 
-  fetch(`https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/profile/${encodeURIComponent(userId)}`)
+  fetch(`${window.NASL.API_BASE}/api/user/profile/${encodeURIComponent(userId)}`)
   .then(response => {
     if (!response.ok) throw new Error("Failed to fetch profile");
     return response.json();

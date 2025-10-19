@@ -2,13 +2,14 @@
 <html>
 <head><title>Google Callback</title></head>
 <body>
+  <script src="/js/config.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
 
     if (code) {
       console.log(code);
-      fetch("https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/loginWithGoogle", {
+  fetch(`${window.NASL.API_BASE}/api/user/loginWithGoogle`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

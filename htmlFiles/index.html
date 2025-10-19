@@ -417,6 +417,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.min.js"
       integrity="sha384-RuyvpeZCxMJCqVUGFI0Do1mQrods/hhxYlcVfGPOfQtPJh0JCw12tUAZ/Mv10S7D"
       crossorigin="anonymous"></script>
+    <script src="/js/config.js"></script>
     <script>
       const authButton = document.getElementById("auth-button");
     const profileButton = document.getElementById("profile-button");
@@ -438,14 +439,9 @@
         location.reload();
       });
 
-        fetch(
-          "https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/profile",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
+        fetch(`${window.NASL.API_BASE}/api/user/profile`, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
           .then((response) => {
             if (!response.ok) throw new Error("Failed to fetch profile");
             return response.json();
@@ -486,7 +482,7 @@
       }
 
     async function fetchUpdates() {
-      const res = await fetch("https://next-generation-adaptive-system-lab-nasl.onrender.com/api/recentUpdate/getrecentUpdates", {
+      const res = await fetch(`${window.NASL.API_BASE}/api/recentUpdate/getrecentUpdates`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch recent updates");
@@ -542,7 +538,7 @@
     console.log(recent_id)
     if (confirm("Are you sure you want to delete this update?")) {
       try {
-        const res = await fetch("https://next-generation-adaptive-system-lab-nasl.onrender.com/api/recentUpdate/delete", {
+        const res = await fetch(`${window.NASL.API_BASE}/api/recentUpdate/delete`, {
           method: "DELETE",
           headers: {
              Authorization: `Bearer ${token}`,
@@ -585,7 +581,7 @@
       }
 
     async function fetchUpdates() {
-      const res = await fetch("https://next-generation-adaptive-system-lab-nasl.onrender.com/api/highlight/getHighlights", {
+      const res = await fetch(`${window.NASL.API_BASE}/api/highlight/getHighlights`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch highlights");
@@ -639,7 +635,7 @@
     const highlight_id =btn.dataset.id;
     if (confirm("Are you sure you want to delete this highlight?")) {
       try {
-        const res = await fetch("https://next-generation-adaptive-system-lab-nasl.onrender.com/api/highlight/delete", {
+        const res = await fetch(`${window.NASL.API_BASE}/api/highlight/delete`, {
           method: "DELETE",
           headers: {
              Authorization: `Bearer ${token}`,

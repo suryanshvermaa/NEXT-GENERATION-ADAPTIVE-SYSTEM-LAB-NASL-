@@ -129,6 +129,7 @@
   </div>
 
 <!-- JAVASCRIPT -->
+<script src="/js/config.js"></script>
 <script>
   document.getElementById("register-form").addEventListener("submit", async function(e) {
     e.preventDefault();
@@ -145,7 +146,7 @@
     try {
       // STEP 1: Get upload URL
       const token = localStorage.getItem("authToken"); // assuming you're using token auth
-      const uploadRes = await fetch('https://next-generation-adaptive-system-lab-nasl.onrender.com/api/image/uploadURL', {
+  const uploadRes = await fetch(`${window.NASL.API_BASE}/api/image/uploadURL`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -173,7 +174,7 @@
 
       console.log("Form Data:", { imageUrl });
       // STEP 3: Send user data with profileImage URL
-      const createUserRes = await fetch("https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/createUser", {
+  const createUserRes = await fetch(`${window.NASL.API_BASE}/api/user/createUser`, {
         method: "POST",
         headers: {
           'Authorization': `Bearer ${token}`,

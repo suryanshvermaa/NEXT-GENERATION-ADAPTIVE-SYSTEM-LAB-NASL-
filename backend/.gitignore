@@ -10,5 +10,5 @@ mongo-data
 .env.local
 cert
 generated/
-./postgres_data
-./minio_data
+postgres_data
+minio_data

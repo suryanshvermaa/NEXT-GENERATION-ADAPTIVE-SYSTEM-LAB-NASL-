@@ -430,8 +430,9 @@
     <!-- Scripts -->
     <script src="../js/navbar.js"></script>
     <script src="../js/footer.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.min.js"></script>
+  <script src="/js/config.js"></script>
 
     <script>
       const container = document.getElementById("journalContainer");
@@ -454,7 +455,7 @@
 
       // 2. Fetch and render journal papers
       fetch(
-        `https://next-generation-adaptive-system-lab-nasl.onrender.com/api/publication/get-all?type=${encodeURIComponent(type)}`
+  `${window.NASL.API_BASE}/api/publication/get-all?type=${encodeURIComponent(type)}`
       )
         .then((response) => {
           if (!response.ok) throw new Error("Failed to fetch journal papers");
@@ -509,7 +510,7 @@
                 ) {
                   try {
                     const res = await fetch(
-                      `https://next-generation-adaptive-system-lab-nasl.onrender.com/api/publication/${id}`,
+                      `${window.NASL.API_BASE}/api/publication/${id}`,
                       {
                         method: "DELETE",
                         headers: {

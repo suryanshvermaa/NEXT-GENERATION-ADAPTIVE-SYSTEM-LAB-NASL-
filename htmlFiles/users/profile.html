@@ -537,10 +537,11 @@ Update Profile
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../js/navbar.js"></script>
 <script src="../js/footer.js"></script>
+<script src="/js/config.js"></script>
 <script>
   // const token = localStorage.getItem("authToken");
 
-  fetch('https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/profile', {
+  fetch(`${window.NASL.API_BASE}/api/user/profile`, {
     headers: {
       Authorization: `Bearer ${token}`,
     }
@@ -618,7 +619,7 @@ Update Profile
     const container = document.getElementById(typeToContainerId[type]);
     container.innerHTML = `<p>Loading ${type}...</p>`;
 
-    fetch(`https://next-generation-adaptive-system-lab-nasl.onrender.com/api/publication/get-all-by-authorId/${encodeURIComponent(authorId)}/${encodeURIComponent(type)}`, {
+  fetch(`${window.NASL.API_BASE}/api/publication/get-all-by-authorId/${encodeURIComponent(authorId)}/${encodeURIComponent(type)}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,

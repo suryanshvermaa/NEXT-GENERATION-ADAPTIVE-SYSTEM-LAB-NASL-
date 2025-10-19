@@ -5,6 +5,7 @@
     <title>Login Page</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="/js/config.js"></script>
 
     <style>
       * {
@@ -116,7 +117,8 @@
     <div class="login-container">
       <h2>Login</h2>
       <form
-        action="https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/login"
+        id="loginForm"
+        action=""
         method="post"
       >
         <div class="form-group">
@@ -169,7 +171,7 @@
 <script>
   document.getElementById("googleSignIn").addEventListener("click", () => {
     const clientId = "358593758996-6qjvsjgc161svfo1qrop1tsec1fssua9.apps.googleusercontent.com";
-    const redirectUri = "https://nasl-lab-nitp.vercel.app/users/googleCallback.html";
+    const redirectUri = `${window.NASL.PRODUCTION}/users/googleCallback.html`;
     const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid%20email%20profile`;
 
     window.location.href = url;
@@ -190,7 +192,7 @@
 
           try {
             const res = await fetch(
-              "https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/login",
+              `${window.NASL.API_BASE}/api/user/login`,
               {
                 method: "POST",
                 headers: {

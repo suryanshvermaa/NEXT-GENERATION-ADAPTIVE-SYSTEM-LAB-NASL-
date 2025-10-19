@@ -97,6 +97,7 @@
       crossorigin="anonymous"
     ></script>
 
+    <script src="/js/config.js"></script>
     <script>
       // Store selected author IDs
       const token = localStorage.getItem("authToken");
@@ -120,7 +121,7 @@
 
           try {
             const res = await fetch(
-              `https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/search?query=${encodeURIComponent(
+              `${window.NASL.API_BASE}/api/user/search?query=${encodeURIComponent(
                 query
               )}`,
               {
@@ -237,7 +238,7 @@
         console.log(payload)
         try {
           const response = await fetch(
-            "https://next-generation-adaptive-system-lab-nasl.onrender.com/api/publication/create",
+            `${window.NASL.API_BASE}/api/publication/create`,
             {
               method: "POST",
               headers: {
@@ -258,7 +259,7 @@
           } else {
             alert(result.message || "Failed to create ");
           }
-        } catch (errror) {
+        } catch (error) {
           console.error("Error:", error);
           alert("Something went wrong!");
         }

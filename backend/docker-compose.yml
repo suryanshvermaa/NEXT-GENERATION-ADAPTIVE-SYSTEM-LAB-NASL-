@@ -55,5 +55,4 @@ services:
 networks:
     nasl_network:
         driver: bridge
-        internal: true
         name: nasl_network

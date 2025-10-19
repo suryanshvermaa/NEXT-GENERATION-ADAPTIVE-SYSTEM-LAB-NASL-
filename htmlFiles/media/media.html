@@ -387,6 +387,7 @@
 </footer>
 
 
+ <script src="/js/config.js"></script>
  <script>
   const token = localStorage.getItem("authToken");
   const userData = JSON.parse(localStorage.getItem("user")); // "ADMIN" or "USER"
@@ -399,7 +400,7 @@
   async function fetchImages() {
     try {
       const response = await fetch(
-        "https://next-generation-adaptive-system-lab-nasl.onrender.com/api/photo-gallery/getImages",
+        `${window.NASL.API_BASE}/api/photo-gallery/getImages`,
         {
           method: "GET",
           headers: {
@@ -438,7 +439,7 @@
             const confirmDelete = confirm("Are you sure you want to delete this image?");
             if (!confirmDelete) return;
             try {
-              const delRes = await fetch("https://next-generation-adaptive-system-lab-nasl.onrender.com/api/photo-gallery/deleteImage", {
+              const delRes = await fetch(`${window.NASL.API_BASE}/api/photo-gallery/deleteImage`, {
                 method: "DELETE",
                 headers: {
                   "Content-Type": "application/json",
