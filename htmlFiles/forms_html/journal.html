@@ -96,6 +96,7 @@
       integrity="sha384-RuyvpeZCxMJCqVUGFI0Do1mQrods/hhxYlcVfGPOfQtPJh0JCw12tUAZ/Mv10S7D"
       crossorigin="anonymous"
     ></script>
+    <script src="/js/config.js"></script>
 
     <script>
       // Store selected author IDs
@@ -120,13 +121,9 @@
 
           try {
             const res = await fetch(
-              `https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/search?query=${encodeURIComponent(
-                query
-              )}`,
+              `${window.NASL.API_BASE}/api/user/search?query=${encodeURIComponent(query)}`,
               {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
               }
             );
             console.log(query);
@@ -237,7 +234,7 @@
         console.log(payload)
         try {
           const response = await fetch(
-            "https://next-generation-adaptive-system-lab-nasl.onrender.com/api/publication/create",
+            `${window.NASL.API_BASE}/api/publication/create`,
             {
               method: "POST",
               headers: {

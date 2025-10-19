@@ -427,9 +427,10 @@
   </div>
 </footer>
 
-    <!-- Scripts -->
-    <script src="../js/navbar.js"></script>
-    <script src="../js/footer.js"></script>
+  <!-- Scripts -->
+  <script src="/js/config.js"></script>
+  <script src="../js/navbar.js"></script>
+  <script src="../js/footer.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.min.js"></script>
 
@@ -439,9 +440,9 @@
       const type = "professional";
 
       // 1. Get user role from localStorage
-      // let userRole = null;
+      let userRole = null;
       try {
-        // const userData = JSON.parse(localStorage.getItem("user"));
+        const userData = JSON.parse(localStorage.getItem("user"));
         userRole = userData?.role;
         console.log("User role:", userRole);
       } catch (err) {
@@ -452,9 +453,9 @@
         document.getElementById("addButton").style.display = "block";
       }
 
-      // 2. Fetch and render journal papers
+      // 2. Fetch and render entries
       fetch(
-        `https://next-generation-adaptive-system-lab-nasl.onrender.com/api/outreachorcourses/get-all?type=${encodeURIComponent(type)}`
+        `${window.NASL.API_BASE}/api/outreachorcourses/get-all?type=${encodeURIComponent(type)}`
       )
         .then((response) => {
           if (!response.ok) throw new Error("Failed to fetch Patents ");
@@ -462,9 +463,9 @@
         })
         .then((result) => {
           const { outreachorcourses } = result.data;
-          console.log("outoutreachorcourses:", outoutreachorcourses);
+          console.log("outreachorcourses:", outreachorcourses);
 
-          outoutreachorcourses.forEach((outreach) => {
+          outreachorcourses.forEach((outreach) => {
             const card = document.createElement("div");
             card.className = "card";
 
@@ -506,7 +507,7 @@
                 ) {
                   try {
                     const res = await fetch(
-                      `https://next-generation-adaptive-system-lab-nasl.onrender.com/api/outreachorcourses/${id}`,
+                      `${window.NASL.API_BASE}/api/outreachorcourses/${id}`,
                       {
                         method: "DELETE",
                         headers: {

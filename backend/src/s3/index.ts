@@ -28,7 +28,9 @@ export const signedUrl = async (
 	time: number
 ): Promise<string> => {
 	return new Promise(async (resolve, reject) => {
-		const imageKey = imageUrl.split("/").slice(7).join("/");
+		const imageKey = imageUrl ? imageUrl.split("/").slice(7).join("/") : "";
+		if (!imageKey) return reject(new Error("Invalid imageUrl, could not derive object Key"));
+
 		const getImageCommand = new GetObjectCommand({
 			Bucket,
 			Key: imageKey,
@@ -44,7 +46,9 @@ export const signedUrl = async (
 export const deleteImage = async (imageUrl: string): Promise<boolean> => {
 	return new Promise(async (resolve, reject) => {
 		try {
-			const imageKey = imageUrl.split("/").slice(7).join("/");
+			const imageKey = imageUrl ? imageUrl.split("/").slice(7).join("/") : "";
+			if (!imageKey) return reject(new Error("Invalid imageUrl, could not derive object Key"));
+
 			const deleteImageCommand = new DeleteObjectCommand({
 				Bucket,
 				Key: imageKey,

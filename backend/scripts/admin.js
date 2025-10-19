@@ -1,6 +1,6 @@
-import { PrismaClient } from "../generated/prisma";
-import readline from "readline";
-import bcrypt from "bcryptjs";
+const { PrismaClient } = require("../generated/prisma");
+const readline = require("readline");
+const bcrypt = require("bcryptjs");
 
 const prisma = new PrismaClient();
 

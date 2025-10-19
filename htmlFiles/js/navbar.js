@@ -41,7 +41,7 @@
         location.reload();
       });
 
-        fetch(`${window.NASL?.API_BASE || 'https://next-generation-adaptive-system-lab-nasl.onrender.com'}/api/user/profile`,
+        fetch(`${window.NASL?.API_BASE || window.NASL?.PRODUCTION}/api/user/profile`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

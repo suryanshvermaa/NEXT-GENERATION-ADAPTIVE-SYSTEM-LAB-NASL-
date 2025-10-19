@@ -80,6 +80,7 @@
       integrity="sha384-RuyvpeZCxMJCqVUGFI0Do1mQrods/hhxYlcVfGPOfQtPJh0JCw12tUAZ/Mv10S7D"
       crossorigin="anonymous"
     ></script>
+    <script src="/js/config.js"></script>
 
     <script>
       // 1. Get the upload URL
@@ -108,7 +109,7 @@
           try {
             // 1. Get the upload URL
             const uploadRes = await fetch(
-              "https://next-generation-adaptive-system-lab-nasl.onrender.com/api/image/uploadURL",
+              `${window.NASL.API_BASE}/api/image/uploadURL`,
               {
                 method: "POST",
                 headers: {
@@ -151,7 +152,7 @@
         };
         try {
           const res = await fetch(
-            "https://next-generation-adaptive-system-lab-nasl.onrender.com/api/user/createUser",
+            `${window.NASL.API_BASE}/api/user/createUser`,
             {
               method: "POST",
               headers: {

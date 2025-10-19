@@ -1,5 +1,5 @@
 
-  fetch(`${window.NASL?.API_BASE || 'https://next-generation-adaptive-system-lab-nasl.onrender.com'}/api/researchArea/getReasearchAreas`)
+  fetch(`${window.NASL?.API_BASE || window.NASL?.PRODUCTION}/api/researchArea/getReasearchAreas`)
     .then(res => res.text()) 
     .then(data => {
       console.log("Fetched data:", data); // for debugging

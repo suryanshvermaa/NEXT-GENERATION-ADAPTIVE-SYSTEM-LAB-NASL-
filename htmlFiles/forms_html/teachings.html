@@ -82,6 +82,7 @@
       integrity="sha384-RuyvpeZCxMJCqVUGFI0Do1mQrods/hhxYlcVfGPOfQtPJh0JCw12tUAZ/Mv10S7D"
       crossorigin="anonymous"
     ></script>
+    <script src="/js/config.js"></script>
 
     <script>
       async function submitForm(e) {
@@ -102,7 +103,7 @@
         console.log(payload)
         try {
           const response = await fetch(
-            "https://next-generation-adaptive-system-lab-nasl.onrender.com/api/outreachorcourses/create",
+            `${window.NASL.API_BASE}/api/outreachorcourses/create`,
             {
               method: "POST",
               headers: {
