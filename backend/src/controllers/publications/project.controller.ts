@@ -161,7 +161,7 @@ export const getAllProjects = asyncHandler(
 				},
 			},
 		});
-		for (let project of projects) {
+		for (const project of projects) {
 			if (project.pi && project.pi.profileImage) {
 				project.pi.profileImage = await signedUrl(
 					project.pi.profileImage,
@@ -172,7 +172,7 @@ export const getAllProjects = asyncHandler(
 		if (!projects || projects.length === 0)
 			throw new AppError("No projects found", 404);
 
-		for (let project of projects) {
+		for (const project of projects) {
 			if (project.pi && project.pi.profileImage) {
 				project.pi.profileImage = await signedUrl(
 					project.pi.profileImage,
@@ -268,7 +268,7 @@ export const getAllProjectsByPiId = asyncHandler(
 				},
 			},
 		});
-		for (let project of projects) {
+		for (const project of projects) {
 			if (project.pi && project.pi.profileImage) {
 				project.pi.profileImage = await signedUrl(
 					project.pi.profileImage,
@@ -281,7 +281,7 @@ export const getAllProjectsByPiId = asyncHandler(
 		if (projects.length === 0) {
 			throw new AppError("No projects found for this PI", 404);
 		}
-		for (let project of projects) {
+		for (const project of projects) {
 			if (project.pi && project.pi.profileImage) {
 				project.pi.profileImage = await signedUrl(
 					project.pi.profileImage,

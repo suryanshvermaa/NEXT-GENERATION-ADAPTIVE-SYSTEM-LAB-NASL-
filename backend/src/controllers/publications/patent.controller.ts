@@ -142,7 +142,7 @@ export const getPatentById = asyncHandler(
 		});
 		if (!patent) throw new AppError("Patent not found", 404);
 		if (patent.inventors) {
-			for (let inventor of patent.inventors) {
+			for (const inventor of patent.inventors) {
 				inventor.profileImage = inventor.profileImage
 					? await signedUrl(inventor.profileImage, 3)
 					: "";
@@ -206,9 +206,9 @@ export const getAllPatentsByInventorId = asyncHandler(
 		});
 		if (!patents || patents.length === 0)
 			throw new AppError("No patents found for this user", 404);
-		for (let patent of patents) {
+		for (const patent of patents) {
 			if (patent.inventors) {
-				for (let inventor of patent.inventors) {
+				for (const inventor of patent.inventors) {
 					inventor.profileImage = inventor.profileImage
 						? await signedUrl(inventor.profileImage, 3)
 						: "";
@@ -241,9 +241,9 @@ export const getAllPatents = asyncHandler(
 				},
 			},
 		});
-		for (let patent of patents) {
+		for (const patent of patents) {
 			if (patent.inventors) {
-				for (let inventor of patent.inventors) {
+				for (const inventor of patent.inventors) {
 					inventor.profileImage = inventor.profileImage
 						? await signedUrl(inventor.profileImage, 3)
 						: "";

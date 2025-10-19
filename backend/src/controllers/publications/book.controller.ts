@@ -82,8 +82,8 @@ export const getAllBooks = asyncHandler(async (req: Request, res: Response) => {
 		},
 	});
 
-	for (let book of books) {
-		for (let author of book.authors) {
+	for (const book of books) {
+		for (const author of book.authors) {
 			author.profileImage = author.profileImage
 				? await signedUrl(author.profileImage, 3)
 				: "";
@@ -124,7 +124,7 @@ export const getBookById = asyncHandler(async (req: Request, res: Response) => {
 		throw new AppError("Book not found", 404);
 	}
 	if (book.authors) {
-		for (let author of book.authors) {
+		for (const author of book.authors) {
 			author.profileImage = author.profileImage
 				? await signedUrl(author.profileImage, 3)
 				: "";
@@ -183,7 +183,7 @@ export const updateBook = asyncHandler(async (req: Request, res: Response) => {
 		},
 	});
 	if (book.authors) {
-		for (let author of book.authors) {
+		for (const author of book.authors) {
 			author.profileImage = author.profileImage
 				? await signedUrl(author.profileImage, 3)
 				: "";
@@ -247,8 +247,8 @@ export const getAllBooksByUserId = asyncHandler(
 		if (!books || books.length === 0) {
 			throw new AppError("No books found for this user", 404);
 		}
-		for (let book of books) {
-			for (let author of book.authors) {
+		for (const book of books) {
+			for (const author of book.authors) {
 				author.profileImage = author.profileImage
 					? await signedUrl(author.profileImage, 3)
 					: "";

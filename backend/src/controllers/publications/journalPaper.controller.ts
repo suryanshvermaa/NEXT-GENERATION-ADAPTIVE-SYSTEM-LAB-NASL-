@@ -130,10 +130,10 @@ export const getAllJournalPaper = asyncHandler(
 				},
 			},
 		});
-		for (let paper of journalPapers) {
-			for (let author of paper.authors) {
+		for (const paper of journalPapers) {
+			for (const author of paper.authors) {
 				author.profileImage = author.profileImage
-					? await signedUrl(author.profileImage!, 3)
+					? await signedUrl(author.profileImage, 3)
 					: "";
 			}
 		}

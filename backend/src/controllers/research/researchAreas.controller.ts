@@ -109,8 +109,8 @@ export const getResearchArea = asyncHandler(
 				id: Number(id),
 			},
 		});
-		const imageURL = await signedUrl(researchArea?.imageURL!, 5);
 		if (!researchArea) throw new AppError("researchArea not found", 400);
+		const imageURL = await signedUrl(researchArea.imageURL, 5);
 		response(res, 200, "researchArea fetched successfully", {
 			researchArea: { ...researchArea, imageURL },
 		});
@@ -134,7 +134,7 @@ export const getReasearchAreas = asyncHandler(
 		});
 		if (!researchAreas)
 			throw new AppError("Research Areas are not found", 400);
-		for (let rs of researchAreas) {
+		for (const rs of researchAreas) {
 			rs.imageURL = await signedUrl(rs.imageURL, 5);
 		}
 		response(res, 200, "Research Areas fetched successfully", {

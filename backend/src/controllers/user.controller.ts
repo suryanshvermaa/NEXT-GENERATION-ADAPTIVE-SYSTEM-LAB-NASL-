@@ -272,7 +272,7 @@ export const searchingUserByEmail = asyncHandler(
 		if (users.length === 0) {
 			return response(res, 404, "No users found", { users: [] });
 		}
-		for (let user of users) {
+		for (const user of users) {
 			user.profileImage = user.profileImage
 				? await signedUrl(user.profileImage!, 4)
 				: "";
@@ -308,7 +308,7 @@ export const getPeople = asyncHandler(async (req: Request, res: Response) => {
 	if (people.length === 0) {
 		return response(res, 404, "No people found", { people: [] });
 	}
-	for (let person of people) {
+	for (const person of people) {
 		person.profileImage = person.profileImage
 			? await signedUrl(person.profileImage!, 4)
 			: "";

@@ -12,20 +12,22 @@ import response from "../utils/response";
  * @param res
  */
 export const createoutreachorcourses = asyncHandler(
-    async (req: Request, res: Response) => {
-        const { title, content, type } = req.body;
-        if (!title|| !content || !type) {
-            throw new AppError("Please provide all required fields!", 400);
-        }
-        const outreachOrCourses = await prisma.outreachOrCourses.create({
-            data: {
-                title,
-                type,
-                content,
-            },
-        });
-        response(res, 201, "Publication created successfully", { outreachOrCourses });
-    }
+	async (req: Request, res: Response) => {
+		const { title, content, type } = req.body;
+		if (!title || !content || !type) {
+			throw new AppError("Please provide all required fields!", 400);
+		}
+		const outreachOrCourses = await prisma.outreachOrCourses.create({
+			data: {
+				title,
+				type,
+				content,
+			},
+		});
+		response(res, 201, "Publication created successfully", {
+			outreachOrCourses,
+		});
+	}
 );
 
 /**
@@ -36,21 +38,23 @@ export const createoutreachorcourses = asyncHandler(
  * @param res
  */
 export const updateoutreachOrCourses = asyncHandler(
-    async (req: Request, res: Response) => {
-        const { id } = req.params;
-        const { title, content } = req.body;
-        if (!id || !title ) {
-            throw new AppError("Please provide all required fields!", 400);
-        }
-        const outreachOrCourse = await prisma.outreachOrCourses.update({
-            where: { id: Number(id) },
-            data: {
-                title,
-                content,
-            },
-        });
-        response(res, 200, "Project updated successfully", { outreachOrCourse });
-    }
+	async (req: Request, res: Response) => {
+		const { id } = req.params;
+		const { title, content } = req.body;
+		if (!id || !title) {
+			throw new AppError("Please provide all required fields!", 400);
+		}
+		const outreachOrCourse = await prisma.outreachOrCourses.update({
+			where: { id: Number(id) },
+			data: {
+				title,
+				content,
+			},
+		});
+		response(res, 200, "Project updated successfully", {
+			outreachOrCourse,
+		});
+	}
 );
 
 /**
@@ -61,16 +65,18 @@ export const updateoutreachOrCourses = asyncHandler(
  * @param res
  */
 export const getoutreachorcourses = asyncHandler(
-    async (req: Request, res: Response) => {
-        const type = req.query.type;
-        const outreachorcourses = await prisma.outreachOrCourses.findMany({
-            where: {
-                type: type as string,
-            },
-            orderBy: { createdAt: "desc" }
-        });
-        response(res, 200, "publications fetched successfully", { outreachorcourses });
-    }
+	async (req: Request, res: Response) => {
+		const type = req.query.type;
+		const outreachorcourses = await prisma.outreachOrCourses.findMany({
+			where: {
+				type: type as string,
+			},
+			orderBy: { createdAt: "desc" },
+		});
+		response(res, 200, "publications fetched successfully", {
+			outreachorcourses,
+		});
+	}
 );
 
 /**
@@ -81,14 +87,16 @@ export const getoutreachorcourses = asyncHandler(
  * @param res
  */
 export const getoutreachorcoursesById = asyncHandler(
-    async (req: Request, res: Response) => {
-        const { id } = req.params;
-        if (!id) throw new AppError("Please provide id of project", 400);
-        const outreachorcourse = await prisma.outreachOrCourses.findUnique({
-            where: { id: Number(id) },
-        });
-        response(res, 200, "Project fetched successfully", { outreachorcourse });
-    }
+	async (req: Request, res: Response) => {
+		const { id } = req.params;
+		if (!id) throw new AppError("Please provide id of project", 400);
+		const outreachorcourse = await prisma.outreachOrCourses.findUnique({
+			where: { id: Number(id) },
+		});
+		response(res, 200, "Project fetched successfully", {
+			outreachorcourse,
+		});
+	}
 );
 
 /**
@@ -99,13 +107,14 @@ export const getoutreachorcoursesById = asyncHandler(
  * @param res
  */
 export const deleteoutreachorcourses = asyncHandler(
-    async (req: Request, res: Response) => {
-        const { id } = req.params;
-        if (!id) throw new AppError("Please provide id of project", 400);
-        const outreachorcourse = await prisma.outreachOrCourses.delete({
-            where: { id: Number(id) },
-        });
-        response(res, 200, "Project deleted successfully", { outreachorcourse });
-    }
+	async (req: Request, res: Response) => {
+		const { id } = req.params;
+		if (!id) throw new AppError("Please provide id of project", 400);
+		const outreachorcourse = await prisma.outreachOrCourses.delete({
+			where: { id: Number(id) },
+		});
+		response(res, 200, "Project deleted successfully", {
+			outreachorcourse,
+		});
+	}
 );
-

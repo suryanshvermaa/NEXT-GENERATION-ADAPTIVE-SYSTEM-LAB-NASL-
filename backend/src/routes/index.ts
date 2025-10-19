@@ -34,6 +34,6 @@ router
 	.use("/photo-gallery", photoGalleryRouter)
 	.use("/event", eventRouter)
 	.use("/publication", publicationRouter)
-	.use("/outreachorcourses", outreachorcoursesRouter)
+	.use("/outreachorcourses", outreachorcoursesRouter);
 
 export default router;

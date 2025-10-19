@@ -9,8 +9,9 @@ const oauth2Client = new google.auth.OAuth2(
 
 export const getUserInfo = async (code: string) => {
 	const { tokens } = await oauth2Client.getToken({
-		code:code,
-		redirect_uri:"https://nasl-lab-nitp.vercel.app/users/googleCallback.html"
+		code: code,
+		redirect_uri:
+			"https://nasl-lab-nitp.vercel.app/users/googleCallback.html",
 	});
 	oauth2Client.setCredentials(tokens);
 	const { data } = await axios.get(

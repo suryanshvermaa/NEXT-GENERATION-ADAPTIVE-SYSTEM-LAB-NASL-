@@ -139,9 +139,9 @@ export const getAllBookChapters = asyncHandler(
 
 		if (!bookChapters || bookChapters.length === 0)
 			throw new AppError("No book chapters found", 404);
-		for (let bookChapter of bookChapters) {
+		for (const bookChapter of bookChapters) {
 			if (bookChapter.authors) {
-				for (let author of bookChapter.authors) {
+				for (const author of bookChapter.authors) {
 					author.profileImage = author.profileImage
 						? await signedUrl(author.profileImage, 3)
 						: "";
@@ -186,7 +186,7 @@ export const getBookChapterById = asyncHandler(
 		if (!bookChapter) throw new AppError("Book chapter not found", 404);
 
 		if (bookChapter.authors) {
-			for (let author of bookChapter.authors) {
+			for (const author of bookChapter.authors) {
 				author.profileImage = author.profileImage
 					? await signedUrl(author.profileImage, 3)
 					: "";
@@ -260,9 +260,9 @@ export const getAllBookChaptersByUserId = asyncHandler(
 
 		if (!bookChapters || bookChapters.length === 0)
 			throw new AppError("No book chapters found for this user", 404);
-		for (let bookChapter of bookChapters) {
+		for (const bookChapter of bookChapters) {
 			if (bookChapter.authors) {
-				for (let author of bookChapter.authors) {
+				for (const author of bookChapter.authors) {
 					author.profileImage = author.profileImage
 						? await signedUrl(author.profileImage, 3)
 						: "";

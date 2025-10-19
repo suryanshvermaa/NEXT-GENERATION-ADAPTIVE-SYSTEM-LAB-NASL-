@@ -43,7 +43,7 @@ export const createPublication = asyncHandler(
 			},
 		});
 		if (publication.authors) {
-			for (let author of publication.authors) {
+			for (const author of publication.authors) {
 				author.profileImage = author.profileImage
 					? await signedUrl(author.profileImage, 3)
 					: "";
@@ -92,7 +92,7 @@ export const updatePublication = asyncHandler(
 			},
 		});
 		if (publication.authors) {
-			for (let author of publication.authors) {
+			for (const author of publication.authors) {
 				author.profileImage = author.profileImage
 					? await signedUrl(author.profileImage, 3)
 					: "";
@@ -130,8 +130,8 @@ export const getPublications = asyncHandler(
 				},
 			},
 		});
-		for (let publication of publications) {
-			for (let author of publication.authors) {
+		for (const publication of publications) {
+			for (const author of publication.authors) {
 				author.profileImage = author.profileImage
 					? await signedUrl(author.profileImage, 3)
 					: "";
@@ -167,10 +167,12 @@ export const getPublicationById = asyncHandler(
 				},
 			},
 		});
-		for (let author of publication?.authors!) {
-			author.profileImage = author.profileImage
-				? await signedUrl(author.profileImage, 3)
-				: "";
+		if (publication && publication.authors) {
+			for (const author of publication.authors) {
+				author.profileImage = author.profileImage
+					? await signedUrl(author.profileImage, 3)
+					: "";
+			}
 		}
 		response(res, 200, "Project fetched successfully", { publication });
 	}
@@ -228,10 +230,10 @@ export const getAllPublicationsByAuthorId = asyncHandler(
 				},
 			},
 		});
-		for (let publication of publications) {
-			for (let author of publication.authors) {
+		for (const publication of publications) {
+			for (const author of publication.authors) {
 				author.profileImage = author.profileImage
-					? await signedUrl(author.profileImage!, 3)
+					? await signedUrl(author.profileImage, 3)
 					: "";
 			}
 		}

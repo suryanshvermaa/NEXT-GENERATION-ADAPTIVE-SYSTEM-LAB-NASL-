@@ -172,9 +172,9 @@ export const getAllConferencePapers = asyncHandler(
 		});
 		if (!conferencePapers || conferencePapers.length === 0)
 			throw new AppError("No conference papers found", 404);
-		for (let conferencePaper of conferencePapers) {
+		for (const conferencePaper of conferencePapers) {
 			if (conferencePaper.authors) {
-				for (let author of conferencePaper.authors) {
+				for (const author of conferencePaper.authors) {
 					author.profileImage = author.profileImage
 						? await signedUrl(author.profileImage, 3)
 						: "";
@@ -222,9 +222,9 @@ export const getAllConferencePapersByUserId = asyncHandler(
 		});
 		if (!conferencePapers || conferencePapers.length === 0)
 			throw new AppError("No conference papers found for this user", 404);
-		for (let conferencePaper of conferencePapers) {
+		for (const conferencePaper of conferencePapers) {
 			if (conferencePaper.authors) {
-				for (let author of conferencePaper.authors) {
+				for (const author of conferencePaper.authors) {
 					author.profileImage = author.profileImage
 						? await signedUrl(author.profileImage, 3)
 						: "";
@@ -268,7 +268,7 @@ export const getConferencePaperById = asyncHandler(
 		if (!conferencePaper)
 			throw new AppError("Conference paper not found", 404);
 		if (conferencePaper.authors) {
-			for (let author of conferencePaper.authors) {
+			for (const author of conferencePaper.authors) {
 				author.profileImage = author.profileImage
 					? await signedUrl(author.profileImage, 3)
 					: "";
