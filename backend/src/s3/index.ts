@@ -30,14 +30,20 @@ const getKeyFromUrl = (imageUrlOrKey: string): string => {
 
 		// If virtual-hosted–style URL, bucket is part of hostname
 		// e.g., '<bucket>.s3.amazonaws.com' or '<bucket>.minio.local'
-		const hostStartsWithBucket = Bucket && u.hostname.toLowerCase().startsWith(`${Bucket}`.toLowerCase() + ".");
+		const hostStartsWithBucket =
+			Bucket &&
+			u.hostname
+				.toLowerCase()
+				.startsWith(`${Bucket}`.toLowerCase() + ".");
 		if (hostStartsWithBucket) {
 			return path;
 		}
 
 		// Fallback: if we can locate '/<bucket>/' anywhere in the path, strip it
 		if (Bucket) {
-			const idx = path.toLowerCase().indexOf(`${Bucket}`.toLowerCase() + "/");
+			const idx = path
+				.toLowerCase()
+				.indexOf(`${Bucket}`.toLowerCase() + "/");
 			if (idx >= 0) {
 				return path.slice(idx + Bucket.length + 1);
 			}
@@ -70,7 +76,10 @@ export const signedUrl = async (
 ): Promise<string> => {
 	return new Promise(async (resolve, reject) => {
 		const imageKey = getKeyFromUrl(imageUrl);
-		if (!imageKey) return reject(new Error("Invalid imageUrl, could not derive object key"));
+		if (!imageKey)
+			return reject(
+				new Error("Invalid imageUrl, could not derive object key")
+			);
 
 		const getImageCommand = new GetObjectCommand({
 			Bucket,
@@ -88,7 +97,10 @@ export const deleteImage = async (imageUrl: string): Promise<boolean> => {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const imageKey = getKeyFromUrl(imageUrl);
-			if (!imageKey) return reject(new Error("Invalid imageUrl, could not derive object key"));
+			if (!imageKey)
+				return reject(
+					new Error("Invalid imageUrl, could not derive object key")
+				);
 
 			const deleteImageCommand = new DeleteObjectCommand({
 				Bucket,

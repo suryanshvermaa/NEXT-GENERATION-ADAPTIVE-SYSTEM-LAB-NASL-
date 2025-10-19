@@ -9,8 +9,8 @@
 		"lint:fix": "eslint . --fix",
 		"dev": "nodemon src/index.ts",
 		"start": "node dist/index.js",
+		"postinstall": "prisma generate",
 		"format": "prettier . --write",
-		"prepare": "husky",
 		"createAdmin": "node scripts/admin.js"
 	},
 	"keywords": [],
@@ -28,6 +28,9 @@
 		"googleapis": "^150.0.1",
 		"jsonwebtoken": "^9.0.2"
 	},
+	"engines": {
+		"node": ">=18"
+	},
 	"devDependencies": {
 		"@eslint/js": "^9.26.0",
 		"@tsconfig/node20": "^20.1.5",
@@ -40,7 +43,6 @@
 		"eslint-config-prettier": "^10.1.5",
 		"eslint-plugin-prettier": "^5.4.0",
 		"globals": "^16.1.0",
-		"husky": "^9.1.7",
 		"nodemon": "^3.1.10",
 		"prettier": "^3.5.3",
 		"prisma": "^6.9.0",

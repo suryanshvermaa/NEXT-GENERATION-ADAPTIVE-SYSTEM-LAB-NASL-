@@ -28,7 +28,15 @@ app.get(
 
 app.use(errorHandler);
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-	console.log("server is running on port", port);
-});
+export default app;
+
+// Run a local HTTP server only when not running on Vercel/serverless
+const isServerless =
+	process.env.VERCEL === "1" || process.env.PRODUCTION_SERVER_TYPE === "serverless";
+
+if (!isServerless) {
+	const port = process.env.PORT || 3000;
+	app.listen(port, () => {
+		console.log("server is running on port", port);
+	});
+}
