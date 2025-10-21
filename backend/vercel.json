@@ -5,10 +5,7 @@
 			"src": "src/index.ts",
 			"use": "@vercel/node",
 			"config": {
-				"includeFiles": [
-					"generated/prisma/**",
-					"prisma/**"
-				]
+				"includeFiles": ["generated/prisma/**", "prisma/**"]
 			}
 		}
 	],

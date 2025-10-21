@@ -16,18 +16,18 @@ Production-ready Express + TypeScript + Prisma API for the NASL research program
 ## Project structure
 
 - `src/`
-  - `index.ts` — Express app bootstrap, health check, router, error handling
-  - `routes/` — Route registries per domain (mounted under `/api`)
-  - `controllers/` — Business logic for each domain
-  - `config/` — `db.ts` (Prisma client), `s3.ts` (S3 client)
-  - `s3/` — Helpers for presigned URLs and deletion
-  - `middlewares/` — `auth.middleware.ts`, `error.middleware.ts`
-  - `utils/` — `asyncHandler`, `response`, `error`
-  - `auth/googleAuth.ts` — Google OAuth user info exchange
-  - `types/express/` — Express Request augmentation for `req.user`
+    - `index.ts` — Express app bootstrap, health check, router, error handling
+    - `routes/` — Route registries per domain (mounted under `/api`)
+    - `controllers/` — Business logic for each domain
+    - `config/` — `db.ts` (Prisma client), `s3.ts` (S3 client)
+    - `s3/` — Helpers for presigned URLs and deletion
+    - `middlewares/` — `auth.middleware.ts`, `error.middleware.ts`
+    - `utils/` — `asyncHandler`, `response`, `error`
+    - `auth/googleAuth.ts` — Google OAuth user info exchange
+    - `types/express/` — Express Request augmentation for `req.user`
 - `prisma/`
-  - `schema.prisma` — models and datasource
-  - `migrations/` — database migrations
+    - `schema.prisma` — models and datasource
+    - `migrations/` — database migrations
 - `generated/prisma/` — Prisma client output (generated at install/build)
 - `docs/API.md` — endpoint reference
 - `scripts/admin.js` — interactive admin user creation script
@@ -49,33 +49,33 @@ Copy `.env.example` to `.env` and fill the values:
 - `S3_REGION` — S3 region (string)
 - `S3_BUCKET` — Bucket name where media is stored
 - Google OAuth (used by `src/auth/googleAuth.ts`):
-  - `CLIENT_ID`
-  - `CLIENT_SECRET`
+    - `CLIENT_ID`
+    - `CLIENT_SECRET`
 
 > For Google OAuth, the redirect URI in code is currently set to `https://nasl-lab-nitp.vercel.app/users/googleCallback.html`. Ensure your Google OAuth client has this authorized redirect URI or align the code and config to your environment.
 
 ## Getting started (local)
 
-1) Install dependencies (Prisma client will be generated on postinstall)
+1. Install dependencies (Prisma client will be generated on postinstall)
 
 ```powershell
 npm install
 ```
 
-2) Prepare environment
+2. Prepare environment
 
 - Create and fill `.env` (see above)
 - Ensure PostgreSQL is reachable at `DATABASE_URL`
 - Ensure your S3-compatible storage is available and the bucket exists
 
-3) Database: generate client and apply migrations (if needed)
+3. Database: generate client and apply migrations (if needed)
 
 ```powershell
 npx prisma generate
 npx prisma migrate dev --name init
 ```
 
-4) Start the dev server
+4. Start the dev server
 
 ```powershell
 npm run dev
@@ -119,11 +119,11 @@ The Prisma client is emitted to `generated/prisma` and imported from there in co
 ## Auth
 
 - JWT
-  - Header: `Authorization: Bearer <token>` (also supports `token` header/query/body)
-  - Secret: `AUTH_SECRET`
+    - Header: `Authorization: Bearer <token>` (also supports `token` header/query/body)
+    - Secret: `AUTH_SECRET`
 - Google OAuth 2.0
-  - Exchange code using `POST /api/user/loginWithGoogle` with `{ "code": "..." }`
-  - Requires `CLIENT_ID` and `CLIENT_SECRET` env vars
+    - Exchange code using `POST /api/user/loginWithGoogle` with `{ "code": "..." }`
+    - Requires `CLIENT_ID` and `CLIENT_SECRET` env vars
 
 Admin-only endpoints require the user to have `role: ADMIN`. Use the helper script to create an admin:
 
@@ -142,12 +142,12 @@ The S3 client is configured with `forcePathStyle: true`, so path-style URLs are 
 ## API reference
 
 - See `docs/API.md` for routes, bodies, and responses across modules:
-  - Users, Images, Recent Updates, Highlights
-  - Research Areas, Research Facilities
-  - Books, Book Chapters, Conference and Journal Papers
-  - Projects, Patents, Publications
-  - Photo Gallery, Events
-  - Health check
+    - Users, Images, Recent Updates, Highlights
+    - Research Areas, Research Facilities
+    - Books, Book Chapters, Conference and Journal Papers
+    - Projects, Patents, Publications
+    - Photo Gallery, Events
+    - Health check
 
 Base path for APIs: `/api/...`
 
