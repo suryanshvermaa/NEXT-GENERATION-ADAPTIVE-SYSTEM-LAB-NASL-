@@ -9,6 +9,20 @@ import "dotenv/config";
 
 const Bucket = process.env.S3_BUCKET;
 
+function sanitizePart(part: string): string {
+    return part
+      .toLowerCase() // Convert to lowercase
+      
+      // Replace all characters that are NOT letters, numbers, dots, or hyphens with a single hyphen.
+      .replace(/[^a-z0-9.-]/g, '-') 
+      
+      // Replace multiple consecutive hyphens with a single one (e.g., "a--b" -> "a-b")
+      .replace(/-+/g, '-')
+      
+      // Remove any hyphen at the very beginning or end of the string segment
+      .replace(/^-|-$/g, '');
+  }
+
 const getKeyFromUrl = (imageUrlOrKey: string): string => {
 	if (!imageUrlOrKey) return "";
 
@@ -58,6 +72,7 @@ const getKeyFromUrl = (imageUrlOrKey: string): string => {
 
 export const uploadImageURL = async (imageName: string): Promise<string> => {
 	return new Promise(async (resolve, reject) => {
+		imageName=sanitizePart(imageName);
 		const putImageCommand = new PutObjectCommand({
 			Bucket,
 			Key: `nasl/${Date.now().toString() + imageName}`,
