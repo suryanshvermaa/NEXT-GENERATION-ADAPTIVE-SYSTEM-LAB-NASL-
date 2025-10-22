@@ -15,7 +15,7 @@ bookRouter
 	.get("/get-all", getAllBooks)
 	.get("/:id", getBookById)
 	.put("/:id", auth, updateBook)
-	.delete("/:id", deleteBook)
+	.delete("/:id",auth, deleteBook)
 	.get("/get-all-by-user-id", getAllBooksByUserId);
 
 export default bookRouter;

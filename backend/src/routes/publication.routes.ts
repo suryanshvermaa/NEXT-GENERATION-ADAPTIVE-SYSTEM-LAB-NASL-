@@ -12,10 +12,10 @@ const publicationRouter = Router();
 
 publicationRouter
 	.post("/create", auth, createPublication)
-	.put("/:id", updatePublication)
+	.put("/:id",auth, updatePublication)
 	.get("/get-all", getPublications)
 	.get("/:id", getPublicationById)
-	.delete("/:id", deletePublication)
+	.delete("/:id",auth, deletePublication)
 	.get("/get-all-by-authorId/:authorId/:type", getAllPublicationsByAuthorId);
 
 export default publicationRouter;

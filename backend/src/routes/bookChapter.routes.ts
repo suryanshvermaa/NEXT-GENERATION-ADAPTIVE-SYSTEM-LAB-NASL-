@@ -15,7 +15,7 @@ bookChapterRouter
 	.get("/get-all", getAllBookChapters)
 	.get("/:id", getBookChapterById)
 	.put("/:id", auth, updateBookChapter)
-	.delete("/:id", deleteBookChapter)
+	.delete("/:id", auth, deleteBookChapter)
 	.get("/get-all-by-user-id", getAllBooksByUserId);
 
 export default bookChapterRouter;
