@@ -59,6 +59,33 @@ Frontend:
 
 ---
 
+## Production: Vercel hosting and Tabi.io (S3)
+
+This repository is configured to run the backend as a serverless function on Vercel using `backend/vercel.json`. When deployed to Vercel:
+
+- Build will run against `src/index.ts` via `@vercel/node`.
+- Prisma assets under `generated/prisma` and `prisma` are included in the Vercel build (see `vercel.json`).
+- The app will export an Express handler and won't start a local HTTP listener (the serverless wrapper handles requests).
+
+S3: This project has been updated to use Tabi.io as the S3-compatible storage provider in production. Tabi.io provides S3-compatible endpoints and credentials.
+
+To configure Tabi.io in production, set the following env vars (on Vercel or your CI):
+
+```
+ACCESS_KEY_ID=your_tabi_access_key
+SECRET_ACCESS_KEY=your_tabi_secret
+S3_ENDPOINT=https://s3.tabi.io        # example, confirm your region/endpoint with Tabi
+S3_REGION=auto-or-specific-region    # per Tabi guidance
+S3_BUCKET=your_bucket_name
+```
+
+Notes:
+- Ensure `S3_ENDPOINT` uses `https://` for production providers like Tabi.io.
+- Keep `forcePathStyle: true` (already used by the project S3 client) — Tabi.io is compatible with this.
+- When deploying, set `VERCEL=1` or leave `PRODUCTION_SERVER_TYPE=serverless` so the serverless export is used.
+
+---
+
 ## Quick start (Windows PowerShell)
 
 1) Clone and install backend deps
@@ -88,11 +115,19 @@ CLIENT_SECRET=your_google_oauth_client_secret
 DATABASE_URL=postgres://user:pass@host:5432/dbname
 
 # S3 storage (use http URL for non-AWS providers)
-ACCESS_KEY_ID=your_s3_access_key
-SECRET_ACCESS_KEY=your_s3_secret_key
+# Local / MinIO example:
+ACCESS_KEY_ID=minio_access_key
+SECRET_ACCESS_KEY=minio_secret
 S3_ENDPOINT=http://localhost:9000
 S3_REGION=us-east-1
 S3_BUCKET=your_s3_bucket
+
+# Production / Tabi.io example (on Vercel):
+# ACCESS_KEY_ID=your_tabi_access_key
+# SECRET_ACCESS_KEY=your_tabi_secret
+# S3_ENDPOINT=https://s3.tabi.io
+# S3_REGION=auto-or-specific-region
+# S3_BUCKET=your_bucket_name
 ```
 
 Notes:
