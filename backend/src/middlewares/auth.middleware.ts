@@ -7,8 +7,7 @@ import { Role } from "../../generated/prisma";
 
 export interface ITokenPayload {
 	userId: string | number;
-	email?: string;
-	data?: object;
+	role: string;
 }
 
 /**

@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NASL</title>
+  <link rel="stylesheet" href="./css/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Arvo&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+</head>
+<script>
+  function toggleReadMore() {
+    const dots = document.getElementById("dots");
+    const moreText = document.getElementById("more");
+    const btnText = document.getElementById("readMoreLink");
+
+    if (dots.style.display === "none") {
+      dots.style.display = "inline";
+      btnText.innerHTML = "Read more";
+      moreText.style.display = "none";
+    } else {
+      dots.style.display = "none";
+      btnText.innerHTML = "Read less";
+      moreText.style.display = "inline";
+    }
+  }
+</script>
+
+<body>
+  <!-- NAVBAR -->
+    <div id="navbar-placeholder">
+      <div class="nav_bar">
+  <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"
+        ><img
+          class="nav_icon"
+          src="https://www.nitp.ac.in/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo.00e5159e.png&w=256&q=75"
+      /></a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse primary-navigation" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="./index.html">Home</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+            >
+              Research
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="./research/rese_areas.html"
+                  >Research Areas
+                </a>
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="./research/rese_facil.html"
+                  >Research Facilities</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="#">Funding and Collaboration</a>
+              </li>
+              <li><a class="dropdown-item" href="#">Projects</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+            >
+              People
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="./people/phd.html"
+                  >PhD Scholars</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="./people/mtech.html"
+                  >M.Tech/PG Students</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="./people/btech.html"
+                  >B.Tech/UG Students</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="./people/intern.html"
+                  >Interns</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="./people/alumni.html"
+                  >Alumni</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="./people/investigator.html"
+                  >Principal Investigator</a
+                >
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+            >
+              Publications
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="./publications/journel.html">Journal Papers</a></li>
+              <li><a class="dropdown-item" href="./publications/patents.html">Patents</a></li>
+              <li><a class="dropdown-item" href="./publications/conference.html">Conference Papers</a></li>
+              <li><a class="dropdown-item" href="./publications/books.html">Books/Book Chapters</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+            >
+              Teachings
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="./teachings/ug.html">UG Courses</a></li>
+              <li><a class="dropdown-item" href="./teachings/pg.html">PG/PhD Courses</a></li>
+              <li><a class="dropdown-item" href="./teachings/oth.html">Others</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+            >
+              Outreach and Awards
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="./outreach/talks.html">Interested Talks</a></li>
+              <li><a class="dropdown-item" href="./outreach/techincal.html">Techinal Reviewer</a></li>
+              <li>
+                <a class="dropdown-item" href="#">Professional Outreach</a>
+              </li>
+              <li><a class="dropdown-item" href="#">Awards</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+            >
+              Events
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Conference</a></li>
+              <li><a class="dropdown-item" href="#">PDP</a></li>
+              <li><a class="dropdown-item" href="#">Workshop</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./media/media.html">Media</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./media/group.html">Group Moments</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./forms_html/join.html">Join LAB</a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link btn btn-outline-primary me-2"
+              id="profile-button"
+              href="./users/profile.html"
+              style="display: none"
+              ><img src="" alt="" id="profile_image"
+            /></a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link btn btn-custom-red"
+              id="auth-button"
+              href="./users/login.html"
+              >Login</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</div>
+
+    </div>
+
+    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel" data-bs-interval="1000">
+      <div class="position-relative ">
+      <div class="overlay-heading text-center">
+      <div class="overlay-box">
+        <h1 class="display-5 fw-bold d-inline text-white headline">NEXT GENERATION ADAPTIVE SYSTEM LABS</h1><br>
+        <span class="text-white fw-semibold fs-4 headline">NIT PATNA</span>
+      </div>
+    </div>
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
+          aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+          aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+          aria-label="Slide 3"></button>
+      </div>
+      <div class="carousel-inner ">
+        <div class="carousel-item active">
+          <img src="/assets/WhatsApp Image 2025-06-19 at 10.15.48_77bed870.jpg" class="d-block w-100" alt="Slide 1">
+        </div>
+        <div class="carousel-item">
+          <img src="/assets/Patna-1712_2.avif"
+            class="d-block w-100" alt="Slide 2">
+        </div>
+        <div class="carousel-item">
+          <img src="/assets/WhatsApp Image 2025-06-19 at 10.16.17_98399572.jpg" class="d-block w-100 " alt="Slide 3">
+        </div>
+      </div>
+
+    </div>
+    <div class="container my-4">
+      <div class="row">
+        <!-- Recent Highlights Box -->
+        <div class="col-md-6 mb-3">
+  <div id="recent-updates-container" class="p-2 border rounded shadow-sm h-100 custom-highlight-box">
+    <h4 class="fw-bold mb-3">Recent Updates</h4>
+    <a
+      href="./forms_html/recent_upd.html"
+      id="addButton-recent"
+      class="btn btn-success mx-auto mb-4"
+      style="max-width: 200px; display: none;"
+    >
+      + Add Recent Updates
+    </a>
+    <div class="list-group"></div>
+  </div>
+</div>
+
+        <div class="col-md-6 mb-3">
+  <div id="highlight-container" class="p-2 border rounded shadow-sm h-100 custom-highlight-box">
+    <h4 class="fw-bold mb-3">Recent Highlights</h4>
+    <a
+      href="./forms_html/highlight.html"
+      id="addButton-highlight"
+      class="btn btn-success mx-auto mb-4"
+      style="max-width: 200px; display: none;"
+    >
+      + Add Highlights
+    </a>
+    <div class="list-group"></div>
+  </div>
+</div>
+</div>
+</div>
+
+    <div class="bg-white rounded-lg md:p-12 shadow-lg border-2 border-gray-200 mx-2 my-2" id="about-section">
+     <div class="about-heading">
+  <h2 class="text-center text-3xl font-semibold text-gray-900">About NASL</h2>
+</div>
+      <hr>
+      <p class="text-lg" id="aboutText">
+        The International Conference on Next-Generation Adaptive Research and Innovations (ICNARI-2026), organized by
+        the Department of Electrical Engineering at the National Institute of Technology, Patna, Bihar, India, is
+        scheduled to take place in hybrid mode on 7th March 2026 and 8th March 2026. The conference aims to bring together leading visionaries, researchers, academicians, and industry experts to explore the latest advancements and innovations while showcasing cutting-edge developments in various fields of electrical engineering and sustainable technologies. Next Generation Adaptive Systems Lab (NASL) at NIT Patna is a research-driven initiative focused on developing intelligent, adaptive, and sustainable technological solutions for real-world challenges  The conference aims to bring together leading visionaries, researchers, academicians, and industry experts to explore the latest advancements and innovations while showcasing cutting-edge developments in various fields of electrical engineering and sustainable technologies. Next Generation Adaptive Systems Lab (NASL) at NIT Patna is a research-driven initiative focused on developing intelligent, adaptive, and sustainable technological solutions for real-world challenges
+        <span id="dots">..</span><span id="more" style="display: none;">
+          The conference aims to bring together leading visionaries, researchers, academicians, and industry experts to
+          explore the latest advancements and innovations while showcasing cutting-edge developments in various fields
+          of electrical engineering and sustainable technologies.
+          Next Generation Adaptive Systems Lab (NASL) at NIT Patna is a research-driven initiative focused on developing
+          intelligent, adaptive, and sustainable technological solutions for real-world challenges. The lab explores
+          cutting-edge domains such as Artificial Intelligence, Augmented Reality, Embedded Systems, and Cyber-Physical
+          Systems. With a strong interdisciplinary team of researchers and students, NASL aims to push the boundaries of
+          innovation and contribute to the advancement of next-generation smart technologies.
+
+
+        </span>
+        <a onclick="toggleReadMore()" id="readMoreLink"
+          style="text-decoration: none; font-weight: bold; color: inherit; cursor: pointer;">Read more</a>
+      </p>
+    </div>
+
+<!-- Footer -->
+<footer class="text-center text-lg-start text-white">
+  <div class="container py-4">
+    <div class="row my-2">
+      <div class="col-lg-3 col-md-4 mb-4 mb-md-0">
+        <h5 class="text-uppercase mb-3">Location</h5>
+        <hr />
+        <div class="map-responsive">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3255.823641956394!2d85.17103046449337!3d25.619793581885816!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ed58dce6732867%3A0x4059f39a1ac82f06!2sNational%20Institute%20of%20Technology%2C%20Patna!5e0!3m2!1sen!2sin!4v1749797441461!5m2!1sen!2sin"
+            width="100%"
+            height="200"
+            style="border: 0"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-4 mb-4 mb-md-0">
+        <h5 class="text-uppercase mb-3">Postal Address</h5>
+        <hr />
+        <div>
+          <span class="text-white"><b>Dr. Amitesh Kumar</b></span
+          ><br />
+          <span class="text-white">Department of Electrical Engineering</span>
+          <span class="text-white">Ashok Rajpath Campus</span>
+          <span class="text-white">PIN - 800005 Bihar,India</span>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-4 mb-4 mb-md-0">
+        <h5 class="text-uppercase mb-3">Contact</h5>
+        <hr />
+        <div>
+          <span class="text-white"><b>Email</b></span
+          ><br />
+          <div class="email_section">
+            <span class="text-white">amitesh.ee@nitp.ac.in</span><br />
+            <span class="text-white">dr.amitesh.ee@gmail.com</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+        <h5 class="text-uppercase mb-3">Quick Links</h5>
+        <hr />
+        <ul class="list-unstyled">
+          <li>
+            <a
+              href="./index.html"
+              class="text-white text-decoration-none"
+              >Home</a
+            >
+          </li>
+          <li>
+            <a href="./forms_html/joinLab.html" class="text-white text-decoration-none">Contact</a>
+          </li>
+          <li>
+            <a
+              href="./users/login.html"
+              class="text-danger text-decoration-none"
+              ><b>Admin</b></a
+            >
+          </li>
+          <li>
+            <a
+              href="./forms_html/crt_user.html"
+              id="create-user"
+              class="text-warning text-decoration-none"
+              style="display: none"
+              ><b>+ Create User</b></a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Copyright -->
+  <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
+    © 2025 Copyright:
+    <a class="text-white" href="">NASL</a>
+  </div>
+</footer>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.min.js"
+      integrity="sha384-RuyvpeZCxMJCqVUGFI0Do1mQrods/hhxYlcVfGPOfQtPJh0JCw12tUAZ/Mv10S7D"
+      crossorigin="anonymous"></script>
+    <script src="/js/config.js"></script>
+    <script>
+      const authButton = document.getElementById("auth-button");
+    const profileButton = document.getElementById("profile-button");
+    const token = localStorage.getItem("authToken");
+    const userData = JSON.parse(localStorage.getItem("user"));
+    const userRole = userData?.role;
+
+    console.log(userRole);
+
+    if (token) {
+      authButton.textContent = "Logout";
+      authButton.href = "";
+      profileButton.style.display = "inline-block";
+
+      authButton.addEventListener("click", () => {
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("user");
+        alert("Logged out successfully.");
+        location.reload();
+      });
+
+        fetch(`${window.NASL.API_BASE}/api/user/profile`, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+          .then((response) => {
+            if (!response.ok) throw new Error("Failed to fetch profile");
+            return response.json();
+          })
+          .then((result) => {
+            const { user } = result.data;
+            if (user && user.profileImage) {
+              const profileImg = document.getElementById("profile_image");
+              profileImg.src = user.profileImage;
+              profileImg.alt = user.name || "Profile Image";
+              profileImg.style.width = "30px";
+              profileImg.style.height = "30px";
+              profileImg.style.borderRadius = "50%";
+              profileImg.style.objectFit = "cover";
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading profile image:", error);
+          });
+      }else {
+      authButton.textContent = "Login";
+      authButton.href = "./users/login.html";
+      profileButton.style.display = "none";
+    }
+
+    </script>
+    <script src="./js/footer.js"></script>
+      <!-- Javascript -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const token = localStorage.getItem("authToken");
+    let userData = JSON.parse(localStorage.getItem("user"));
+    let userRole = userData?.role;
+    console.log(userRole);
+
+    if (userRole === "ADMIN") {
+        document.getElementById("addButton-recent").style.display = "block";
+      }
+
+    async function fetchUpdates() {
+      const res = await fetch(`${window.NASL.API_BASE}/api/recentUpdate/getrecentUpdates`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch recent updates");
+      return res.json();
+    }
+
+    async function renderUpdates() {
+      try {
+        const result = await fetchUpdates();
+        console.log(result)
+        const updates = Array.isArray(result.data.recentUpdates) ? result.data.recentUpdates : [];
+        const highlightList = document.querySelector("#recent-updates-container .list-group");
+        highlightList.innerHTML = ""; // Clear existing items
+
+        if (updates.length === 0) {
+          highlightList.innerHTML = `<div class="list-group-item">No recent updates available.</div>`;
+          return;
+        }
+
+        updates.forEach(update => {
+          const item = document.createElement("div");
+            const deleteButtonHTML = (userRole === "ADMIN") 
+    ? `<a class="icon-btn delete-btn" data-id="${update.id}" title="Delete">
+         <span class="material-symbols-outlined text-danger" style="cursor:pointer;">delete</span>
+       </a>` 
+    : "";
+          item.className = "list-group-item border rounded mb-1 shadow-sm p-2";
+          item.innerHTML = `
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h5 class="fw-bold mb-0 text-primary">${update.update}</h5>
+      <div class="d-flex align-items-center gap-2">
+        ${deleteButtonHTML}
+        <small class="text-muted">${new Date(update.date).toLocaleDateString()}</small>
+      </div>
+    </div>
+    <div class="text-dark mb-0.5 d-flex justify-content-between custom-paragraph">
+      ${update.description}
+      ${update.link ? `<a href="${update.link}" target="_blank">Read more</a>` : ""}
+    </div>
+  `;
+          highlightList.appendChild(item);
+        });
+      } catch (error) {
+        console.error("Error loading recent updates:", error);
+      }
+
+      
+    // Delete recent updates
+    document.querySelectorAll(".delete-btn").forEach(btn => {
+  btn.addEventListener("click", async (e) => {
+    const recent_id = btn.dataset.id;
+
+    console.log(recent_id)
+    if (confirm("Are you sure you want to delete this update?")) {
+      try {
+        const res = await fetch(`${window.NASL.API_BASE}/api/recentUpdate/delete`, {
+          method: "DELETE",
+          headers: {
+             Authorization: `Bearer ${token}`,
+             "Content-Type": "application/json"
+             },
+          body: JSON.stringify({ id:Number(recent_id) })
+        });
+        if (res.ok) {
+          const item = btn.closest(".list-group-item");
+        if (item) item.remove();
+        alert("Deleted succesfully");
+        } else {
+          alert("Failed to delete");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Error deleting update.");
+      }
+    }
+  });
+});
+
+
+
+    }
+    renderUpdates();
+  });
+</script>
+
+
+ <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const token = localStorage.getItem("authToken");
+    const userData = JSON.parse(localStorage.getItem("user"));
+    let userRole = userData?.role;
+    console.log(userRole);
+
+    if (userRole === "ADMIN") {
+        document.getElementById("addButton-highlight").style.display = "block";
+      }
+
+    async function fetchUpdates() {
+      const res = await fetch(`${window.NASL.API_BASE}/api/highlight/getHighlights`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch highlights");
+      return res.json();
+    }
+
+    async function renderHighlights() {
+      try {
+        const result = await fetchUpdates();
+        console.log(result)
+        const highlights = Array.isArray(result.data.highlights) ? result.data.highlights : [];
+        const highlightList = document.querySelector("#highlight-container .list-group");
+        highlightList.innerHTML = ""; // Clear existing items
+
+        if (highlights.length === 0) {
+          highlightList.innerHTML = `<div class="list-group-item">No highlights available.</div>`;
+          return;
+        }
+
+        highlights.forEach(highlight => {
+          const item = document.createElement("div");
+            const deleteButtonHTML = (userRole === "ADMIN") 
+    ? `<a class="icon-btn delete-btn-highlight" data-id="${highlight.id}" title="Delete">
+         <span class="material-symbols-outlined text-danger" style="cursor:pointer;">delete</span>
+       </a>` 
+    : "";
+          item.className = "list-group-item border rounded mb-1 shadow-sm p-2";
+          item.innerHTML = `
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h5 class="fw-bold mb-0 text-primary">${highlight.highlight}</h5>
+      <div class="d-flex align-items-center gap-2">
+        ${deleteButtonHTML}
+        <small class="text-muted">${new Date(highlight.date).toLocaleDateString()}</small>
+      </div>
+    </div>
+    <div class="text-dark mb-0.5 d-flex justify-content-between custom-paragraph">
+      ${highlight.description}
+      ${highlight.link ? `<a href="${highlight.link}" target="_blank">Read more</a>` : ""}
+    </div>
+  `;
+          highlightList.appendChild(item);
+        });
+      } catch (error) {
+        console.error("Error loading highlights:", error);
+      }
+
+      
+    // Delete recent updates
+    document.querySelectorAll(".delete-btn-highlight").forEach(btn => {
+  btn.addEventListener("click", async (e) => {
+    const highlight_id =btn.dataset.id;
+    if (confirm("Are you sure you want to delete this highlight?")) {
+      try {
+        const res = await fetch(`${window.NASL.API_BASE}/api/highlight/delete`, {
+          method: "DELETE",
+          headers: {
+             Authorization: `Bearer ${token}`,
+             "Content-Type": "application/json"
+             },
+          body: JSON.stringify({ id:Number(highlight_id) })
+        });
+        if (res.ok) {
+          const item = btn.closest(".list-group-item");
+        if (item) item.remove();
+        alert("Deleted succesfully");
+        } else {
+          alert("Failed to delete");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Error deleting highlights.");
+      }
+    }
+  });
+});
+
+    }
+    renderHighlights();
+  });
+</script>
+
+
+
+</body>
+</html>

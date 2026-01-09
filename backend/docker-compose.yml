@@ -1,26 +1,26 @@
 version: "3.8"
 services:
-    nasl-backend:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        container_name: nasl_backend_container
-        ports:
-            - "3000:3000"
-        environment:
-            - PORT=3000
-            - AUTH_SECRET=suryanshauthsecret
-            - DATABASE_URL=postgres://suryansh:suryansh1234@postgres:5432/mydatabase
-            - ACCESS_KEY_ID=suryansh
-            - SECRET_ACCESS_KEY=suryansh
-            - S3_ENDPOINT=s3:9000
-            - S3_REGION=us-east-1
-            - S3_BUCKET=your_s3_bucket
-        depends_on:
-            - postgres
-            - s3
-        networks:
-            - nasl_network
+    # nasl-backend:
+    #     build:
+    #         context: .
+    #         dockerfile: Dockerfile
+    #     container_name: nasl_backend_container
+    #     ports:
+    #         - "3000:3000"
+    #     environment:
+    #         - PORT=3000
+    #         - AUTH_SECRET=suryanshauthsecret
+    #         - DATABASE_URL=postgres://suryansh:suryansh1234@postgres:5432/mydatabase
+    #         - ACCESS_KEY_ID=suryansh
+    #         - SECRET_ACCESS_KEY=suryansh
+    #         - S3_ENDPOINT=s3:9000
+    #         - S3_REGION=us-east-1
+    #         - S3_BUCKET=your_s3_bucket
+    #     depends_on:
+    #         - postgres
+    #         - s3
+    #     networks:
+    #         - nasl_network
     postgres:
         image: postgres:15.4
         container_name: postgres_container

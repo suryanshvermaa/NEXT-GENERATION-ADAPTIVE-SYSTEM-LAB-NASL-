@@ -81,7 +81,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 	const isCorrectPassword = await bcrypt.compare(password, user.password!);
 	if (!isCorrectPassword) throw new AppError("Password is incorrect", 401);
 	const token = await createToken(
-		{ userId: user.id, email: user.email },
+		{ userId: user.id, role: user.role },
 		60 * 24
 	); //for 24 hours
 	response(res, 200, "login successful", {
@@ -165,7 +165,7 @@ export const loginWithGoogle = asyncHandler(
 		});
 		if (!user) throw new AppError("Unauthorised", 401);
 		const token = await createToken(
-			{ userId: user.id, email: user.email },
+			{ userId: user.id, role: user.role },
 			60 * 24
 		); // for 24 hour
 		response(res, 200, "login successful", {

@@ -1,0 +1,6 @@
+@import url('./base.css');
+@import url('./layout.css');
+@import url('./utilities.css');
+
+/* Legacy global styles (kept for identical UI/behavior) */
+@import url('../../css/style.css');

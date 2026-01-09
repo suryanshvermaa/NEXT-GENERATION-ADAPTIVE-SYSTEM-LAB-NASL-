@@ -1,0 +1,6 @@
+/* Base layer placeholder.
+   Keep this file purely structural to avoid UI regressions.
+   Legacy styles remain in `css/style.css` and other legacy stylesheets. */
+
+/* Keep specificity low; do not change global behavior */
+* { box-sizing: border-box; }
