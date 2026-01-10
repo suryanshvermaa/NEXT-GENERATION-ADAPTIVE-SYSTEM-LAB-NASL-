@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "src/pages/**/*", "use": "@vercel/static" },
+    { "src": "src/js/**/*", "use": "@vercel/static" },
+    { "src": "src/assets/**/*", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "^/$", "dest": "/src/pages/index.html" },
+    { "src": "^/js/(.*)$", "dest": "/src/js/$1" },
+    { "src": "^/assets/(.*)$", "dest": "/src/assets/$1" },
+    { "src": "^/(.*)/$", "dest": "/src/pages/$1/index.html" },
+    { "src": "^/(.*)$", "dest": "/src/pages/$1" }
+  ]
+}
