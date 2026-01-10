@@ -1,23 +1,10 @@
-export const ROLES = {
+export const ROLES: Record<string, string> = {
   ADMIN: "ADMIN",
   USER: "USER"
 };
 
-export const PERMISSIONS = {
-  CREATE_USER: "CREATE_USER",
-  DELETE_USER: "DELETE_USER",
-  VIEW_COURSE: "VIEW_COURSE",
-  CREATE_COURSE: "CREATE_COURSE"
-};
+export const PERMISSIONS: Record<string, string> = {};
 
-export const ROLE_ACCESS = {
-  ADMIN: [
-    PERMISSIONS.CREATE_USER,
-    PERMISSIONS.DELETE_USER,
-    PERMISSIONS.VIEW_COURSE,
-    PERMISSIONS.CREATE_COURSE
-  ],
-  USER:[
-    PERMISSIONS.VIEW_COURSE
-  ]
+export const ROLE_ACCESS: Record<string, string[]> = {
+  ADMIN: [],USER:[]
 };
