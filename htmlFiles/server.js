@@ -86,9 +86,11 @@ const server = http.createServer((req, res) => {
       const ext = path.extname(filePath).toLowerCase();
       const contentType = MIME[ext] || 'application/octet-stream';
 
+      const noCacheExts = new Set(['.html', '.js', '.css']);
+
       res.writeHead(200, {
         'Content-Type': contentType,
-        'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=3600',
+        'Cache-Control': noCacheExts.has(ext) ? 'no-cache' : 'public, max-age=3600',
       });
 
       fs.createReadStream(filePath).pipe(res);

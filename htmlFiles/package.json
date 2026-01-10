@@ -1,0 +1,12 @@
+{
+  "name": "nasl-lab",
+  "version": "1.0.0",
+  "description": "this is nasl lab website",
+  "main": "server.js",
+  "scripts": {
+    "start":"node server.js"
+  },
+  "author": "Suryansh Verma",
+  "license": "MIT",
+  "packageManager": "pnpm@10.20.0"
+}

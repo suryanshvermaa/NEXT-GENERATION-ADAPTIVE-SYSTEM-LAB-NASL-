@@ -1,94 +1,50 @@
-.container{
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  gap: 5rem;
-  padding-top: 5rem;
-}
-.dropdown-box{
-  margin-top: 3rem;
-  display: flex;
-  flex-wrap: nowrap;
-  flex-direction: row;
-  gap: 4rem !important;
-  justify-content: center;
-  align-items: center;
-}
-
-.nav-link{
-  margin: 0rem;
-  border-radius: 5px;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  /* border: 1px solid black !important; */
-  background-color: #254D70 !important;
-  color: white !important;
-  font-size:22px !important;
-  padding: 0px;
-  width: 16rem !important;
-  height: 4rem;
-}
 body {
-  background-color: #f0f4fa;
   font-family: 'Arvo', serif;
+  background-color: #f0f4fa;
 }
 
-.container {
-  padding: 2rem;
+.admin-dashboard {
+  max-width: 1100px;
 }
 
-h2.text-primary {
-  font-size: 2.5rem;
-  font-weight: bold;
-  margin-bottom: 2rem;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+.admin-hero {
+  padding: 1.25rem 1rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(6px);
 }
 
-.dropdown-box {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  justify-content: center;
+.admin-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--bs-primary);
 }
 
-.dropdown {
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
+.admin-subtitle {
+  color: var(--bs-secondary-color);
 }
 
-.nav-link:hover {
-  background-color: #0d6efd;
-  color: white !important;
+.admin-card {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
-.dropdown-menu {
-  min-width: 250px !important;
-  border: 2px solid #0d6efd;
-  border-radius: 10px;
-  padding: 10px 0;
-  background-color: #f8fbff;
-}
-.dropdown-menu .dropdown-item{
-  height: 50px !important;
-}
-.dropdown-item {
-  font-size: 1rem;
-  padding: 10px 20px;
-  transition: 0.2s;
+.admin-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.09);
 }
 
-.dropdown-item:hover {
-  background-color: #dceeff !important;
-  color: #0d6efd !important;
+.admin-card .card-title {
+  margin-bottom: 0.25rem;
+  font-weight: 700;
 }
-.nav-link.dropdown-toggle:focus,
-.nav-link.dropdown-toggle:active {
-  background-color: #e9f2ff !important;
-  color: #254D70 !important;
-  box-shadow: none !important;
+
+.admin-card .card-text {
+  color: var(--bs-secondary-color);
+  margin-bottom: 0;
 }
 

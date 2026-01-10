@@ -433,14 +433,56 @@
   </div>
 </div>
 
-<a
-href="../forms_html/upd_user.html"
-id="addButton-journal"
-class="btn btn-success mx-auto mb-4 mt-3"
-style="max-width: 200px;"
->
-Update Profile
-</a>
+<div class="text-center mb-4 mt-3">
+  <a
+    href="#edit-profile"
+    id="edit-profile-link"
+    class="btn btn-success"
+  >
+    Edit Profile
+  </a>
+</div>
+
+<!-- ✅ EDIT PROFILE -->
+<div id="edit-profile" class="mt-4 bg-white rounded-3 shadow-sm p-4">
+  <h5 class="fw-bold mb-3">EDIT PROFILE</h5>
+
+  <div id="profile-status" class="alert alert-info d-none" role="alert"></div>
+
+  <form id="editProfileForm" class="row g-3" autocomplete="off">
+    <div class="col-12 col-md-4">
+      <label class="form-label" for="editProfileImage">Update Photo</label>
+      <input class="form-control" type="file" id="editProfileImage" accept="image/*" />
+      <div class="form-text">If you pick a file, it will be uploaded and saved.</div>
+    </div>
+
+    <div class="col-12 col-md-4">
+      <label class="form-label" for="editName">Name</label>
+      <input class="form-control" type="text" id="editName" placeholder="Your name" />
+    </div>
+
+    <div class="col-12 col-md-4">
+      <label class="form-label" for="editEmail">Email</label>
+      <input class="form-control" type="email" id="editEmail" placeholder="Your email" />
+      <div class="form-text">If your backend blocks email updates, you’ll see the error.</div>
+    </div>
+
+    <div class="col-12 col-md-4">
+      <label class="form-label" for="editPassword">New Password</label>
+      <input class="form-control" type="password" id="editPassword" placeholder="Leave blank to keep" />
+    </div>
+
+    <div class="col-12 col-md-4">
+      <label class="form-label" for="editPasswordConfirm">Confirm Password</label>
+      <input class="form-control" type="password" id="editPasswordConfirm" placeholder="Re-enter new password" />
+    </div>
+
+    <div class="col-12">
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+      <a href="../forms_html/upd_user.html" class="btn btn-outline-secondary ms-2">Advanced Edit</a>
+    </div>
+  </form>
+</div>
 </div>
 </div>
 </div>
@@ -535,11 +577,31 @@ Update Profile
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../js/navbar.js"></script>
-<script src="../js/footer.js"></script>
 <script src="/js/config.js"></script>
+<script src="/js/navbar.js"></script>
+<script src="/js/footer.js"></script>
 <script>
-  // const token = localStorage.getItem("authToken");
+  const token = localStorage.getItem("authToken");
+  const statusEl = document.getElementById("profile-status");
+
+  function setStatus(message, type) {
+    if (!statusEl) return;
+    statusEl.classList.remove("d-none", "alert-info", "alert-success", "alert-warning", "alert-danger");
+    statusEl.classList.add(type || "alert-info");
+    statusEl.textContent = message;
+  }
+
+  function clearStatus() {
+    if (!statusEl) return;
+    statusEl.classList.add("d-none");
+    statusEl.textContent = "";
+  }
+
+  if (!token) {
+    setStatus("You are not logged in. Please login to view/edit your profile.", "alert-warning");
+  }
+
+  let currentUser = null;
 
   fetch(`${window.NASL.API_BASE}/api/user/profile`, {
     headers: {
@@ -552,12 +614,19 @@ Update Profile
   })
   .then(result => {
     let { user } = result.data;
+    currentUser = user || null;
     // console.log(user); // for debugging
 
     // Profile image
     const profileImg = document.getElementById("profile_icon");
     profileImg.src = user.profileImage || "/assets/default-avatar.svg";
     profileImg.alt = user.name || "Profile";
+
+    // Prefill edit form
+    const editName = document.getElementById("editName");
+    const editEmail = document.getElementById("editEmail");
+    if (editName) editName.value = user.name || "";
+    if (editEmail) editEmail.value = user.email || "";
 
     // Basic Info
     document.getElementById("username").innerText = user.name || "No Name";
@@ -568,45 +637,59 @@ Update Profile
     // About
     document.getElementById("user_about").innerHTML = user.about || "<i>No about info provided.</i>";
 
-    // Social Links
+    // Social Links (supports either user.social[] or direct fields)
     const googleAnchor = document.getElementById("googleUrl");
     const linkedInAnchor = document.getElementById("linkedInUrl");
     const twitterAnchor = document.getElementById("twitterUrl");
-    if (user.social[2].url) {
-      googleAnchor.href = user.social[2].url;
-      googleAnchor.target = "_blank";
-    } else {
-      googleAnchor.style.display = "none";
+
+    const social = Array.isArray(user.social) ? user.social : [];
+    const twitterUrl = social?.[0]?.url || user.twitter || "";
+    const linkedInUrl = social?.[1]?.url || user.linkedin || "";
+    const googleUrl = social?.[2]?.url || user.google || "";
+
+    if (googleAnchor) {
+      if (googleUrl) {
+        googleAnchor.href = googleUrl;
+        googleAnchor.target = "_blank";
+      } else {
+        googleAnchor.style.display = "none";
+      }
     }
 
-    if (user.social[1].url) {
-      linkedInAnchor.href = user.social[1].url;
-      linkedInAnchor.target = "_blank";
-    } else {
-      linkedInAnchor.style.display = "none";
+    if (linkedInAnchor) {
+      if (linkedInUrl) {
+        linkedInAnchor.href = linkedInUrl;
+        linkedInAnchor.target = "_blank";
+      } else {
+        linkedInAnchor.style.display = "none";
+      }
     }
 
-    if (user.social[0].url) {
-      twitterAnchor.href = user.social[0].url;
-      twitterAnchor.target = "_blank";
-    } else {
-      twitterAnchor.style.display = "none";
+    if (twitterAnchor) {
+      if (twitterUrl) {
+        twitterAnchor.href = twitterUrl;
+        twitterAnchor.target = "_blank";
+      } else {
+        twitterAnchor.style.display = "none";
+      }
     }
+
+    clearStatus();
 
   })
   .catch(error => {
     console.error("Error loading profile data:", error);
+    setStatus("Failed to load profile. Please re-login and try again.", "alert-danger");
   });
 </script>
 <script>
-  // const token = localStorage.getItem("authToken");
-  let User = JSON.parse(localStorage.getItem("user")) || {};
-  const authorId = parseInt(user?.id);
-  let User_Role = User?.role;
-  console.log( user_Role, authorId )
+  const token = localStorage.getItem("authToken");
+  const storedUser = JSON.parse(localStorage.getItem("user") || "{}") || {};
+  const authorId = Number(storedUser?.id);
+  const userRole = storedUser?.role;
 
-  if (!authorId || isNaN(authorId)) {
-    console.error("Invalid user ID");
+  if (!authorId || Number.isNaN(authorId)) {
+    console.warn("Invalid user ID for publications; skipping.");
   }
 
   const typeToContainerId = {
@@ -685,6 +768,113 @@ Update Profile
     fetchAndRender("patent");
   });
 
+</script>
+
+<!-- ✅ Edit profile logic (reuses same endpoints as upd_user.html) -->
+<script>
+  const editForm = document.getElementById("editProfileForm");
+  const editImage = document.getElementById("editProfileImage");
+
+  if (editImage) {
+    editImage.addEventListener("change", () => {
+      const file = editImage.files && editImage.files[0];
+      if (!file) return;
+      const profileImg = document.getElementById("profile_icon");
+      if (profileImg) profileImg.src = URL.createObjectURL(file);
+    });
+  }
+
+  async function uploadProfileImage(file, token) {
+    const uploadRes = await fetch(`${window.NASL.API_BASE}/api/image/uploadURL`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ imageName: file.name }),
+    });
+
+    const uploadData = await uploadRes.json();
+    if (!uploadRes.ok) {
+      throw new Error(uploadData?.message || "Failed to get upload URL");
+    }
+
+    const { imageUploadingUrl, imageUrl } = uploadData.data;
+
+    const putRes = await fetch(imageUploadingUrl, {
+      method: "PUT",
+      headers: { "Content-Type": file.type },
+      body: file,
+    });
+    if (!putRes.ok) throw new Error("Failed to upload image");
+    return imageUrl;
+  }
+
+  if (editForm) {
+    editForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        alert("Please login first.");
+        return;
+      }
+
+      const name = (document.getElementById("editName")?.value || "").trim();
+      const email = (document.getElementById("editEmail")?.value || "").trim();
+      const password = (document.getElementById("editPassword")?.value || "");
+      const passwordConfirm = (document.getElementById("editPasswordConfirm")?.value || "");
+
+      if (password || passwordConfirm) {
+        if (password.length < 6) {
+          alert("Password must be at least 6 characters.");
+          return;
+        }
+        if (password !== passwordConfirm) {
+          alert("Password and confirm password do not match.");
+          return;
+        }
+      }
+
+      try {
+        setStatus("Saving changes...", "alert-info");
+
+        const payload = {};
+        if (name) payload.name = name;
+        if (email) payload.email = email;
+        if (password) payload.password = password;
+
+        const file = editImage && editImage.files && editImage.files[0];
+        if (file) {
+          payload.profileImage = await uploadProfileImage(file, token);
+        }
+
+        if (Object.keys(payload).length === 0) {
+          setStatus("Nothing to update.", "alert-warning");
+          return;
+        }
+
+        const res = await fetch(`${window.NASL.API_BASE}/api/user/updateProfile`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const result = await res.json();
+        if (!res.ok) {
+          throw new Error(result?.message || "Failed to update profile");
+        }
+
+        setStatus("Profile updated successfully.", "alert-success");
+        setTimeout(() => window.location.reload(), 600);
+      } catch (err) {
+        console.error(err);
+        setStatus(err?.message || "Update failed.", "alert-danger");
+      }
+    });
+  }
 </script>
 
   </body>

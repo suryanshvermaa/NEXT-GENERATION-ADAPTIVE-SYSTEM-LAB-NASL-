@@ -24,17 +24,17 @@ async function fetchFirst(urls) {
 
 /**
  * Loads navbar/footer fragments if placeholders exist.
- * Only injects when placeholder is currently empty.
+ * Replaces any existing placeholder content to keep headers/footers consistent.
  */
 export async function initPartials() {
   const navbarHost = /** @type {HTMLElement|null} */ ($('#navbar-placeholder'));
-  if (navbarHost && navbarHost.childElementCount === 0) {
+  if (navbarHost) {
     const html = await fetchFirst(['/reuse/navbar.html']);
     if (html) navbarHost.innerHTML = html;
   }
 
   const footerHost = /** @type {HTMLElement|null} */ ($('#footer-placeholder'));
-  if (footerHost && footerHost.childElementCount === 0) {
+  if (footerHost) {
     const html = await fetchFirst(['/reuse/footer.html']);
     if (html) footerHost.innerHTML = html;
   }
