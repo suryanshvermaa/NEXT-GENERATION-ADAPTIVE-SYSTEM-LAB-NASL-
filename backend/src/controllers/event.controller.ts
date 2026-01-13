@@ -3,7 +3,7 @@ import prisma from "../config/db";
 import response from "../utils/response";
 import { AppError } from "../utils/error";
 import asyncHandler from "../utils/asyncHandler";
-import { signedUrl } from "../s3";
+import { deleteImage, signedUrl } from "../s3";
 
 /**
  *
@@ -52,6 +52,10 @@ export const updateEvent = asyncHandler(async (req: Request, res: Response) => {
 	if(req.user!.role!=="ADMIN" && existingEvent.createdBy !== Number(req.user!.userId)){
 		throw new AppError("You are not authorized to update this event", 403);
 	}
+	const prevImageURL = existingEvent.imageURL;
+	if (prevImageURL !== imageURL) {
+		await deleteImage(prevImageURL!);
+	}
 	const updatedEvent = await prisma.event.update({
 		where: { id: Number(id) },
 		data: {
@@ -88,6 +92,7 @@ export const deleteEvent = asyncHandler(async (req: Request, res: Response) => {
 	const deletedEvent = await prisma.event.delete({
 		where: { id: Number(id) },
 	});
+	await deleteImage(existingEvent.imageURL!);
 	return response(res, 200, "Event deleted successfully", deletedEvent);
 });
 
