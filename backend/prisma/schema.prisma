@@ -32,28 +32,35 @@ model User {
   id           Int      @id @unique @default(autoincrement())
   name         String?
   email        String   @unique @db.Text
-  role         Role     @default(USER)
+  role         Role
   password     String? // in case of google auth, password is not needed
   profileImage String?
   designation   Designation?
   contactNumber String?
   about       String?
-  status      String?
   journals_count Int      @default(0)
   conferencePapers_count Int      @default(0)
-  bookChapters_count Int      @default(0)
   books_count Int      @default(0)
   patents_count Int      @default(0)
-  projects_count Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt     DateTime @default(now()) @updatedAt
+}
+
+model Social{
+  id Int @id @unique @default(autoincrement())
+  platform String
+  url String
+  iconURL String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model ResearchArea {
   id          Int      @unique @default(autoincrement())
   name        String
   description String
-  imageURL    String
+  imageURL    String?
+  createdBy   Int? // User ID of the creator
   createdAt   DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt
 }
@@ -63,6 +70,7 @@ model ResearchFacility {
   name        String
   description String
   imageURL    String?
+  createdBy   Int? // User ID of the creator
   createdAt   DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt
 }
@@ -71,13 +79,14 @@ model ResearchFacility {
 model Journal_Paper{
   id         Int      @id @unique @default(autoincrement())
   title      String
-  authors  User[]
+  authors    String[]
   journal    String
   volume     String?
   year       Int?
   publicationDate DateTime?
   quartile   String?
   doi        String?
+  createdBy   Int? // User ID of the creator
   createdAt  DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 }
@@ -85,13 +94,14 @@ model Journal_Paper{
 model Conference_Paper {
   id         Int      @id @unique @default(autoincrement())
   title      String
-  authors    User[]
+  authors    String[]
   conference String
   location   String?
   year       Int?
   pages      String?
   indexing   String?
   doi        String?
+  createdBy   Int? // User ID of the creator
   createdAt  DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 }
@@ -100,11 +110,12 @@ model Book_Chapter {
   id         Int      @id @unique @default(autoincrement())
   chapterTitle String
   bookTitle  String
-  authors    User[]
+  authors    String[]
   scopus     String?
   doi        String?
   publisher  String?
   year       Int?
+  createdBy   Int? // User ID of the creator
   createdAt  DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 }
@@ -112,12 +123,13 @@ model Book_Chapter {
 model Book {
   id         Int      @id @unique @default(autoincrement())
   title      String
-  authors    User[]
+  authors    String[]
   publisher  String?
   scopus     String?
   doi        String?
   isbn       String?
   year       Int?
+  createdBy   Int? // User ID of the creator
   createdAt  DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 }
@@ -129,10 +141,11 @@ model Project {
   role        String?
   outlay      Float?
   duration    String?
-  pi User @relation(fields: [piInstitute], references: [id], onDelete: Cascade)
-  piInstitute Int
+  pi  String?
+  piInstitute String?
   status      String?
   fundsReceived Float?
+  CreatedBy   Int? // User ID of the creator
   createdAt   DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt
 }
@@ -144,7 +157,8 @@ model Patent {
   grantNo     String?
   grantDate   DateTime?
   publicationDate DateTime?
-  inventors  User[]
+  inventors  String[]
+  createdBy   Int? // User ID of the creator
   createdAt   DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt
 }
@@ -154,6 +168,7 @@ model OutreachOrCourses {
   title    String
   content String
   type String
+  createdBy   Int? // User ID of the creator
   createdAt   DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt
 }
@@ -162,7 +177,8 @@ model Event {
   id          Int      @id @unique @default(autoincrement())
   event       String
   description String
-  imageURL    String
+  imageURL    String?
+  createdBy   Int? // User ID of the creator
   createdAt   DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt
 }
@@ -199,9 +215,10 @@ model PhotoGallery {
 model Publication{
   id         Int      @id @unique @default(autoincrement())
   title       String
-  authors     User[]
+  authors     String[]
   content     String
   type String
+  createdBy   Int? // User ID of the creator
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 }
