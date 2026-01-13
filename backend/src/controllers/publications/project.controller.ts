@@ -23,6 +23,7 @@ export const createProject = asyncHandler(
 			pi,
 			status = null,
 			fundsReceived = null,
+			piInstitute = null,
 		} = req.body;
 		if (
 			!title ||
@@ -45,31 +46,13 @@ export const createProject = asyncHandler(
 				role,
 				outlay,
 				duration,
-				pi: {
-					connect: { id: pi },
-				},
+				pi,
 				status,
 				fundsReceived,
-			},
-			include: {
-				pi: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						role: true,
-						profileImage: true,
-						designation: true,
-					},
-				},
+				piInstitute,
+				CreatedBy: req.user?.userId as number,
 			},
 		});
-		if (project.pi && project.pi.profileImage) {
-			project.pi.profileImage = await signedUrl(
-				project.pi.profileImage,
-				3
-			);
-		}
 		response(res, 201, "Project created successfully", { project });
 	}
 );
@@ -90,15 +73,22 @@ export const updateProject = asyncHandler(
 			role = null,
 			outlay = null,
 			duration = null,
-			pi,
 			status = null,
 			fundsReceived = null,
 		} = req.body;
-		if (!id || !title || !pi) {
+		if (!id || !title) {
 			throw new AppError(
 				"Please provide all required fields: id, title, agency, role, outlay, duration, pi, status",
 				400
 			);
+		}
+		const existingProject = await prisma.project.findUnique({
+			where: { id: Number(id) },
+		});
+		if (!existingProject)
+			throw new AppError("Project not found with the given id", 404);
+		if(req.user?.role !== 'ADMIN' && existingProject.CreatedBy !== req.user?.userId) {
+			throw new AppError("You are not authorized to update this project", 403);
 		}
 		const project = await prisma.project.update({
 			where: { id: Number(id) },
@@ -108,78 +98,32 @@ export const updateProject = asyncHandler(
 				role,
 				outlay,
 				duration,
-				pi: {
-					connect: { id: pi },
-				},
 				status,
 				fundsReceived,
 			},
-			include: {
-				pi: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						role: true,
-						profileImage: true,
-						designation: true,
-					},
-				},
-			},
 		});
-		if (project.pi && project.pi.profileImage) {
-			project.pi.profileImage = await signedUrl(
-				project.pi.profileImage,
-				3
-			);
-		}
 		response(res, 200, "Project updated successfully", { project });
 	}
 );
 
 /**
  * @description fetching all projects
- * @route GET /api/project/get-all
+ * @route GET /api/project/get-all?page=&limit=
  * @access Public
  * @param req
  * @param res
  */
 export const getAllProjects = asyncHandler(
 	async (req: Request, res: Response) => {
+		const { page = "1", limit = "10" } = req.query;
+		const pageNumber = parseInt(page as string);
+		const limitNumber = parseInt(limit as string);
+		const skip = (pageNumber - 1) * limitNumber;
 		const projects = await prisma.project.findMany({
 			orderBy: { createdAt: "desc" },
-			include: {
-				pi: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						role: true,
-						profileImage: true,
-						designation: true,
-					},
-				},
-			},
+			skip,
+			take: limitNumber
 		});
-		for (const project of projects) {
-			if (project.pi && project.pi.profileImage) {
-				project.pi.profileImage = await signedUrl(
-					project.pi.profileImage,
-					3
-				);
-			}
-		}
-		if (!projects || projects.length === 0)
-			throw new AppError("No projects found", 404);
-
-		for (const project of projects) {
-			if (project.pi && project.pi.profileImage) {
-				project.pi.profileImage = await signedUrl(
-					project.pi.profileImage,
-					3
-				);
-			}
-		}
 		response(res, 200, "Projects fetched successfully", { projects });
 	}
 );
@@ -197,26 +141,8 @@ export const getProjectById = asyncHandler(
 		if (!id) throw new AppError("Please provide id of project", 400);
 		const project = await prisma.project.findUnique({
 			where: { id: Number(id) },
-			include: {
-				pi: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						role: true,
-						profileImage: true,
-						designation: true,
-					},
-				},
-			},
 		});
 		if (!project) throw new AppError("Project not found", 404);
-		if (project.pi && project.pi.profileImage) {
-			project.pi.profileImage = await signedUrl(
-				project.pi.profileImage,
-				3
-			);
-		}
 		response(res, 200, "Project fetched successfully", { project });
 	}
 );
@@ -232,6 +158,14 @@ export const deleteProject = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
 		if (!id) throw new AppError("Please provide id of project", 400);
+		const existingProject = await prisma.project.findUnique({
+			where: { id: Number(id) },
+		});
+		if (!existingProject)
+			throw new AppError("Project with given id does not exist", 404);
+		if(req.user?.role !== 'ADMIN' && existingProject.CreatedBy !== req.user?.userId) {
+			throw new AppError("You are not authorized to delete this project", 403);
+		}
 		const project = await prisma.project.delete({
 			where: { id: Number(id) },
 		});
@@ -240,55 +174,28 @@ export const deleteProject = asyncHandler(
 );
 
 /**
- * @description fetching all projects by PI ID
- * @route GET /api/project/get-all-by-pi/:piId
- * @access Private
+ * @description fetching all projects by user id
+ * @route GET /api/project/get-all-by-user-id/:userId ?page=&limit=
+ * @access Public
  * @param req
  * @param res
  */
-export const getAllProjectsByPiId = asyncHandler(
+export const getAllProjectsByUserId = asyncHandler(
 	async (req: Request, res: Response) => {
-		const { piId } = req.params;
-		if (!piId) throw new AppError("Please provide piId", 400);
+		const { userId } = req.params;
+		const { page = "1", limit = "10" } = req.query;
+		const pageNumber = parseInt(page as string);
+		const limitNumber = parseInt(limit as string);
+		const skip = (pageNumber - 1) * limitNumber;
+		if (!userId) throw new AppError("Please provide userId", 400);
 		const projects = await prisma.project.findMany({
 			where: {
-				pi: { id: Number(piId) },
+				CreatedBy: Number(userId),
 			},
 			orderBy: { createdAt: "desc" },
-			include: {
-				pi: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						role: true,
-						profileImage: true,
-						designation: true,
-					},
-				},
-			},
+			skip: skip,
+			take: Number(limit),
 		});
-		for (const project of projects) {
-			if (project.pi && project.pi.profileImage) {
-				project.pi.profileImage = await signedUrl(
-					project.pi.profileImage,
-					3
-				);
-			}
-		}
-		if (!projects || projects.length === 0)
-			throw new AppError("No projects found for this PI", 404);
-		if (projects.length === 0) {
-			throw new AppError("No projects found for this PI", 404);
-		}
-		for (const project of projects) {
-			if (project.pi && project.pi.profileImage) {
-				project.pi.profileImage = await signedUrl(
-					project.pi.profileImage,
-					3
-				);
-			}
-		}
 		response(res, 200, "Projects fetched successfully", { projects });
 	}
 );

@@ -12,10 +12,10 @@ const patentRouter = Router();
 
 patentRouter
 	.post("/create", auth, createPatent)
-	.get("/get-all", getAllPatents)
+	.get("/get-all", getAllPatents) // query params: page, limit
 	.get("/:id", getPatentById)
 	.put("/:id", auth, updatePatent)
 	.delete("/:id", auth, deletePatent)
-	.get("/get-all-by-user-id", getAllPatentsByInventorId);
+	.get("/get-all-by-user-id/:userId", getAllPatentsByInventorId); // query params: page, limit
 
 export default patentRouter;

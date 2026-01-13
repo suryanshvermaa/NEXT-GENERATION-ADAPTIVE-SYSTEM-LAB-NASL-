@@ -149,7 +149,7 @@ export const getAllConferencePapers = asyncHandler(
 /**
  *
  * @description fetching all conference papers by user ID
- * @route GET /api/conference-paper/get-all-by-user-id?page=&limit=
+ * @route GET /api/conference-paper/get-all-by-user-id/:userId?page=&limit=
  * @access Private
  * @param req
  * @param res

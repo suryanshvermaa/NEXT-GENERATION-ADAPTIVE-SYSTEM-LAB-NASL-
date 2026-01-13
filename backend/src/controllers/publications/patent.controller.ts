@@ -37,21 +37,8 @@ export const createPatent = asyncHandler(
 				publicationDate: publicationDate
 					? new Date(publicationDate)
 					: null,
-				inventors: {
-					connect: inventors.map((id: number) => ({ id })),
-				},
-			},
-			include: {
-				inventors: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						role: true,
-						profileImage: true,
-						designation: true,
-					},
-				},
+				inventors: inventors.split(",").map((inventor: string) => Number(inventor.trim())),
+				createdBy: req.user?.userId as number,
 			},
 		});
 		response(res, 201, "Patent created successfully", { patent });
@@ -82,6 +69,14 @@ export const updatePatent = asyncHandler(
 				"Please provide all required fields: id, title, type, grantNo, inventors",
 				400
 			);
+		const existingPatent = await prisma.patent.findUnique({
+			where: { id: Number(id) },
+		});
+		if (!existingPatent)
+			throw new AppError("Patent with given id does not exist", 404);
+		if(req.user?.role !== 'ADMIN' && existingPatent.createdBy !== req.user?.userId) {
+			throw new AppError("You are not authorized to update this patent", 403);
+		}
 		const patent = await prisma.patent.update({
 			where: { id: Number(id) },
 			data: {
@@ -92,21 +87,7 @@ export const updatePatent = asyncHandler(
 				publicationDate: publicationDate
 					? new Date(publicationDate)
 					: null,
-				inventors: {
-					connect: inventors.map((id: number) => ({ id })),
-				},
-			},
-			include: {
-				inventors: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						role: true,
-						profileImage: true,
-						designation: true,
-					},
-				},
+				inventors: inventors.split(",").map((inventor: string) => Number(inventor.trim())),
 			},
 		});
 		response(res, 200, "Patent updated successfully", { patent });
@@ -117,7 +98,7 @@ export const updatePatent = asyncHandler(
  *
  * @description fetching patent by id
  * @route GET /api/patent/:id
- * @access Private
+ * @access Public
  * @param req
  * @param res
  */
@@ -126,28 +107,9 @@ export const getPatentById = asyncHandler(
 		const { id } = req.query;
 		if (!id) throw new AppError("Please provide id of patent", 400);
 		const patent = await prisma.patent.findUnique({
-			where: { id: Number(id) },
-			include: {
-				inventors: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						role: true,
-						profileImage: true,
-						designation: true,
-					},
-				},
-			},
+			where: { id: Number(id) }
 		});
 		if (!patent) throw new AppError("Patent not found", 404);
-		if (patent.inventors) {
-			for (const inventor of patent.inventors) {
-				inventor.profileImage = inventor.profileImage
-					? await signedUrl(inventor.profileImage, 3)
-					: "";
-			}
-		}
 		response(res, 200, "Patent fetched successfully", { patent });
 	}
 );
@@ -164,6 +126,14 @@ export const deletePatent = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
 		if (!id) throw new AppError("Please provide id of patent", 400);
+		const existingPatent = await prisma.patent.findUnique({
+			where: { id: Number(id) },
+		});
+		if (!existingPatent)
+			throw new AppError("Patent with given id does not exist", 404);
+		if(req.user?.role !== 'ADMIN' && existingPatent.createdBy !== req.user?.userId) {
+			throw new AppError("You are not authorized to delete this patent", 403);
+		}
 		const patent = await prisma.patent.delete({
 			where: { id: Number(id) },
 		});
@@ -174,84 +144,47 @@ export const deletePatent = asyncHandler(
 /**
  *
  * @description fetching all patents by user id
- * @route GET /api/patent/get-all-by-user-id
+ * @route GET /api/patent/get-all-by-user-id?page=&limit=
  * @access Private
  * @param req
  * @param res
  */
 export const getAllPatentsByInventorId = asyncHandler(
 	async (req: Request, res: Response) => {
-		const userId = req.user?.userId;
+		const userId = req.params.userId || req.user?.userId;
+		const page = parseInt(req.query.page as string) || 1;
+		const limit = parseInt(req.query.limit as string) || 10;
+		const skip = (page - 1) * limit;
 		const patents = await prisma.patent.findMany({
 			where: {
-				inventors: {
-					some: {
-						id: userId as number,
-					},
-				},
+				createdBy: userId as number,
 			},
 			orderBy: { createdAt: "desc" },
-			include: {
-				inventors: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						role: true,
-						profileImage: true,
-						designation: true,
-					},
-				},
-			},
+			skip,
+			take: limit,
 		});
 		if (!patents || patents.length === 0)
 			throw new AppError("No patents found for this user", 404);
-		for (const patent of patents) {
-			if (patent.inventors) {
-				for (const inventor of patent.inventors) {
-					inventor.profileImage = inventor.profileImage
-						? await signedUrl(inventor.profileImage, 3)
-						: "";
-				}
-			}
-		}
 		response(res, 200, "Patents fetched successfully", { patents });
 	}
 );
 
 /**
  * @description fetching all patents
- * @route GET /api/patent/get-all
+ * @route GET /api/patent/get-all?page=&limit=
  * @access Public
  */
 export const getAllPatents = asyncHandler(
 	async (req: Request, res: Response) => {
+		const { page = "1", limit = "10" } = req.query;
+		const pageNumber = parseInt(page as string);
+		const limitNumber = parseInt(limit as string);
+		const skip = (pageNumber - 1) * limitNumber;
 		const patents = await prisma.patent.findMany({
 			orderBy: { createdAt: "desc" },
-			include: {
-				inventors: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						role: true,
-						profileImage: true,
-						designation: true,
-					},
-				},
-			},
+			skip,
+			take: limitNumber,
 		});
-		for (const patent of patents) {
-			if (patent.inventors) {
-				for (const inventor of patent.inventors) {
-					inventor.profileImage = inventor.profileImage
-						? await signedUrl(inventor.profileImage, 3)
-						: "";
-				}
-			}
-		}
-		if (!patents || patents.length === 0)
-			throw new AppError("No patents found", 404);
 		response(res, 200, "Patents fetched successfully", { patents });
 	}
 );

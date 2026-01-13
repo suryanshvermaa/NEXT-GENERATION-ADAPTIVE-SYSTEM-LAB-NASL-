@@ -13,7 +13,7 @@ researchAreaRouter
 	.post("/createReasearchArea", adminAuth, createReasearchArea)
 	.put("/updateResearchArea", adminAuth, updateResearchArea)
 	.delete("/deleteResearchArea", adminAuth, deleteResearchArea)
-	.get("/getResearchArea", getResearchArea)
-	.get("/getReasearchAreas", getReasearchAreas);
+	.get("/getResearchArea", getResearchArea) // query params: id
+	.get("/getReasearchAreas", getReasearchAreas); // query params: page, limit
 
 export default researchAreaRouter;

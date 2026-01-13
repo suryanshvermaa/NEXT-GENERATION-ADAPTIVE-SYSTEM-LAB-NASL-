@@ -12,10 +12,10 @@ const conferenceRouter = Router();
 
 conferenceRouter
 	.post("/create", auth, createConferencePaper)
-	.get("/get-all", getAllConferencePapers)
+	.get("/get-all", getAllConferencePapers) // query params: page, limit
 	.get("/:id", getConferencePaperById)
 	.put("/:id", auth, updateConferencePaper)
 	.delete("/:id", auth, deleteConferencePaperById)
-	.get("/get-all-by-user-id", getAllConferencePapersByUserId);
+	.get("/get-all-by-user-id/:userId", getAllConferencePapersByUserId); // query params: page, limit
 
 export default conferenceRouter;

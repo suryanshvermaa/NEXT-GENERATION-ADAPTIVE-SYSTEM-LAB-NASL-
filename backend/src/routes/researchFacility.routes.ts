@@ -13,7 +13,7 @@ researchFacilityRouter
 	.post("/createResearchFacility", adminAuth, createResearchFacility)
 	.put("/updateResearchFacility", adminAuth, updateResearchFacility)
 	.delete("/deleteResearchFacility", adminAuth, deleteResearchFacility)
-	.get("/getResearchFacility", getResearchFacility)
-	.get("/getReasearchFacilities", getReasearchFacilities);
+	.get("/getResearchFacility", getResearchFacility) // query params: id
+	.get("/getReasearchFacilities", getReasearchFacilities); // query params: page, limit
 
 export default researchFacilityRouter;

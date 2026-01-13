@@ -12,10 +12,10 @@ const journalPaperRouter = Router();
 
 journalPaperRouter
 	.post("/create", auth, createJournalPaper)
-	.get("/get-all", getAllJournalPaper)
+	.get("/get-all", getAllJournalPaper) // query params: page, limit
 	.get("/:id", getJournalPaperById)
 	.put("/:id", auth, updateJournalPaper)
 	.delete("/:id", auth, deleteJournalPaperById)
-	.get("/get-all-by-user-id", getJounalPapersByUserId);
+	.get("/get-all-by-user-id/:userId", getJounalPapersByUserId); // query params: page, limit
 
 export default journalPaperRouter;
