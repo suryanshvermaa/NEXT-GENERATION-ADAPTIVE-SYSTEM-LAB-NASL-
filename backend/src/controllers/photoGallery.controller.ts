@@ -41,6 +41,8 @@ export const addImage = asyncHandler(async (req: Request, res: Response) => {
  */
 export const getAllImages = asyncHandler(
 	async (req: Request, res: Response) => {
+		const {page=1, limit=10} = req.query;
+		const skip = (Number(page) - 1) * Number(limit);
 		const images = await prisma.photoGallery.findMany({
 			where: {
 				groupMoment: false,
@@ -53,6 +55,8 @@ export const getAllImages = asyncHandler(
 			orderBy: {
 				createdAt: "desc",
 			},
+			skip: skip,
+			take: Number(limit),
 		});
 		if (!images) throw new AppError("Images not found", 400);
 		for (const im of images) {
@@ -72,6 +76,8 @@ export const getAllImages = asyncHandler(
  */
 export const getAllImagesOfGroupMoment = asyncHandler(
 	async (req: Request, res: Response) => {
+		const {page=1, limit=10} = req.query;
+		const skip = (Number(page) - 1) * Number(limit);
 		const images = await prisma.photoGallery.findMany({
 			where: {
 				groupMoment: true,
@@ -84,6 +90,8 @@ export const getAllImagesOfGroupMoment = asyncHandler(
 			orderBy: {
 				createdAt: "desc",
 			},
+			skip: skip,
+			take: Number(limit),
 		});
 		if (!images) throw new AppError("Images not found", 400);
 		for (const im of images) {

@@ -1,8 +1,7 @@
 import { Router } from "express";
 import {
 	createUser,
-	getPeople,
-	getProfileById,
+	getPeopleByDesignation,
 	login,
 	loginWithGoogle,
 	profile,
@@ -17,11 +16,10 @@ const userRouter = Router();
 userRouter
 	.post("/createUser", auth,authorizePermission(PERMISSIONS.CREATE_USER), createUser)
 	.post("/login", login)
-	.get("/profile", auth,authorizePermission(PERMISSIONS.FETCH_PROFILE), profile)
 	.post("/loginWithGoogle", loginWithGoogle)
-	.put("/updateProfile", auth,authorizePermission(PERMISSIONS.UPDATE_PROFILE), updateProfile)
-	.get("/search", searchingUserByEmail)
-	.get("/getPeople", getPeople)
-	.get("/profile/:userId", getProfileById);
+	.put("/updateProfile", auth, updateProfile)
+	.get("/search", searchingUserByEmail) // query param: query
+	.get("/getPeople", getPeopleByDesignation) // query param: designation, page, limit
+	.get("/profile/:userId", profile); // param: userId
 
 export default userRouter;

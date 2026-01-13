@@ -38,6 +38,7 @@ model User {
   designation   Designation?
   contactNumber String?
   about       String?
+  Social      Social[]
   journals_count Int      @default(0)
   conferencePapers_count Int      @default(0)
   books_count Int      @default(0)
@@ -51,6 +52,8 @@ model Social{
   platform String
   url String
   iconURL String?
+  userId Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
