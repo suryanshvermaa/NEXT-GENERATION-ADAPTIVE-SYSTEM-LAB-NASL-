@@ -140,7 +140,7 @@ export const getEventById = asyncHandler(
 			throw new AppError("Event not found", 404);
 		}
 		return response(res, 200, "Event fetched successfully", {
-			event: { ...event, imageURL: await signedUrl(event.imageURL, 3) },
+			event: { ...event, imageURL: event.imageURL&& await signedUrl(event.imageURL, 3) },
 		});
 	}
 );
