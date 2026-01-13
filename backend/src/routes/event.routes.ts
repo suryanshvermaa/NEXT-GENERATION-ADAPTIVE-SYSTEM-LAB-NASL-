@@ -6,14 +6,16 @@ import {
 	getAllEvents,
 	getEventById,
 } from "../controllers/event.controller";
-import { adminAuth } from "../middlewares/auth.middleware";
+import { auth } from "../middlewares/auth.middleware";
+import { authorizePermission } from "../middlewares/role.middleware";
+import { PERMISSIONS } from "../RBAC/permissions";
 
 const eventRouter = Router();
 
 eventRouter
-	.post("/create", adminAuth, createEvent)
-	.put("/update/:id", adminAuth, updateEvent)
-	.delete("/delete/:id", adminAuth, deleteEvent)
+	.post("/create",auth, authorizePermission(PERMISSIONS.CREATE_EVENT), createEvent)
+	.put("/update/:id", auth, authorizePermission(PERMISSIONS.UPDATE_EVENT), updateEvent)
+	.delete("/delete/:id", auth, authorizePermission(PERMISSIONS.DELETE_EVENT), deleteEvent)
 	.get("/all", getAllEvents) // query params: page, limit
 	.get("/:id", getEventById);
 

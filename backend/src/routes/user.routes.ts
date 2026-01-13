@@ -10,7 +10,7 @@ import {
 } from "../controllers/user.controller";
 import { auth } from "../middlewares/auth.middleware";
 import { authorizePermission } from "../middlewares/role.middleware";
-import { PERMISSIONS } from "../config/roles";
+import { PERMISSIONS } from "../RBAC/permissions";
 const userRouter = Router();
 
 userRouter
