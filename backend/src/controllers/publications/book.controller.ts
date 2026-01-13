@@ -158,19 +158,18 @@ export const deleteBook = asyncHandler(async (req: Request, res: Response) => {
 
 /**
  * @description fetching all books by user ID
- * @route POST /api/book/get-all-by-user-id?page=&limit=
+ * @route POST /api/book/get-all-by-user-id/:userId?page=&limit=
  * @access Private
  * @param req
  * @param res
  */
 export const getAllBooksByUserId = asyncHandler(
 	async (req: Request, res: Response) => {
-		const userId = req.user?.userId;
 		const { page = "1", limit = "10" } = req.query;
 		const skip = (Number(page) - 1) * Number(limit);
 		const books = await prisma.book.findMany({
 			where: {
-				createdBy: userId as number,
+				createdBy: Number(req.params.userId)||req.user?.userId as number,
 			},
 			orderBy: { createdAt: "desc" },
 			skip: skip,

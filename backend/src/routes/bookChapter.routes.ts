@@ -12,10 +12,10 @@ const bookChapterRouter = Router();
 
 bookChapterRouter
 	.post("/create", auth, createBookChapter)
-	.get("/get-all", getAllBookChapters)
+	.get("/get-all", getAllBookChapters) // query params: page, limit
 	.get("/:id", getBookChapterById)
 	.put("/:id", auth, updateBookChapter)
 	.delete("/:id", auth, deleteBookChapter)
-	.get("/get-all-by-user-id", getAllBooksByUserId);
+	.get("/get-all-by-user-id/:userId", getAllBooksByUserId); // query params: userId, page, limit
 
 export default bookChapterRouter;
