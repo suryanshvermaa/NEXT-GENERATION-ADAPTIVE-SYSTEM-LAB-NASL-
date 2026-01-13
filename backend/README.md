@@ -2,7 +2,7 @@
 
 Production-ready Express + TypeScript + Prisma API for the NASL research program website. Provides user auth (JWT + Google OAuth), content modules (publications, projects, patents, events, highlights, photo gallery, research areas/facilities), S3-compatible media handling, and Postgres persistence.
 
-> Full REST endpoint details live in `docs/API.md`.
+> Full REST endpoint details live in `docs/README.md`.
 
 ## Tech stack
 
@@ -29,7 +29,7 @@ Production-ready Express + TypeScript + Prisma API for the NASL research program
     - `schema.prisma` — models and datasource
     - `migrations/` — database migrations
 - `generated/prisma/` — Prisma client output (generated at install/build)
-- `docs/API.md` — endpoint reference
+- `docs/` — endpoint reference (frontend payload/response contract)
 - `scripts/admin.js` — interactive admin user creation script
 
 > Note: Large and runtime data folders are ignored for docs: `.vercel/`, `generated/`, `minio_data/`, `postgres_data/`.
@@ -141,7 +141,7 @@ The S3 client is configured with `forcePathStyle: true`, so path-style URLs are 
 
 ## API reference
 
-- See `docs/API.md` for routes, bodies, and responses across modules:
+- See `docs/README.md` for routes, bodies, and responses across modules:
     - Users, Images, Recent Updates, Highlights
     - Research Areas, Research Facilities
     - Books, Book Chapters, Conference and Journal Papers
