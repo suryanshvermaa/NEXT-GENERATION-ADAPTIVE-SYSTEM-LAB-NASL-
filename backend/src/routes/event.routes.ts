@@ -14,7 +14,7 @@ eventRouter
 	.post("/create", adminAuth, createEvent)
 	.put("/update/:id", adminAuth, updateEvent)
 	.delete("/delete/:id", adminAuth, deleteEvent)
-	.get("/all", getAllEvents)
+	.get("/all", getAllEvents) // query params: page, limit
 	.get("/:id", getEventById);
 
 export default eventRouter;

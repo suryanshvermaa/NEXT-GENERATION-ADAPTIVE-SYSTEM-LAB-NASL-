@@ -30,26 +30,13 @@ export const createBook = asyncHandler(async (req: Request, res: Response) => {
 	const book = await prisma.book.create({
 		data: {
 			title,
-			authors: {
-				connect: authors.map((authorId: number) => ({ id: authorId })),
-			},
+			authors: authors.split(",").map((author:string) => (author.trim())),
 			publisher,
 			scopus,
 			doi,
 			isbn,
 			year,
-		},
-		include: {
-			authors: {
-				select: {
-					id: true,
-					name: true,
-					email: true,
-					role: true,
-					profileImage: true,
-					designation: true,
-				},
-			},
+			createdBy: req.user!.userId as number,
 		},
 	});
 
@@ -58,38 +45,21 @@ export const createBook = asyncHandler(async (req: Request, res: Response) => {
 
 /**
  * @description fetching all books
- * @route GET /api/book/get-all
+ * @route GET /api/book/get-all?page=&limit=
  * @access Public
  * @param req
  * @param res
  */
 export const getAllBooks = asyncHandler(async (req: Request, res: Response) => {
+	const { page = "1", limit = "10" } = req.query;
+	const skip = (Number(page) - 1) * Number(limit);
 	const books = await prisma.book.findMany({
 		orderBy: {
 			createdAt: "desc",
 		},
-		include: {
-			authors: {
-				select: {
-					id: true,
-					name: true,
-					email: true,
-					role: true,
-					profileImage: true,
-					designation: true,
-				},
-			},
-		},
+		skip: skip,
+		take: Number(limit),
 	});
-
-	for (const book of books) {
-		for (const author of book.authors) {
-			author.profileImage = author.profileImage
-				? await signedUrl(author.profileImage, 3)
-				: "";
-		}
-	}
-
 	response(res, 200, "Books fetched successfully", { books });
 });
 
@@ -105,30 +75,11 @@ export const getBookById = asyncHandler(async (req: Request, res: Response) => {
 	if (!id) throw new AppError("Please provide id of book", 400);
 
 	const book = await prisma.book.findUnique({
-		where: { id: Number(id) },
-		include: {
-			authors: {
-				select: {
-					id: true,
-					name: true,
-					email: true,
-					role: true,
-					profileImage: true,
-					designation: true,
-				},
-			},
-		},
+		where: { id: Number(id) }
 	});
 
 	if (!book) {
 		throw new AppError("Book not found", 404);
-	}
-	if (book.authors) {
-		for (const author of book.authors) {
-			author.profileImage = author.profileImage
-				? await signedUrl(author.profileImage, 3)
-				: "";
-		}
 	}
 	response(res, 200, "Book fetched successfully", { book });
 });
@@ -155,40 +106,27 @@ export const updateBook = asyncHandler(async (req: Request, res: Response) => {
 	if (!id || !title || !authors) {
 		throw new AppError("Please provide id, title, authors, and year", 400);
 	}
-
+	const existingBook = await prisma.book.findUnique({
+		where: { id: Number(id) }
+	});
+	if (!existingBook) {
+		throw new AppError("Book not found", 404);
+	}
+	if(req.user?.role !== "ADMIN" && existingBook.createdBy !== req.user?.userId) {
+		throw new AppError("You are not authorized to update this book", 403);
+	}
 	const book = await prisma.book.update({
 		where: { id: Number(id) },
 		data: {
 			title,
-			authors: {
-				connect: authors.map((authorId: number) => ({ id: authorId })),
-			},
+			authors: authors.split(",").map((author:string) => (author.trim())),
 			publisher,
 			scopus,
 			doi,
 			isbn,
 			year,
 		},
-		include: {
-			authors: {
-				select: {
-					id: true,
-					name: true,
-					email: true,
-					role: true,
-					profileImage: true,
-					designation: true,
-				},
-			},
-		},
 	});
-	if (book.authors) {
-		for (const author of book.authors) {
-			author.profileImage = author.profileImage
-				? await signedUrl(author.profileImage, 3)
-				: "";
-		}
-	}
 	response(res, 200, "Book updated successfully", { book });
 });
 
@@ -202,7 +140,15 @@ export const updateBook = asyncHandler(async (req: Request, res: Response) => {
 export const deleteBook = asyncHandler(async (req: Request, res: Response) => {
 	const { id } = req.params;
 	if (!id) throw new AppError("Please provide id of book", 400);
-
+	const existingBook = await prisma.book.findUnique({
+		where: { id: Number(id) }
+	});
+	if (!existingBook) {
+		throw new AppError("Book not found", 404);
+	}
+	if(req.user?.role !== "ADMIN" && existingBook.createdBy !== req.user?.userId) {
+		throw new AppError("You are not authorized to delete this book", 403);
+	}
 	const book = await prisma.book.delete({
 		where: { id: Number(id) },
 	});
@@ -212,7 +158,7 @@ export const deleteBook = asyncHandler(async (req: Request, res: Response) => {
 
 /**
  * @description fetching all books by user ID
- * @route POST /api/book/get-all-by-user-id
+ * @route POST /api/book/get-all-by-user-id?page=&limit=
  * @access Private
  * @param req
  * @param res
@@ -220,40 +166,16 @@ export const deleteBook = asyncHandler(async (req: Request, res: Response) => {
 export const getAllBooksByUserId = asyncHandler(
 	async (req: Request, res: Response) => {
 		const userId = req.user?.userId;
-
+		const { page = "1", limit = "10" } = req.query;
+		const skip = (Number(page) - 1) * Number(limit);
 		const books = await prisma.book.findMany({
 			where: {
-				authors: {
-					some: {
-						id: userId as number,
-					},
-				},
+				createdBy: userId as number,
 			},
 			orderBy: { createdAt: "desc" },
-			include: {
-				authors: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						role: true,
-						profileImage: true,
-						designation: true,
-					},
-				},
-			},
+			skip: skip,
+			take: Number(limit),
 		});
-
-		if (!books || books.length === 0) {
-			throw new AppError("No books found for this user", 404);
-		}
-		for (const book of books) {
-			for (const author of book.authors) {
-				author.profileImage = author.profileImage
-					? await signedUrl(author.profileImage, 3)
-					: "";
-			}
-		}
 		response(res, 200, "Books fetched successfully", { books });
 	}
 );

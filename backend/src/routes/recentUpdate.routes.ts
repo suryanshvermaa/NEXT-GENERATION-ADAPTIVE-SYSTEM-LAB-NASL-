@@ -10,6 +10,6 @@ const recentUpdateRouter = Router();
 recentUpdateRouter
 	.post("/create", adminAuth, createRecentUpdate)
 	.delete("/delete", adminAuth, deleterecentUpdate)
-	.get("/getrecentUpdates", getrecentUpdates);
+	.get("/getrecentUpdates", getrecentUpdates); // query params: page, limit
 
 export default recentUpdateRouter;

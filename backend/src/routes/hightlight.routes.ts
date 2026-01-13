@@ -10,6 +10,6 @@ const highlightRouter = Router();
 highlightRouter
 	.post("/create", adminAuth, createHighlight)
 	.delete("/delete", adminAuth, deletehighlight)
-	.get("/getHighlights", getHighlights);
+	.get("/getHighlights", getHighlights); // query params: page, limit
 
 export default highlightRouter;
