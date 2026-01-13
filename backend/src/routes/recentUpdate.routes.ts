@@ -3,7 +3,7 @@ import {
 	createRecentUpdate,
 	deleterecentUpdate,
 	getrecentUpdates,
-} from "../controllers/notifications/recentHighlight.controller";
+} from "../controllers/notifications/recentUpdates.controller";
 import { adminAuth } from "../middlewares/auth.middleware";
 const recentUpdateRouter = Router();
 

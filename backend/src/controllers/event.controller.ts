@@ -23,6 +23,7 @@ export const createEvent = asyncHandler(async (req: Request, res: Response) => {
 			event,
 			description,
 			imageURL,
+			createdBy: Number(req.user!.userId),
 		},
 	});
 	return response(res, 201, "Event created successfully", {
@@ -43,6 +44,13 @@ export const updateEvent = asyncHandler(async (req: Request, res: Response) => {
 	const { event, description, imageURL } = req.body;
 	if (!event || !description || !imageURL) {
 		throw new AppError("Please provide all required fields", 400);
+	}
+	const existingEvent = await prisma.event.findFirst({where: { id: Number(id) }});
+	if(!existingEvent){
+		throw new AppError("Event not found", 404);
+	}
+	if(req.user!.role!=="ADMIN" && existingEvent.createdBy !== Number(req.user!.userId)){
+		throw new AppError("You are not authorized to update this event", 403);
 	}
 	const updatedEvent = await prisma.event.update({
 		where: { id: Number(id) },
@@ -70,6 +78,13 @@ export const updateEvent = asyncHandler(async (req: Request, res: Response) => {
  *  */
 export const deleteEvent = asyncHandler(async (req: Request, res: Response) => {
 	const { id } = req.params;
+	const existingEvent = await prisma.event.findFirst({where: { id: Number(id) }});
+	if(!existingEvent){
+		throw new AppError("Event not found", 404);
+	}
+	if(req.user!.role!=="ADMIN" && existingEvent.createdBy !== Number(req.user!.userId)){
+		throw new AppError("You are not authorized to delete this event", 403);
+	}
 	const deletedEvent = await prisma.event.delete({
 		where: { id: Number(id) },
 	});
@@ -79,23 +94,26 @@ export const deleteEvent = asyncHandler(async (req: Request, res: Response) => {
 /**
  * *
  * @description Get all events
- * @route GET /api/event/all
+ * @route GET /api/event/all?page=&limit=
  * @access Public
  * @param req
  * @param res
  */
 export const getAllEvents = asyncHandler(
 	async (req: Request, res: Response) => {
+		const {page=1,limit=10} = req.query;
 		const events = await prisma.event.findMany({
 			orderBy: {
 				createdAt: "desc",
 			},
+			skip: (Number(page) - 1) * Number(limit),
+			take: Number(limit),
 		});
 		return response(res, 200, "Events fetched successfully", {
-			events: events.map(async (event) => ({
+			events: await Promise.all(events.map(async (event) => ({
 				...event,
-				imageURL: await signedUrl(event.imageURL, 3),
-			})),
+				imageURL: event.imageURL ? await signedUrl(event.imageURL, 3) : null,
+			}))),
 		});
 	}
 );
