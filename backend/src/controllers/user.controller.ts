@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 import { createToken } from "../middlewares/auth.middleware";
 import { signedUrl } from "../s3";
 import { getUserInfo } from "../auth/googleAuth";
+import { sendMailToCreatedUser } from "../mail/sendMail";
 
 enum Role {
 	USER,
@@ -50,6 +51,7 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
 			designation: designation,
 		},
 	});
+	await sendMailToCreatedUser(user.email,pass);
 	return response(res, 201, `${name} is ceated successfully`, {
 		user: {
 			name: user.name,

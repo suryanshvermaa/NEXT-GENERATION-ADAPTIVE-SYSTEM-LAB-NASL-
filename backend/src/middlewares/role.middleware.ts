@@ -17,6 +17,7 @@ export const  authorizePermission = (permission: string) => {
         if (!role) throw new AppError("Forbidden: You don't have enough permission to access this resource", 403);
         const allowedPermissions = ROLE_ACCESS[role as keyof typeof ROLE_ACCESS] || [];
         const isAllowed = allowedPermissions.includes(permission);
+        console.log(role,permission,isAllowed);
         if (!isAllowed) throw new AppError("Forbidden: You don't have enough permission to access this resource", 403);
         next();
     }

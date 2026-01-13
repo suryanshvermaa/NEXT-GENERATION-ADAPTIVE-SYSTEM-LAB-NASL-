@@ -11,7 +11,21 @@ datasource db {
 
 enum Role{
   ADMIN
-  USER
+  BTECH
+  MTECH
+  PHD
+  INVESTIGATOR
+  INTERN
+  ALUMNI
+}
+
+enum Designation{
+  BTECH
+  MTECH
+  PHD
+  INVESTIGATOR
+  INTERN
+  ALUMNI
 }
 
 model User {
@@ -21,18 +35,16 @@ model User {
   role         Role     @default(USER)
   password     String? // in case of google auth, password is not needed
   profileImage String?
-  designation   String?
-  social Json[] //array of json object
+  designation   Designation?
   contactNumber String?
   about       String?
   status      String?
-  journals Journal_Paper[]
-  conferencePapers Conference_Paper[]
-  bookChapters Book_Chapter[]
-  books Book[]
-  patents Patent[]
-  projects Project[]
-  publications Publication[]
+  journals_count Int      @default(0)
+  conferencePapers_count Int      @default(0)
+  bookChapters_count Int      @default(0)
+  books_count Int      @default(0)
+  patents_count Int      @default(0)
+  projects_count Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt     DateTime @default(now()) @updatedAt
 }
