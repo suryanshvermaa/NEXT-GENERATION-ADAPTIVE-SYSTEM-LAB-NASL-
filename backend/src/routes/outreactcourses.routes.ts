@@ -12,7 +12,7 @@ const outreachorcoursesRouter = Router();
 outreachorcoursesRouter
 	.post("/create", auth, createoutreachorcourses)
 	.put("/:id", updateoutreachOrCourses)
-	.get("/get-all", getoutreachorcourses)
+	.get("/get-all", getoutreachorcourses) // query : type,page,limit
 	.get("/:id", getoutreachorcoursesById)
 	.delete("/:id", deleteoutreachorcourses);
 
