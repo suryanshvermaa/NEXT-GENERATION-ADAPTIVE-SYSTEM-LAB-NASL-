@@ -1,7 +1,9 @@
-import { ROLE_ACCESS } from "../config/roles";
+import { ROLE_ACCESS } from "../RBAC/roleAccess";
+import { PERMISSIONS } from "../RBAC/permissions";
 import { Request,Response,NextFunction } from "express";
 import asyncHandler from "../utils/asyncHandler";
 import { AppError } from "../utils/error";
+import { Role } from "../../generated/prisma";
 
 /**
  * 
@@ -10,13 +12,13 @@ import { AppError } from "../utils/error";
  * @throws {AppError} - Throws an error if the user does not have the required permission
  * @description - This middleware function checks if the user's role has the required permission to access a resource. If the user has the permission, it calls the next middleware. If not, it throws an AppError with a 403 status code.
  */
-export const  authorizePermission = (permission: string) => {
+export const  authorizePermission = (permission: keyof typeof PERMISSIONS) => {
   return asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
         const role = req.user?.role;
         if (!role) throw new AppError("Forbidden: You don't have enough permission to access this resource", 403);
-        const allowedPermissions = ROLE_ACCESS[role as keyof typeof ROLE_ACCESS] || [];
-        const isAllowed = allowedPermissions.includes(permission);
+        const allowedPermissions = ROLE_ACCESS[permission] || [];
+        const isAllowed = allowedPermissions.includes(role as Role);
         if (!isAllowed) throw new AppError("Forbidden: You don't have enough permission to access this resource", 403);
         next();
     }

@@ -34,16 +34,13 @@ export const createJournalPaper = asyncHandler(
 			data: {
 				title,
 				journal,
-				authors: {
-					connect: authors.map((authorId: number) => ({
-						id: authorId,
-					})),
-				},
+				authors: authors.split(",").map((author:string)=>(author.trim())),
 				publicationDate: new Date(publicationDate),
 				volume,
 				year,
 				quartile,
 				doi,
+				createdBy: req.user!.userId as number,
 			},
 		});
 		response(res, 201, "Journal paper created successfully", {
@@ -67,7 +64,7 @@ export const updateJournalPaper = asyncHandler(
 			title,
 			journal,
 			authors,
-			publicationDate = new Date(),
+			publicationDate,
 			volume = null,
 			year = null,
 			quartile = null,
@@ -78,6 +75,17 @@ export const updateJournalPaper = asyncHandler(
 				"Please provide all required fields: id, title, journal, authors, publicationDate, volume, year, quartile, doi",
 				400
 			);
+		const existingPaper = await prisma.journal_Paper.findUnique({
+			where: {
+				id: id as number,
+			},
+		});
+		if (!existingPaper) {
+			throw new AppError("Journal paper not found", 404);
+		}
+		if(req.user?.role !== "ADMIN" && existingPaper.createdBy !== req.user?.userId){ 
+			throw new AppError("You are not authorized to update this journal paper", 403);
+		}
 		const journalPaper = await prisma.journal_Paper.update({
 			where: {
 				id: id as number,
@@ -85,11 +93,7 @@ export const updateJournalPaper = asyncHandler(
 			data: {
 				title,
 				journal,
-				authors: {
-					connect: authors.map((authorId: number) => ({
-						id: authorId,
-					})),
-				},
+				authors: authors.split(",").map((author:string)=>(author.trim())),
 				publicationDate: new Date(publicationDate),
 				volume,
 				year,
@@ -106,39 +110,24 @@ export const updateJournalPaper = asyncHandler(
 /**
  *
  * @description fetching all journal papers
- * @route GET /api/journal-paper/get-all
+ * @route GET /api/journal-paper/get-all?page=&limit=
  * @access Public
  * @param req
  * @param res
  */
 export const getAllJournalPaper = asyncHandler(
 	async (req: Request, res: Response) => {
+		const { page = "1", limit = "10" } = req.query;
+		const pageNumber = parseInt(page as string, 10);
+		const limitNumber = parseInt(limit as string, 10);
+		const skip = (pageNumber - 1) * limitNumber;
 		const journalPapers = await prisma.journal_Paper.findMany({
 			orderBy: {
 				createdAt: "desc",
 			},
-			include: {
-				authors: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						role: true,
-						profileImage: true,
-						designation: true,
-					},
-				},
-			},
+			skip: skip,
+			take: limitNumber,
 		});
-		for (const paper of journalPapers) {
-			for (const author of paper.authors) {
-				author.profileImage = author.profileImage
-					? await signedUrl(author.profileImage, 3)
-					: "";
-			}
-		}
-		if (!journalPapers || journalPapers.length === 0)
-			throw new AppError("No journal papers found", 404);
 		response(res, 200, "Journal papers fetched successfully", {
 			journalPapers,
 		});
@@ -148,40 +137,28 @@ export const getAllJournalPaper = asyncHandler(
 /**
  *
  * @description fetching journal papers by user id
- * @route GET /api/journal-paper/get-all-by-user-id
+ * @route GET /api/journal-paper/get-all-by-user-id?page=&limit=
  * @access Private
  * @param req
  * @param res
  */
 export const getJounalPapersByUserId = asyncHandler(
 	async (req: Request, res: Response) => {
-		const userId = req.user?.userId;
+		const userId = req.params.userId || req.user?.userId;
+		const { page = "1", limit = "10" } = req.query;
+		const pageNumber = parseInt(page as string, 10);
+		const limitNumber = parseInt(limit as string, 10);
+		const skip = (pageNumber - 1) * limitNumber;
 		const journalPapers = await prisma.journal_Paper.findMany({
 			where: {
-				authors: {
-					some: {
-						id: userId as number,
-					},
-				},
+				createdBy: Number(userId),
 			},
 			orderBy: {
 				createdAt: "desc",
 			},
-			include: {
-				authors: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						role: true,
-						profileImage: true,
-						designation: true,
-					},
-				},
-			},
+			skip: skip,
+			take: limitNumber
 		});
-		if (!journalPapers || journalPapers.length === 0)
-			throw new AppError("No journal papers found for this user", 404);
 		response(res, 200, "Journal papers fetched successfully", {
 			journalPapers,
 		});
@@ -203,19 +180,7 @@ export const getJournalPaperById = asyncHandler(
 		const journalPaper = await prisma.journal_Paper.findUnique({
 			where: {
 				id: Number(id),
-			},
-			include: {
-				authors: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						role: true,
-						profileImage: true,
-						designation: true,
-					},
-				},
-			},
+			}
 		});
 		if (!journalPaper) throw new AppError("Journal paper not found", 404);
 		response(res, 200, "Journal paper fetched successfully", {
@@ -236,6 +201,17 @@ export const deleteJournalPaperById = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
 		if (!id) throw new AppError("Please provide id of journal paper", 400);
+		const existingPaper = await prisma.journal_Paper.findUnique({
+			where: {
+				id: Number(id),
+			},
+		});
+		if (!existingPaper) {
+			throw new AppError("Journal paper not found", 404);
+		}
+		if(req.user?.role !== "ADMIN" && existingPaper.createdBy !== req.user?.userId){ 
+			throw new AppError("You are not authorized to delete this journal paper", 403);
+		}
 		const journalPaper = await prisma.journal_Paper.delete({
 			where: {
 				id: Number(id),

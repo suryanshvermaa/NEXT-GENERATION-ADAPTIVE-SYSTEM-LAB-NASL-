@@ -23,6 +23,7 @@ export const createResearchFacility = asyncHandler(
 				name,
 				description,
 				imageURL,
+				createdBy: req.user?.userId as number,
 			},
 		});
 		if (!researchFacility)
@@ -49,6 +50,22 @@ export const updateResearchFacility = asyncHandler(
 		const { name, description, imageURL, id } = req.body;
 		if (!id || !name || !description)
 			throw new AppError("all fields are required", 400);
+		const existingresearchFacility = await prisma.researchFacility.findUnique({
+			where: {
+				id: id as number,
+			},
+		});
+		if(req.user?.role !== 'ADMIN' && existingresearchFacility?.createdBy !== req.user?.userId){
+			throw new AppError("You are not authorized to update this research facility", 403);
+		}
+		if (!existingresearchFacility)
+			throw new AppError("researchFacility not found", 404);
+		if (
+			existingresearchFacility.imageURL &&
+			existingresearchFacility.imageURL !== imageURL
+		) {
+			await deleteImage(existingresearchFacility.imageURL);
+		}
 		const updatedresearchFacility = await prisma.researchFacility.update({
 			where: {
 				id: id as number,
@@ -82,6 +99,16 @@ export const deleteResearchFacility = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { id } = req.body;
 		if (!id) throw new AppError("Id is required", 400);
+		const existingresearchFacility = await prisma.researchFacility.findUnique({
+			where: {
+				id: id as number,
+			},
+		});
+		if(req.user?.role !== 'ADMIN' && existingresearchFacility?.createdBy !== req.user?.userId){
+			throw new AppError("You are not authorized to delete this research facility", 403);
+		}
+		if (!existingresearchFacility)
+			throw new AppError("researchFacility not found", 404);
 		const researchFacility = await prisma.researchFacility.delete({
 			where: {
 				id,
@@ -112,7 +139,7 @@ export const getResearchFacility = asyncHandler(
 		});
 		if (!researchFacility)
 			throw new AppError("researchFacility not found", 400);
-		const imageURL = await signedUrl(researchFacility.imageURL!, 2);
+		const imageURL =researchFacility.imageURL&& await signedUrl(researchFacility.imageURL, 2);
 		response(res, 200, "researchFacility fetched successfully", {
 			researchFacility: { ...researchFacility, imageURL },
 		});
@@ -122,22 +149,26 @@ export const getResearchFacility = asyncHandler(
 /**
  *
  * @description getReasearchFacilities
- * @route POST /api/researchFacility/getReasearchAreas
- * @access Private
+ * @route POST /api/researchFacility/getReasearchAreas?page=&limit=
+ * @access Public
  * @param req
  * @param res
  */
 export const getReasearchFacilities = asyncHandler(
 	async (req: Request, res: Response) => {
+		const { page = 1, limit = 10 } = req.query;
+		const skip = (Number(page) - 1) * Number(limit);
 		const researchFacilities = await prisma.researchFacility.findMany({
 			orderBy: {
 				createdAt: "desc",
 			},
+			skip: skip,
+			take: Number(limit),
 		});
 		if (!researchFacilities)
 			throw new AppError("Research Facilities are not found", 400);
 		for (const rs of researchFacilities) {
-			rs.imageURL = await signedUrl(rs.imageURL!, 5);
+			rs.imageURL = rs.imageURL&&await signedUrl(rs.imageURL, 5);
 		}
 		response(res, 200, "Research Facilities fetched successfully", {
 			researchFacilities,

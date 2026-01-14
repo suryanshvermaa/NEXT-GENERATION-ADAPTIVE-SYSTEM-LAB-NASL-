@@ -35,15 +35,12 @@ export const createBookChapter = asyncHandler(
 			data: {
 				chapterTitle,
 				bookTitle,
-				authors: {
-					connect: authors.map((authorId: number) => ({
-						id: authorId,
-					})),
-				},
+				authors: authors.split(",").map((author:string) => (author.trim())),
 				scopus,
 				doi,
 				publisher,
 				year,
+				createdBy: req.user!.userId as number,
 			},
 		});
 
@@ -86,18 +83,21 @@ export const updateBookChapter = asyncHandler(
 				"Please provide all required fields: id, chapterTitle, bookTitle, authors, publisher, year",
 				400
 			);
-
+		const existingBookChapter = await prisma.book_Chapter.findUnique({
+			where: { id: Number(id) },
+		});
+		if (!existingBookChapter) {
+			throw new AppError("Book chapter not found", 404);
+		}
+		if(req.user?.role !== "ADMIN" && existingBookChapter.createdBy !== req.user?.userId) {
+			throw new AppError("You are not authorized to update this book chapter", 403);
+		}
 		const bookChapter = await prisma.book_Chapter.update({
 			where: { id: Number(id) },
 			data: {
 				chapterTitle,
 				bookTitle,
-				authors: {
-					set: [],
-					connect: authors.map((authorId: number) => ({
-						id: authorId,
-					})),
-				},
+				authors: authors.split(",").map((author:string) => (author.trim())),
 				scopus,
 				doi,
 				publisher,
@@ -114,40 +114,20 @@ export const updateBookChapter = asyncHandler(
 /**
  *
  * @description fetching all book chapters
- * @route GET /api/book-chapter/get-all
+ * @route GET /api/book-chapter/get-all?page=&limit=
  * @access Public
  * @param req
  * @param res
  */
 export const getAllBookChapters = asyncHandler(
 	async (req: Request, res: Response) => {
+		const { page = 1, limit = 10 } = req.query;
+		const skip = (Number(page) - 1) * Number(limit);
 		const bookChapters = await prisma.book_Chapter.findMany({
 			orderBy: { createdAt: "desc" },
-			include: {
-				authors: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						role: true,
-						profileImage: true,
-						designation: true,
-					},
-				},
-			},
+			skip: skip,
+			take: Number(limit)
 		});
-
-		if (!bookChapters || bookChapters.length === 0)
-			throw new AppError("No book chapters found", 404);
-		for (const bookChapter of bookChapters) {
-			if (bookChapter.authors) {
-				for (const author of bookChapter.authors) {
-					author.profileImage = author.profileImage
-						? await signedUrl(author.profileImage, 3)
-						: "";
-				}
-			}
-		}
 		response(res, 200, "Book chapters fetched successfully", {
 			bookChapters,
 		});
@@ -166,32 +146,10 @@ export const getBookChapterById = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
 		if (!id) throw new AppError("Please provide id of book chapter", 400);
-
 		const bookChapter = await prisma.book_Chapter.findUnique({
-			where: { id: Number(id) },
-			include: {
-				authors: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						role: true,
-						profileImage: true,
-						designation: true,
-					},
-				},
-			},
+			where: { id: Number(id) }
 		});
-
 		if (!bookChapter) throw new AppError("Book chapter not found", 404);
-
-		if (bookChapter.authors) {
-			for (const author of bookChapter.authors) {
-				author.profileImage = author.profileImage
-					? await signedUrl(author.profileImage, 3)
-					: "";
-			}
-		}
 		response(res, 200, "Book chapter fetched successfully", {
 			bookChapter,
 		});
@@ -210,7 +168,15 @@ export const deleteBookChapter = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
 		if (!id) throw new AppError("Please provide id of book chapter", 400);
-
+		const existingBookChapter = await prisma.book_Chapter.findUnique({
+			where: { id: Number(id) },
+		});
+		if (!existingBookChapter) {
+			throw new AppError("Book chapter not found", 404);
+		}
+		if(req.user?.role !== "ADMIN" && existingBookChapter.createdBy !== req.user?.userId) {
+			throw new AppError("You are not authorized to delete this book chapter", 403);
+		}
 		const bookChapter = await prisma.book_Chapter.delete({
 			where: { id: Number(id) },
 		});
@@ -224,7 +190,7 @@ export const deleteBookChapter = asyncHandler(
 /**
  *
  * @description fetching all book chapters by user id
- * @route GET /api/book-chapter/get-all-by-user-id
+ * @route GET /api/book-chapter/get-all-by-user-id?page=&limit=
  * @access Private
  * @param req
  * @param res
@@ -232,43 +198,16 @@ export const deleteBookChapter = asyncHandler(
 export const getAllBookChaptersByUserId = asyncHandler(
 	async (req: Request, res: Response) => {
 		const userId = req.user?.userId;
-
+		const { page = 1, limit = 10 } = req.query;
+		const skip = (Number(page) - 1) * Number(limit);
 		if (!userId) throw new AppError("User id is required", 400);
-
 		const bookChapters = await prisma.book_Chapter.findMany({
 			where: {
-				authors: {
-					some: {
-						id: userId as number,
-					},
-				},
+				createdBy: userId as number,
 			},
-			orderBy: { createdAt: "desc" },
-			include: {
-				authors: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						role: true,
-						profileImage: true,
-						designation: true,
-					},
-				},
-			},
+			skip: skip,
+			take: Number(limit)
 		});
-
-		if (!bookChapters || bookChapters.length === 0)
-			throw new AppError("No book chapters found for this user", 404);
-		for (const bookChapter of bookChapters) {
-			if (bookChapter.authors) {
-				for (const author of bookChapter.authors) {
-					author.profileImage = author.profileImage
-						? await signedUrl(author.profileImage, 3)
-						: "";
-				}
-			}
-		}
 		response(res, 200, "Book chapters fetched successfully", {
 			bookChapters,
 		});

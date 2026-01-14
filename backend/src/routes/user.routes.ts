@@ -1,25 +1,25 @@
 import { Router } from "express";
 import {
 	createUser,
-	getPeople,
-	getProfileById,
+	getPeopleByDesignation,
 	login,
 	loginWithGoogle,
 	profile,
 	searchingUserByEmail,
 	updateProfile,
 } from "../controllers/user.controller";
-import { adminAuth, auth } from "../middlewares/auth.middleware";
+import { auth } from "../middlewares/auth.middleware";
+import { authorizePermission } from "../middlewares/role.middleware";
+import { PERMISSIONS } from "../RBAC/permissions";
 const userRouter = Router();
 
 userRouter
-	.post("/createUser", adminAuth, createUser)
+	.post("/createUser", auth,authorizePermission(PERMISSIONS.CREATE_USER), createUser)
 	.post("/login", login)
-	.get("/profile", auth, profile)
 	.post("/loginWithGoogle", loginWithGoogle)
 	.put("/updateProfile", auth, updateProfile)
-	.get("/search", searchingUserByEmail)
-	.get("/getPeople", getPeople)
-	.get("/profile/:userId", getProfileById);
+	.get("/search", searchingUserByEmail) // query param: query
+	.get("/getPeople", getPeopleByDesignation) // query param: designation, page, limit
+	.get("/profile/:userId", profile); // param: userId
 
 export default userRouter;

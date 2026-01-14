@@ -7,11 +7,36 @@ import bcrypt from "bcryptjs";
 import { createToken } from "../middlewares/auth.middleware";
 import { signedUrl } from "../s3";
 import { getUserInfo } from "../auth/googleAuth";
+import { sendMailToCreatedUser } from "../mail/sendMail";
+import { Prisma, User } from "../../generated/prisma";
 
-enum Role {
-	USER,
-	ADMIN,
+enum Designation{
+  BTECH,
+  MTECH,
+  PHD,
+  INVESTIGATOR,
+  INTERN,
+  ALUMNI
 }
+
+const designationToEnum = (designation: string): Designation | null => {
+  switch (designation.toLowerCase()) {
+	case "btech":
+		return Designation.BTECH;
+	case "mtech":
+		return Designation.MTECH;
+	case "phd":
+		return Designation.PHD;
+	case "investigator":
+		return Designation.INVESTIGATOR;
+	case "intern":
+		return Designation.INTERN;
+	case "alumni":
+		return Designation.ALUMNI;
+	default:
+		return null;
+  }
+};
 
 /**
  * @description Create a new user
@@ -28,8 +53,8 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
 		password = "",
 		designation,
 	} = req.body;
-	let { role = Role.USER } = req.body;
-	if (role == "admin") role = Role.ADMIN;
+	const designationEnum = designationToEnum(designation) as unknown as string;
+	const role=designationEnum;
 	if (!name || !email || !designation)
 		throw new AppError("All fields are required", 400);
 	const isExisting = await prisma.user.findUnique({
@@ -46,10 +71,11 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
 			email,
 			password: pass,
 			profileImage,
-			role,
-			designation: designation,
+			role: role as User["role"],
+			designation: designationEnum as User["designation"],
 		},
 	});
+	// await sendMailToCreatedUser(user.email,pass);
 	return response(res, 201, `${name} is ceated successfully`, {
 		user: {
 			name: user.name,
@@ -97,57 +123,47 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 });
 
 /**
- * @description Create a new user
- * @route GET /api/user/profile
- * @access Private
+ * @description getting profile of User
+ * @route GET /api/user/profile/:userId
+ * @access Public
  * @param req
  * @param res
  */
 export const profile = asyncHandler(async (req: Request, res: Response) => {
-	const userId = req.user?.userId;
+	const userId = req.params.userId || req.user?.userId;
 	if (!userId) throw new AppError("userid not found", 401);
 	const user = await prisma.user.findUnique({
 		where: {
 			id: userId as number,
 		},
 		select: {
+			id: true,
 			name: true,
 			email: true,
 			profileImage: true,
 			about: true,
 			designation: true,
-			social: true,
-			status: true,
 			contactNumber: true,
-			books: true,
+			books_count: true,
+			conferencePapers_count: true,
+			journals_count: true,
+			patents_count: true,
 			role: true,
-		},
-	});
-	const userCountData = await prisma.user.findUnique({
-		where: {
-			id: userId as number,
-		},
-		include: {
-			_count: {
+			Social: {
 				select: {
-					books: true,
-					bookChapters: true,
-					conferencePapers: true,
-					journals: true,
-					patents: true,
-					projects: true,
-				},
+					userId: false
+				}
 			},
 		},
 	});
+	if (!user) throw new AppError("User not found", 404);
+	
 	response(res, 200, "profile fetched successfully", {
 		user: {
 			...user,
-			...userCountData,
 			profileImage: user?.profileImage
 				? await signedUrl(user.profileImage, 4)
 				: "",
-			password: "Not visible for security",
 		},
 	});
 });
@@ -181,6 +197,12 @@ export const loginWithGoogle = asyncHandler(
 	}
 );
 
+interface ISocial {
+	platform: string;
+	url: string;
+	icon: string;
+}
+
 /**
  *
  * @description updating profile
@@ -193,39 +215,35 @@ export const updateProfile = asyncHandler(
 	async (req: Request, res: Response) => {
 		const {
 			name,
+			email,
 			profileImage,
 			contactNumber,
-			linkedin,
-			twitter,
-			google,
-			about,
+			about
 		} = req.body;
-		const social = [
-			{
-				id: 1,
-				social: "linkedin",
-				url: linkedin,
-			},
-			{
-				id: 2,
-				social: "twitter",
-				url: twitter,
-			},
-			{
-				id: 3,
-				social: "google",
-				url: google,
-			},
-		];
+		const socials: ISocial[] = req.body.social ?? [];
+		const socialsArray: Prisma.SocialCreateManyUserInput[] = socials.map((social) => {
+			return {
+				platform: social.platform,
+				url: social.url,
+				iconURL: social.icon ?? null,
+			};
+		});
 		const updatedUser = await prisma.user.update({
 			where: {
-				id: req.user?.userId as number,
+				id: req.user!.userId as number,
 			},
 			data: {
 				name,
+				email,
 				profileImage,
 				contactNumber: String(contactNumber),
-				social,
+				// only add new socials after deleting old ones
+				Social: {
+					deleteMany: {},
+					createMany: {
+						data: socialsArray,
+					},
+				},
 				about,
 			},
 		});
@@ -283,17 +301,23 @@ export const searchingUserByEmail = asyncHandler(
 
 /**
  * @description Get people by designation
- * @route GET /api/user/getPeople?designation=designation
+ * @route GET /api/user/getPeople?designation=designation&page=1&limit=10
  * @access Public
  * @param req
  * @param res
  */
-export const getPeople = asyncHandler(async (req: Request, res: Response) => {
-	const { designation } = req.query;
+export const getPeopleByDesignation = asyncHandler(async (req: Request, res: Response) => {
+	const { designation, page, limit } = req.query;
 	if (!designation) throw new AppError("Please provide designation", 400);
+	const designationEnum = designationToEnum(designation as string);
+	if (designationEnum === null)
+		throw new AppError("Please provide valid designation", 400);
+	const pageNumber = parseInt(page as string) || 1;
+	const limitNumber = parseInt(limit as string) || 10;
+	const skip = (pageNumber - 1) * limitNumber;
 	const people = await prisma.user.findMany({
 		where: {
-			designation: designation as string,
+			designation: designationEnum as unknown as User["designation"],
 		},
 		select: {
 			id: true,
@@ -302,8 +326,9 @@ export const getPeople = asyncHandler(async (req: Request, res: Response) => {
 			profileImage: true,
 			designation: true,
 			about: true,
-			role: true,
 		},
+		skip,
+		take: limitNumber,
 	});
 	if (people.length === 0) {
 		return response(res, 200, "No people found", { people: [] });
@@ -315,43 +340,3 @@ export const getPeople = asyncHandler(async (req: Request, res: Response) => {
 	}
 	response(res, 200, "People found successfully", { people });
 });
-/**
- * @description Get profile by userId
- * @route GET /api/user/profile/:userId
- * @access Public
- * @param req
- */
-export const getProfileById = asyncHandler(
-	async (req: Request, res: Response) => {
-		const { userId } = req.params;
-		if (!userId) throw new AppError("Please provide userId", 400);
-		const user = await prisma.user.findUnique({
-			where: {
-				id: parseInt(userId),
-			},
-			select: {
-				name: true,
-				email: true,
-				profileImage: true,
-				about: true,
-				designation: true,
-				social: true,
-				status: true,
-				contactNumber: true,
-				role: true,
-				publications: {
-					select: {
-						id: true,
-						title: true,
-						type: true,
-					},
-				},
-			},
-		});
-		if (!user) throw new AppError("User not found", 404);
-		user.profileImage = user.profileImage
-			? await signedUrl(user.profileImage, 4)
-			: "";
-		response(res, 200, "Profile fetched successfully", { user });
-	}
-);

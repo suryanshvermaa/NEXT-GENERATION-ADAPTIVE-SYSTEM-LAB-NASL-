@@ -6,14 +6,16 @@ import {
 	getResearchArea,
 	updateResearchArea,
 } from "../controllers/research/researchAreas.controller";
-import { adminAuth } from "../middlewares/auth.middleware";
+import { auth } from "../middlewares/auth.middleware";
+import { authorizePermission } from "../middlewares/role.middleware";
+import { PERMISSIONS } from "../RBAC/permissions";
 const researchAreaRouter = Router();
 
 researchAreaRouter
-	.post("/createReasearchArea", adminAuth, createReasearchArea)
-	.put("/updateResearchArea", adminAuth, updateResearchArea)
-	.delete("/deleteResearchArea", adminAuth, deleteResearchArea)
-	.get("/getResearchArea", getResearchArea)
-	.get("/getReasearchAreas", getReasearchAreas);
+	.post("/createReasearchArea",auth,authorizePermission(PERMISSIONS.CREATE_RESEARCH_AREA), createReasearchArea)
+	.put("/updateResearchArea", auth, authorizePermission(PERMISSIONS.UPDATE_RESEARCH_AREA), updateResearchArea)
+	.delete("/deleteResearchArea", auth, authorizePermission(PERMISSIONS.DELETE_RESEARCH_AREA), deleteResearchArea)
+	.get("/getResearchArea", getResearchArea) // query params: id
+	.get("/getReasearchAreas", getReasearchAreas); // query params: page, limit
 
 export default researchAreaRouter;

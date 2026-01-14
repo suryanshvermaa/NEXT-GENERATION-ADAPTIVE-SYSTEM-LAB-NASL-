@@ -22,6 +22,7 @@ export const createoutreachorcourses = asyncHandler(
 				title,
 				type,
 				content,
+				createdBy: req.user?.userId as number,
 			},
 		});
 		response(res, 201, "Publication created successfully", {
@@ -44,6 +45,15 @@ export const updateoutreachOrCourses = asyncHandler(
 		if (!id || !title) {
 			throw new AppError("Please provide all required fields!", 400);
 		}
+		const existingoutreachorcourses = await prisma.outreachOrCourses.findUnique({
+			where: { id: Number(id) },
+		});
+		if (!existingoutreachorcourses) {
+			throw new AppError("Outreach or course not found", 404);
+		}
+		if(req.user?.role !== 'ADMIN' && existingoutreachorcourses.createdBy !== req.user?.userId) {
+			throw new AppError("You are not authorized to update this outreach or course", 403);
+		}
 		const outreachOrCourse = await prisma.outreachOrCourses.update({
 			where: { id: Number(id) },
 			data: {
@@ -51,7 +61,7 @@ export const updateoutreachOrCourses = asyncHandler(
 				content,
 			},
 		});
-		response(res, 200, "Project updated successfully", {
+		response(res, 200, "Outreach or course updated successfully", {
 			outreachOrCourse,
 		});
 	}
@@ -59,19 +69,24 @@ export const updateoutreachOrCourses = asyncHandler(
 
 /**
  * @description fetching all publication
- * @route GET /api/outreachorcourses/get-all?type=type
+ * @route GET /api/outreachorcourses/get-all?type=type&page=&limit=
  * @access Public
  * @param req
  * @param res
  */
 export const getoutreachorcourses = asyncHandler(
 	async (req: Request, res: Response) => {
-		const type = req.query.type;
+		const {type, page = "1", limit = "10"} = req.query;
+		const pageNumber = parseInt(page as string);
+		const limitNumber = parseInt(limit as string);
+		const skip = (pageNumber - 1) * limitNumber;
 		const outreachorcourses = await prisma.outreachOrCourses.findMany({
 			where: {
 				type: type as string,
 			},
 			orderBy: { createdAt: "desc" },
+			skip,
+			take: limitNumber,
 		});
 		response(res, 200, "publications fetched successfully", {
 			outreachorcourses,
@@ -93,7 +108,7 @@ export const getoutreachorcoursesById = asyncHandler(
 		const outreachorcourse = await prisma.outreachOrCourses.findUnique({
 			where: { id: Number(id) },
 		});
-		response(res, 200, "Project fetched successfully", {
+		response(res, 200, "Outreach or course fetched successfully", {
 			outreachorcourse,
 		});
 	}
@@ -110,10 +125,19 @@ export const deleteoutreachorcourses = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
 		if (!id) throw new AppError("Please provide id of project", 400);
+		const existingoutreachorcourses = await prisma.outreachOrCourses.findUnique({
+			where: { id: Number(id) },
+		});
+		if (!existingoutreachorcourses) {
+			throw new AppError("Outreach or course not found", 404);
+		}
+		if(req.user?.role !== 'ADMIN' && existingoutreachorcourses.createdBy !== req.user?.userId) {
+			throw new AppError("You are not authorized to delete this outreach or course", 403);
+		}
 		const outreachorcourse = await prisma.outreachOrCourses.delete({
 			where: { id: Number(id) },
 		});
-		response(res, 200, "Project deleted successfully", {
+		response(res, 200, "Outreach or course deleted successfully", {
 			outreachorcourse,
 		});
 	}

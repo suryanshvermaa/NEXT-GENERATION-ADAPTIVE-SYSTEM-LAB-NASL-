@@ -56,17 +56,21 @@ export const deleterecentUpdate = asyncHandler(
 /**
  *
  * @description fetching recentUpdates
- * @route GET /api/recentUpdate/getrecentUpdates
+ * @route GET /api/recentUpdate/getrecentUpdates?page=&limit=
  * @access Public
  * @param req
  * @param res
  */
 export const getrecentUpdates = asyncHandler(
 	async (req: Request, res: Response) => {
+		const { page = 1, limit = 10 } = req.query;
+		const skip = (Number(page) - 1) * Number(limit);
 		const recentUpdates = await prisma.recentUpdate.findMany({
 			orderBy: {
 				createdAt: "desc",
 			},
+			skip: skip,
+			take: Number(limit),
 		});
 		if (!recentUpdates)
 			throw new AppError("recentUpdates are not found", 400);
