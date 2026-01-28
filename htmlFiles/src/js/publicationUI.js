@@ -106,24 +106,28 @@ class PublicationUI {
         <label class="form-label">Authors * <small>(comma-separated)</small></label>
         <input type="text" class="form-control" id="authors" value="${Array.isArray(data.authors) ? data.authors.join(', ') : (data.authors || '')}" required>
       </div>
+      <div class="mb-3">
+        <label class="form-label">Location *</label>
+        <input type="text" class="form-control" id="location" value="${data.location || ''}" required>
+      </div>
       <div class="row">
         <div class="col-md-6 mb-3">
-          <label class="form-label">Publication Date</label>
-          <input type="date" class="form-control" id="publicationDate" value="${data.publicationDate || ''}">
+          <label class="form-label">Year *</label>
+          <input type="number" class="form-control" id="year" value="${data.year || ''}" required>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">Year</label>
-          <input type="text" class="form-control" id="year" value="${data.year || ''}">
+          <label class="form-label">Pages *</label>
+          <input type="text" class="form-control" id="pages" value="${data.pages || ''}" required>
         </div>
       </div>
       <div class="row">
         <div class="col-md-6 mb-3">
-          <label class="form-label">Pages</label>
-          <input type="text" class="form-control" id="pages" value="${data.pages || ''}">
+          <label class="form-label">Indexing *</label>
+          <input type="text" class="form-control" id="indexing" value="${data.indexing || ''}" required>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">DOI</label>
-          <input type="text" class="form-control" id="doi" value="${data.doi || ''}">
+          <label class="form-label">DOI *</label>
+          <input type="text" class="form-control" id="doi" value="${data.doi || ''}" required>
         </div>
       </div>
     `;
@@ -154,9 +158,9 @@ class PublicationUI {
         </div>
       </div>
       <div class="mb-3">
-        <label class="form-label">Inventors <small>(comma-separated user IDs)</small></label>
-        <input type="text" class="form-control" id="inventors" value="${data.inventors || ''}">
-        <small class="text-muted">Leave empty to use current user ID</small>
+        <label class="form-label">Inventors <small>(comma-separated names)</small></label>
+        <input type="text" class="form-control" id="inventors" value="${Array.isArray(data.inventors) ? data.inventors.join(', ') : (data.inventors || '')}" placeholder="e.g., John Doe, Jane Smith">
+        <small class="text-muted d-block">Enter inventor names separated by commas</small>
       </div>
     `;
   }
@@ -168,29 +172,32 @@ class PublicationUI {
         <input type="text" class="form-control" id="title" value="${data.title || ''}" required>
       </div>
       <div class="mb-3">
-        <label class="form-label">Type *</label>
-        <select class="form-select" id="type" required>
-          <option value="BOOK" ${data.type === 'BOOK' ? 'selected' : ''}>Book</option>
-          <option value="CHAPTER" ${data.type === 'CHAPTER' ? 'selected' : ''}>Chapter</option>
-        </select>
-      </div>
-      <div class="mb-3">
         <label class="form-label">Authors * <small>(comma-separated)</small></label>
         <input type="text" class="form-control" id="authors" value="${Array.isArray(data.authors) ? data.authors.join(', ') : (data.authors || '')}" required>
       </div>
-      <div class="mb-3">
-        <label class="form-label">Publisher</label>
-        <input type="text" class="form-control" id="publisher" value="${data.publisher || ''}">
-      </div>
       <div class="row">
         <div class="col-md-6 mb-3">
-          <label class="form-label">Publication Date</label>
-          <input type="date" class="form-control" id="publicationDate" value="${data.publicationDate || ''}">
+          <label class="form-label">Publisher</label>
+          <input type="text" class="form-control" id="publisher" value="${data.publisher || ''}">
         </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Year</label>
+          <input type="number" class="form-control" id="year" value="${data.year || ''}">
+        </div>
+      </div>
+      <div class="row">
         <div class="col-md-6 mb-3">
           <label class="form-label">ISBN</label>
           <input type="text" class="form-control" id="isbn" value="${data.isbn || ''}">
         </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Scopus</label>
+          <input type="text" class="form-control" id="scopus" value="${data.scopus || ''}">
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">DOI</label>
+        <input type="text" class="form-control" id="doi" value="${data.doi || ''}">
       </div>
     `;
   }

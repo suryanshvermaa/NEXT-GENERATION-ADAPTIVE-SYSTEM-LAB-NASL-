@@ -91,10 +91,11 @@ class PublicationCRUD {
         title: data.title,
         conference: data.conference,
         authors: data.authors,
-        publicationDate: data.publicationDate || null,
+        location: data.location || null,
         year: data.year ? parseInt(data.year) : null,
-        doi: data.doi || null,
-        pages: data.pages || null
+        pages: data.pages || null,
+        indexing: data.indexing || null,
+        doi: data.doi || null
       })
     });
 
@@ -119,7 +120,7 @@ class PublicationCRUD {
         grantNo: data.grantNo || null,
         grantDate: data.grantDate || null,
         publicationDate: data.publicationDate || null,
-        inventors: data.inventors // comma-separated user IDs
+        inventors: data.inventors || ''
       })
     });
 
@@ -142,9 +143,10 @@ class PublicationCRUD {
         title: data.title,
         authors: data.authors,
         publisher: data.publisher || null,
-        publicationDate: data.publicationDate || null,
+        scopus: data.scopus || null,
+        doi: data.doi || null,
         isbn: data.isbn || null,
-        type: data.type || 'BOOK' // BOOK or CHAPTER
+        year: data.year ? parseInt(data.year) : null
       })
     });
 
@@ -197,10 +199,11 @@ class PublicationCRUD {
         title: data.title,
         conference: data.conference,
         authors: data.authors,
-        publicationDate: data.publicationDate || null,
+        location: data.location || null,
         year: data.year ? parseInt(data.year) : null,
-        doi: data.doi || null,
-        pages: data.pages || null
+        pages: data.pages || null,
+        indexing: data.indexing || null,
+        doi: data.doi || null
       })
     });
 
@@ -216,6 +219,7 @@ class PublicationCRUD {
       throw new Error('You do not have permission to update this patent');
     }
 
+
     const response = await fetch(`${this.apiBase}/api/patent/${id}`, {
       method: 'PUT',
       headers: this.getAuthHeaders(),
@@ -226,7 +230,7 @@ class PublicationCRUD {
         grantNo: data.grantNo || null,
         grantDate: data.grantDate || null,
         publicationDate: data.publicationDate || null,
-        inventors: data.inventors
+        inventors: data.inventors || ''
       })
     });
 
@@ -250,9 +254,10 @@ class PublicationCRUD {
         title: data.title,
         authors: data.authors,
         publisher: data.publisher || null,
-        publicationDate: data.publicationDate || null,
+        scopus: data.scopus || null,
+        doi: data.doi || null,
         isbn: data.isbn || null,
-        type: data.type || 'BOOK'
+        year: data.year ? parseInt(data.year) : null
       })
     });
 

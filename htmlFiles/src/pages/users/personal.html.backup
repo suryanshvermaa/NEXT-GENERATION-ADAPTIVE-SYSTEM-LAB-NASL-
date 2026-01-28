@@ -846,14 +846,7 @@
 
     if (usernameEl) usernameEl.innerText = user.name || "No Name";
     if (emailEl) emailEl.innerHTML = `<i class="fas fa-envelope"></i> ${user.email || "N/A"}`;
-    if (designationEl) {
-      if (user.designation && user.designation !== 'N/A') {
-        designationEl.innerHTML = `<strong>Designation:</strong> ${user.designation}`;
-        designationEl.style.display = 'block';
-      } else {
-        designationEl.style.display = 'none';
-      }
-    }
+    if (designationEl) designationEl.innerHTML = `<strong>Designation:</strong> ${user.designation || "N/A"}`;
     if (contactEl) contactEl.innerHTML = `<i class="fas fa-phone"></i> ${user.contactNumber || "N/A"}`;
     if (aboutEl) aboutEl.innerHTML = user.about || "<i>No about info provided.</i>";
 
