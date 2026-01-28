@@ -6,6 +6,7 @@
 }
 .container-fluid{
     gap: 2rem;
+    background-color: #254D70 !important;
 }
 .navbar-nav{
     display: flex;
@@ -19,7 +20,7 @@
 /* --------------------- */
 .primary-navigation {
     li a {
-      color: black;
+      color: white;
     }
 
     li a:hover {
@@ -59,6 +60,10 @@
       border-style: none;
     }
 
+    ul li ul li a {
+      color: black;
+    }
+
     ul li ul li a:hover {
       padding-left: 10px;
       border-left: 2px solid #3ca0e7;
@@ -94,9 +99,13 @@ ul li ul li a { transition: all 0.5s ease; }
   text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
 }
 .navbar-expand-lg {
-height: 5rem;
-/* background-color: royalblue !important; */
-
+  height: 5rem;
+}
+.navbar-toggler {
+  border-color: rgba(255,255,255,.5);
+}
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.85)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 .btn-custom-red{
     background-color: #e47d7d !important; 
@@ -111,9 +120,6 @@ h4 {
 }
 .carousel-item img{
 opacity: 0.7;
-}
-.container-fluid{
-    background-color: #254D70 !important;  /* Soft beige */
 }
 
 .custom-highlight-box,

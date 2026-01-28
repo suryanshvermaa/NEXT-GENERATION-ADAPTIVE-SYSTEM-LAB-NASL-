@@ -48,10 +48,16 @@ export const createConferencePaper = asyncHandler(
 				pages,
 				indexing,
 				doi,
-				authors: authors.split(",").map((author:string)=>author.trim()),
+				authors: authors.split(",").map((author: string) => author.trim()),
 				createdBy: req.user?.userId as number,
 			},
 		});
+		await prisma.user.update({
+			where: { id: req.user!.userId as number },
+			data: {
+				conferencePapers_count: { increment: 1 }
+			}
+		})
 		response(res, 201, "Conference paper created successfully", {
 			conferencePaper,
 		});
@@ -99,7 +105,7 @@ export const updateConferencePaper = asyncHandler(
 		});
 		if (!existingConferencePaper)
 			throw new AppError("Conference paper not found", 404);
-		if(req.user?.role !== "ADMIN" && existingConferencePaper.createdBy !== req.user?.userId){
+		if (req.user?.role !== "ADMIN" && existingConferencePaper.createdBy !== req.user?.userId) {
 			throw new AppError("You are not authorized to update this conference paper", 403);
 		}
 		const conferencePaper = await prisma.conference_Paper.update({
@@ -112,7 +118,7 @@ export const updateConferencePaper = asyncHandler(
 				pages,
 				indexing,
 				doi,
-				authors: authors.split(",").map((author:string)=>author.trim()),
+				authors: authors.split(",").map((author: string) => author.trim()),
 			}
 		});
 		response(res, 200, "Conference paper updated successfully", {
@@ -132,7 +138,7 @@ export const updateConferencePaper = asyncHandler(
 export const getAllConferencePapers = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { page = "1", limit = "10" } = req.query;
-		const skip = (Number(page) - 1) * Number(limit);	
+		const skip = (Number(page) - 1) * Number(limit);
 		const conferencePapers = await prisma.conference_Paper.findMany({
 			orderBy: { createdAt: "desc" },
 			skip: skip,
@@ -189,7 +195,7 @@ export const getConferencePaperById = asyncHandler(
 		if (!id)
 			throw new AppError("Please provide id of conference paper", 400);
 		const conferencePaper = await prisma.conference_Paper.findUnique({
-				where: { id: Number(id) }
+			where: { id: Number(id) }
 		});
 		if (!conferencePaper)
 			throw new AppError("Conference paper not found", 404);
@@ -217,12 +223,18 @@ export const deleteConferencePaperById = asyncHandler(
 		});
 		if (!existingConferencePaper)
 			throw new AppError("Conference paper not found", 404);
-		if(req.user?.role !== "ADMIN" && existingConferencePaper.createdBy !== req.user?.userId){
+		if (req.user?.role !== "ADMIN" && existingConferencePaper.createdBy !== req.user?.userId) {
 			throw new AppError("You are not authorized to delete this conference paper", 403);
 		}
 		const conferencePaper = await prisma.conference_Paper.delete({
 			where: { id: Number(id) },
 		});
+		await prisma.user.update({
+			where: { id: req.user!.userId as number },
+			data: {
+				conferencePapers_count: { decrement: 1 }
+			}
+		})
 		response(res, 200, "Conference paper deleted successfully", {
 			conferencePaper,
 		});

@@ -50,7 +50,24 @@ export function initNavbarAuth() {
   const apiBase = getApiBase();
   if (!apiBase) return;
 
-  fetch(`${apiBase}/api/user/profile`, {
+  // Get user ID from localStorage to fetch profile
+  const storedUser = localStorage.getItem('user');
+  let userId = null;
+  if (storedUser) {
+    try {
+      const userData = JSON.parse(storedUser);
+      userId = userData?.id;
+    } catch (e) {
+      console.error('Error parsing user data:', e);
+    }
+  }
+
+  if (!userId) {
+    console.warn('No user ID found in localStorage');
+    return;
+  }
+
+  fetch(`${apiBase}/api/user/profile/${userId}`, {
     headers: { Authorization: `Bearer ${token}` },
   })
     .then((response) => {

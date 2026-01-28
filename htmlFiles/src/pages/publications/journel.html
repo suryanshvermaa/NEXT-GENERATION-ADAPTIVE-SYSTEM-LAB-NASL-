@@ -9,6 +9,10 @@
       rel="stylesheet"
     />
     <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
       rel="stylesheet"
     />
@@ -40,23 +44,19 @@
       }
 
       .card {
-        display: flex;
-        flex-direction: row;
-        background: #f9f9f9;
-        border: 1px solid #ddd;
+        position: relative;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border: 1px solid #e0e0e0;
         border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-        overflow: hidden;
-        padding: 20px;
-        gap: 25px;
+        padding: 25px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
       }
 
-      .card img {
-        width: 280px;
-        height: auto;
-        object-fit: cover;
-        border: 1px solid #ccc;
-        border-radius: 8px;
+      .card:hover {
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        transform: translateY(-3px);
       }
 
       .card-content {
@@ -440,9 +440,10 @@
       const type = "journal"
 
       // 1. Get user role from localStorage
-      // let userRole = null;
+      let userRole = null;
+      let userData = null;
       try {
-        // const userData = JSON.parse(localStorage.getItem("user"));
+        userData = JSON.parse(localStorage.getItem("user"));
         userRole = userData?.role;
         console.log("User role:", userRole);
       } catch (err) {
@@ -453,53 +454,113 @@
         document.getElementById("addButton").style.display = "block";
       }
 
-      // 2. Fetch and render journal papers
-      fetch(
-  `${window.NASL.API_BASE}/api/publication/get-all?type=${encodeURIComponent(type)}`
-      )
+      // Pagination state
+      let currentPage = 1;
+      const limit = 10;
+
+      function fetchJournalPapers(page = 1) {
+        currentPage = page;
+        container.innerHTML = '<p style="text-align: center; padding: 40px;">Loading...</p>';
+        
+        // 2. Fetch and render journal papers
+        fetch(
+    `${window.NASL.API_BASE}/api/journal-paper/get-all?page=${page}&limit=${limit}`
+        )
         .then((response) => {
           if (!response.ok) throw new Error("Failed to fetch journal papers");
           return response.json();
         })
         .then((result) => {
           console.log(result)
-          const { publications } = result.data;
-          console.log("Journal papers:", publications);
+          const { journalPapers } = result.data;
+          console.log("Journal papers:", journalPapers);
 
-          publications.forEach((paper) => {
+          if (!journalPapers || journalPapers.length === 0) {
+            container.innerHTML = `
+              <div style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border-radius: 12px; border: 2px dashed #dee2e6;">
+                <i class="fas fa-file-alt" style="font-size: 4rem; color: #dee2e6; margin-bottom: 20px;"></i>
+                <h5 style="color: #6c757d; margin-bottom: 10px;">No Journal Papers</h5>
+                <p style="color: #adb5bd; margin: 0;">No journal papers have been published yet.</p>
+              </div>
+            `;
+            return;
+          }
+
+          // Clear loading message
+          container.innerHTML = '';
+
+          journalPapers.forEach((paper) => {
             const card = document.createElement("div");
             card.className = "card";
 
-            // 3. Build action buttons only if user is ADMIN
-            let adminButtons = "";
-            if (userRole === "ADMIN" || userRole=== "USER") {
-              adminButtons = `
-          <div class="card-icons">
-            <a class="icon-btn edit-btn" data-id="${paper.id}" title="Edit">
-              <span class="material-symbols-outlined">edit_document</span>
-            </a>
-            <a class="icon-btn delete-btn" data-id="${paper.id}" title="Delete">
-              <span class="material-symbols-outlined">delete</span>
-            </a>
-          </div>
-        `;
-            }
+            // Format authors array to display as string
+            const authorsDisplay = Array.isArray(paper.authors) 
+              ? paper.authors.join(", ") 
+              : paper.authors;
 
-            // 4. Inject card HTML
+            // 4. Inject card HTML with modern design
             card.innerHTML = `
-            <div class="card-content toggle-wrapper" style="max-height: 150px; overflow: hidden; position: relative;">
-              <h2 style="text-align:center;">${paper.title}</h2>
-              <div id="journalPapersPara">${paper.content}
-                </div>
+            <div class="card-content">
+              <h2 style="font-size: 1.3rem; margin-bottom: 12px; color: #1a1a1a; font-weight: 600;">
+                <i class="fas fa-file-alt" style="color: #254D70; margin-right: 8px;"></i>
+                ${paper.title}
+              </h2>
+              <p style="margin-bottom: 8px; color: #555;">
+                <i class="fas fa-users" style="color: #254D70; margin-right: 6px; width: 16px;"></i>
+                <strong>Authors:</strong> <span style="color: #333;">${authorsDisplay || 'N/A'}</span>
+              </p>
+              <p style="margin-bottom: 8px; color: #555;">
+                <i class="fas fa-book" style="color: #254D70; margin-right: 6px; width: 16px;"></i>
+                <strong>Journal:</strong> ${paper.journal || 'N/A'}
+              </p>
+              ${paper.year ? `<p style="margin-bottom: 8px; color: #555;"><i class="fas fa-calendar" style="color: #254D70; margin-right: 6px; width: 16px;"></i><strong>Year:</strong> ${paper.year}</p>` : ''}
+              ${paper.volume ? `<p style="margin-bottom: 8px; color: #555;"><i class="fas fa-book-open" style="color: #254D70; margin-right: 6px; width: 16px;"></i><strong>Volume:</strong> ${paper.volume}</p>` : ''}
+              ${paper.quartile ? `<p style="margin-bottom: 8px; color: #555;"><i class="fas fa-star" style="color: #FFD700; margin-right: 6px; width: 16px;"></i><strong>Quartile:</strong> <span class="badge bg-warning text-dark">${paper.quartile}</span></p>` : ''}
+              ${paper.doi ? `<p style="margin-bottom: 8px; color: #555;"><i class="fas fa-link" style="color: #254D70; margin-right: 6px; width: 16px;"></i><strong>DOI:</strong> <a href="https://doi.org/${paper.doi}" target="_blank" style="color: #254D70;">${paper.doi}</a></p>` : ''}
             </div>
-            ${adminButtons}
           `;
 
             container.appendChild(card);
           });
 
+          // Add pagination controls
+          const paginationDiv = document.createElement("div");
+          paginationDiv.className = "pagination-controls d-flex justify-content-center align-items-center mt-5 mb-4";
+          paginationDiv.style.gap = "15px";
+          
+          const prevBtn = document.createElement("button");
+          prevBtn.className = "btn btn-outline-primary";
+          prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i> Previous';
+          prevBtn.disabled = currentPage === 1;
+          prevBtn.onclick = () => {
+            if (currentPage > 1) {
+              fetchJournalPapers(currentPage - 1);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          };
+
+          const pageInfo = document.createElement("span");
+          pageInfo.className = "text-muted fw-bold";
+          pageInfo.innerHTML = `Page <strong>${currentPage}</strong> | Showing ${journalPapers.length} items`;
+
+          const nextBtn = document.createElement("button");
+          nextBtn.className = "btn btn-outline-primary";
+          nextBtn.innerHTML = 'Next <i class="fas fa-chevron-right"></i>';
+          nextBtn.disabled = journalPapers.length < limit;
+          nextBtn.onclick = () => {
+            if (journalPapers.length === limit) {
+              fetchJournalPapers(currentPage + 1);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          };
+
+          paginationDiv.appendChild(prevBtn);
+          paginationDiv.appendChild(pageInfo);
+          paginationDiv.appendChild(nextBtn);
+          container.appendChild(paginationDiv);
+
           // 5. Setup delete button logic
-          if (userRole === "ADMIN") {
+          if (userRole === "ADMIN" || userRole === "USER") {
             document.querySelectorAll(".delete-btn").forEach((btn) => {
               btn.addEventListener("click", async function () {
                 const id = this.getAttribute("data-id");
@@ -510,7 +571,7 @@
                 ) {
                   try {
                     const res = await fetch(
-                      `${window.NASL.API_BASE}/api/publication/${id}`,
+                      `${window.NASL.API_BASE}/api/journal-paper/${id}`,
                       {
                         method: "DELETE",
                         headers: {
@@ -536,7 +597,18 @@
         })
         .catch((error) => {
           console.error("Error loading journal papers:", error);
+          container.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border-radius: 12px; border: 2px dashed #dee2e6;">
+              <i class="fas fa-exclamation-circle" style="font-size: 4rem; color: #dc3545; margin-bottom: 20px;"></i>
+              <h5 style="color: #6c757d; margin-bottom: 10px;">Error Loading Papers</h5>
+              <p style="color: #adb5bd; margin: 0;">${error.message}</p>
+            </div>
+          `;
         });
+      }
+
+      // Initial load
+      fetchJournalPapers(1);
     </script>
   </body>
 </html>

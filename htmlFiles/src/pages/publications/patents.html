@@ -9,6 +9,10 @@
       rel="stylesheet"
     />
     <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
       rel="stylesheet"
     />
@@ -40,15 +44,19 @@
       }
 
       .card {
-        display: flex;
-        flex-direction: row;
-        background: #f9f9f9;
-        border: 1px solid #ddd;
+        position: relative;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border: 1px solid #e0e0e0;
         border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-        overflow: hidden;
-        padding: 20px;
-        gap: 25px;
+        padding: 25px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+      }
+
+      .card:hover {
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        transform: translateY(-3px);
       }
 
       .card img {
@@ -452,23 +460,42 @@
         document.getElementById("addButton").style.display = "block";
       }
 
-      // 2. Fetch and render journal papers
-      fetch(
-  `${window.NASL.API_BASE}/api/publication/get-all?type=${encodeURIComponent(type)}`
-      )
+      let currentPage = 1;
+      const limit = 10;
+
+      // 2. Fetch and render patents with pagination
+      function fetchPatents(page = 1) {
+        currentPage = page;
+        container.innerHTML = '<p>Loading...</p>';
+        
+        fetch(
+    `${window.NASL.API_BASE}/api/patent/get-all?page=${page}&limit=${limit}`
+        )
         .then((response) => {
-          if (!response.ok) throw new Error("Failed to fetch Patents ");
+          if (!response.ok) throw new Error("Failed to fetch patents");
           return response.json();
         })
         .then((result) => {
-          const { publications } = result.data;
-          console.log("Patents:", publications);
+          const { patents } = result.data;
+          console.log("Patents:", patents);
 
-          publications.forEach((patent) => {
+          if (!patents || patents.length === 0) {
+            container.innerHTML = `
+              <div style="text-align: center; padding: 60px 20px; border: 2px dashed #dee2e6; border-radius: 12px; background: #f8f9fa;">
+                <i class="fas fa-lightbulb" style="font-size: 48px; color: #adb5bd; margin-bottom: 16px;"></i>
+                <p style="color: #6c757d; font-size: 18px; margin: 0;">No patents available</p>
+              </div>
+            `;
+            return;
+          }
+
+          container.innerHTML = '';
+
+          patents.forEach((patent) => {
             const card = document.createElement("div");
             card.className = "card";
 
-            // 3. Build action buttons only if user is ADMIN
+            // 3. Build action buttons only if user is ADMIN or USER
             let adminButtons = "";
             if (userRole === "ADMIN" || userRole=== "USER") {
               adminButtons = `
@@ -483,20 +510,86 @@
         `;
             }
 
-            // 4. Inject card HTML
+            // Format inventors array to display
+            const inventorsDisplay = Array.isArray(patent.inventors) 
+              ? patent.inventors.join(", ") 
+              : patent.inventors;
+
+            // Format dates
+            const grantDateFormatted = patent.grantDate ? new Date(patent.grantDate).toLocaleDateString() : 'N/A';
+            const publicationDateFormatted = patent.publicationDate ? new Date(patent.publicationDate).toLocaleDateString() : 'N/A';
+
+            // 4. Inject card HTML with modern UI and icons
             card.innerHTML = `
-            <div class="card-content toggle-wrapper" style="max-height: 150px; overflow: hidden; position: relative;">
-              <h2 style="text-align:center;">${patent.title}</h2>
-              <div class="patent-details;">${patent.content}</div>
-            
-            ${adminButtons}
-          `;
+              <h5 style="margin-bottom: 20px; color: #1a1a1a; font-weight: 600;">
+                <i class="fas fa-lightbulb" style="margin-right: 8px; color: #ffc107;"></i>
+                ${patent.title}
+              </h5>
+              <p style="margin-bottom: 12px; color: #495057;">
+                <i class="fas fa-users" style="margin-right: 8px; color: #6c757d;"></i>
+                <strong>Inventors:</strong> ${inventorsDisplay || 'N/A'}
+              </p>
+              ${patent.type ? `
+                <p style="margin-bottom: 12px; color: #495057;">
+                  <i class="fas fa-tag" style="margin-right: 8px; color: #6c757d;"></i>
+                  <strong>Type:</strong> <span class="badge bg-secondary">${patent.type}</span>
+                </p>
+              ` : ''}
+              ${patent.grantNo ? `
+                <p style="margin-bottom: 12px; color: #495057;">
+                  <i class="fas fa-hashtag" style="margin-right: 8px; color: #6c757d;"></i>
+                  <strong>Grant Number:</strong> ${patent.grantNo}
+                </p>
+              ` : ''}
+              ${patent.grantDate ? `
+                <p style="margin-bottom: 12px; color: #495057;">
+                  <i class="fas fa-calendar-check" style="margin-right: 8px; color: #6c757d;"></i>
+                  <strong>Grant Date:</strong> ${grantDateFormatted}
+                </p>
+              ` : ''}
+              ${patent.publicationDate ? `
+                <p style="margin-bottom: 0; color: #495057;">
+                  <i class="fas fa-calendar" style="margin-right: 8px; color: #6c757d;"></i>
+                  <strong>Publication Date:</strong> ${publicationDateFormatted}
+                </p>
+              ` : ''}
+              ${adminButtons}
+            `;
 
             container.appendChild(card);
           });
 
+          // Add pagination controls
+          const paginationDiv = document.createElement("div");
+          paginationDiv.className = "pagination-controls d-flex justify-content-between align-items-center mt-4";
+          paginationDiv.innerHTML = `
+            <button id="prevBtn" class="btn btn-outline-primary" ${currentPage === 1 ? 'disabled' : ''}>
+              <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <span class="text-muted">Page ${currentPage}</span>
+            <button id="nextBtn" class="btn btn-outline-primary" ${patents.length < limit ? 'disabled' : ''}>
+              Next <i class="fas fa-chevron-right"></i>
+            </button>
+          `;
+          container.appendChild(paginationDiv);
+
+          // Attach event listeners to pagination buttons
+          document.getElementById('prevBtn')?.addEventListener('click', () => {
+            if (currentPage > 1) {
+              fetchPatents(currentPage - 1);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          });
+
+          document.getElementById('nextBtn')?.addEventListener('click', () => {
+            if (patents.length >= limit) {
+              fetchPatents(currentPage + 1);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          });
+
           // 5. Setup delete button logic
-          if (userRole === "ADMIN") {
+          if (userRole === "ADMIN" || userRole === "USER") {
             document.querySelectorAll(".delete-btn").forEach((btn) => {
               btn.addEventListener("click", async function () {
                 const id = this.getAttribute("data-id");
@@ -507,7 +600,7 @@
                 ) {
                   try {
                     const res = await fetch(
-                      `${window.NASL.API_BASE}/api/publication/${id}`,
+                      `${window.NASL.API_BASE}/api/patent/${id}`,
                       {
                         method: "DELETE",
                         headers: {
@@ -519,7 +612,7 @@
                     const data = await res.json();
                     if (res.ok) {
                       alert("Deleted successfully");
-                      location.reload();
+                      fetchPatents(currentPage);
                     } else {
                       alert(data.message || "Failed to delete");
                     }
@@ -531,6 +624,13 @@
             });
           }
         })
+        .catch((error) => {
+          console.error("Error loading patents:", error);
+        });
+      }
+
+      // Initial load
+      fetchPatents(1);
         .catch((error) => {
           console.error("Error loading patents:", error);
         });

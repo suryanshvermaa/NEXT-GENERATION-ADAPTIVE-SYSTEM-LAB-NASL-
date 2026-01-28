@@ -260,15 +260,17 @@
         const isbn = document.getElementById("isbn").value;
         const authors = JSON.parse(document.getElementById("authors").value);
 
+        // Convert array of author IDs to comma-separated string
+        const authorsList = Array.from(selectedAuthors).join(",");
+        
         const payload = {
           title,
-          publisher,
-          year,
-
-          scopus,
-          doi,
-          isbn,
-          authors,
+          publisher: publisher || null,
+          year: year || null,
+          scopus: scopus || null,
+          doi: doi || null,
+          isbn: isbn || null,
+          authors: authorsList,
         };
 
         console.log(payload)
@@ -290,11 +292,11 @@
           if (response.ok) {
             console.log(result);
             alert("Book added successfully!");
-            // Reset form if needed
+            window.location.reload();
           } else {
             alert(result.message || "Failed to create Book");
           }
-        } catch (errror) {
+        } catch (error) {
           console.error("Error:", error);
           alert("Something went wrong!");
         }
