@@ -37,10 +37,16 @@ export const createPatent = asyncHandler(
 				publicationDate: publicationDate
 					? new Date(publicationDate)
 					: null,
-				inventors: inventors.split(",").map((inventor: string) => Number(inventor.trim())),
+				inventors: inventors.split(",").map((inventor: string) => inventor.trim()),
 				createdBy: req.user?.userId as number,
 			},
 		});
+		await prisma.user.update({
+			where: { id: req.user!.userId as number },
+			data: {
+				patents_count: { increment: 1 }
+			}
+		})
 		response(res, 201, "Patent created successfully", { patent });
 	}
 );
@@ -74,7 +80,7 @@ export const updatePatent = asyncHandler(
 		});
 		if (!existingPatent)
 			throw new AppError("Patent with given id does not exist", 404);
-		if(req.user?.role !== 'ADMIN' && existingPatent.createdBy !== req.user?.userId) {
+		if (req.user?.role !== 'ADMIN' && existingPatent.createdBy !== req.user?.userId) {
 			throw new AppError("You are not authorized to update this patent", 403);
 		}
 		const patent = await prisma.patent.update({
@@ -87,7 +93,7 @@ export const updatePatent = asyncHandler(
 				publicationDate: publicationDate
 					? new Date(publicationDate)
 					: null,
-				inventors: inventors.split(",").map((inventor: string) => Number(inventor.trim())),
+				inventors: inventors.split(",").map((inventor: string) => inventor.trim()),
 			},
 		});
 		response(res, 200, "Patent updated successfully", { patent });
@@ -131,12 +137,18 @@ export const deletePatent = asyncHandler(
 		});
 		if (!existingPatent)
 			throw new AppError("Patent with given id does not exist", 404);
-		if(req.user?.role !== 'ADMIN' && existingPatent.createdBy !== req.user?.userId) {
+		if (req.user?.role !== 'ADMIN' && existingPatent.createdBy !== req.user?.userId) {
 			throw new AppError("You are not authorized to delete this patent", 403);
 		}
 		const patent = await prisma.patent.delete({
 			where: { id: Number(id) },
 		});
+		await prisma.user.update({
+			where: { id: req.user!.userId as number },
+			data: {
+				patents_count: { decrement: 1 }
+			}
+		})
 		response(res, 200, "Patent deleted successfully", { patent });
 	}
 );

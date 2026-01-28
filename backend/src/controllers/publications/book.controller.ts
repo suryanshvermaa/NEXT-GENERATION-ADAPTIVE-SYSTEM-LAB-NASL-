@@ -39,7 +39,12 @@ export const createBook = asyncHandler(async (req: Request, res: Response) => {
 			createdBy: req.user!.userId as number,
 		},
 	});
-
+	await prisma.user.update({
+		where:{id:req.user!.userId as number},
+		data:{
+			books_count:{increment:1}
+		}
+	})
 	response(res, 201, "Book created successfully", { book });
 });
 
@@ -152,6 +157,12 @@ export const deleteBook = asyncHandler(async (req: Request, res: Response) => {
 	const book = await prisma.book.delete({
 		where: { id: Number(id) },
 	});
+	await prisma.user.update({
+		where:{id:req.user!.userId as number},
+		data:{
+			books_count:{decrement:1}
+		}
+	})
 
 	response(res, 200, "Book deleted successfully", { book });
 });

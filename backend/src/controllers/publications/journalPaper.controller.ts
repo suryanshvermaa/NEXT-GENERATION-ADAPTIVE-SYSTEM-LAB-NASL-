@@ -34,7 +34,7 @@ export const createJournalPaper = asyncHandler(
 			data: {
 				title,
 				journal,
-				authors: authors.split(",").map((author:string)=>(author.trim())),
+				authors: authors.split(",").map((author: string) => (author.trim())),
 				publicationDate: new Date(publicationDate),
 				volume,
 				year,
@@ -43,6 +43,12 @@ export const createJournalPaper = asyncHandler(
 				createdBy: req.user!.userId as number,
 			},
 		});
+		await prisma.user.update({
+			where: { id: req.user!.userId as number },
+			data: {
+				journals_count: { increment: 1 }
+			}
+		})
 		response(res, 201, "Journal paper created successfully", {
 			journalPaper,
 		});
@@ -83,7 +89,7 @@ export const updateJournalPaper = asyncHandler(
 		if (!existingPaper) {
 			throw new AppError("Journal paper not found", 404);
 		}
-		if(req.user?.role !== "ADMIN" && existingPaper.createdBy !== req.user?.userId){ 
+		if (req.user?.role !== "ADMIN" && existingPaper.createdBy !== req.user?.userId) {
 			throw new AppError("You are not authorized to update this journal paper", 403);
 		}
 		const journalPaper = await prisma.journal_Paper.update({
@@ -93,7 +99,7 @@ export const updateJournalPaper = asyncHandler(
 			data: {
 				title,
 				journal,
-				authors: authors.split(",").map((author:string)=>(author.trim())),
+				authors: authors.split(",").map((author: string) => (author.trim())),
 				publicationDate: new Date(publicationDate),
 				volume,
 				year,
@@ -209,7 +215,7 @@ export const deleteJournalPaperById = asyncHandler(
 		if (!existingPaper) {
 			throw new AppError("Journal paper not found", 404);
 		}
-		if(req.user?.role !== "ADMIN" && existingPaper.createdBy !== req.user?.userId){ 
+		if (req.user?.role !== "ADMIN" && existingPaper.createdBy !== req.user?.userId) {
 			throw new AppError("You are not authorized to delete this journal paper", 403);
 		}
 		const journalPaper = await prisma.journal_Paper.delete({
@@ -217,6 +223,12 @@ export const deleteJournalPaperById = asyncHandler(
 				id: Number(id),
 			},
 		});
+		await prisma.user.update({
+			where: { id: req.user!.userId as number },
+			data: {
+				journals_count: { decrement: 1 }
+			}
+		})
 		response(res, 200, "Journal paper deleted successfully", {
 			journalPaper,
 		});
