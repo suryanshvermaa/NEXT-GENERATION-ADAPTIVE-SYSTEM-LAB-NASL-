@@ -10,29 +10,20 @@ import { getUserInfo } from "../auth/googleAuth";
 import { sendMailToCreatedUser } from "../mail/sendMail";
 import { Prisma, User } from "../../generated/prisma";
 
-enum Designation{
-  BTECH,
-  MTECH,
-  PHD,
-  INVESTIGATOR,
-  INTERN,
-  ALUMNI
-}
-
-const designationToEnum = (designation: string): Designation | null => {
+const designationToEnum = (designation: string): User["designation"] | null => {
   switch (designation.toLowerCase()) {
 	case "btech":
-		return Designation.BTECH;
+		return "BTECH";
 	case "mtech":
-		return Designation.MTECH;
+		return "MTECH";
 	case "phd":
-		return Designation.PHD;
+		return "PHD";
 	case "investigator":
-		return Designation.INVESTIGATOR;
+		return "INVESTIGATOR";
 	case "intern":
-		return Designation.INTERN;
+		return "INTERN";
 	case "alumni":
-		return Designation.ALUMNI;
+		return "ALUMNI";
 	default:
 		return null;
   }
@@ -53,8 +44,9 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
 		password = "",
 		designation,
 	} = req.body;
-	const designationEnum = designationToEnum(designation) as unknown as string;
-	const role=designationEnum;
+	const designationEnum = designationToEnum(designation);
+	if (!designationEnum) throw new AppError("Invalid designation provided", 400);
+	const role = designationEnum;
 	if (!name || !email || !designation)
 		throw new AppError("All fields are required", 400);
 	const isExisting = await prisma.user.findUnique({
@@ -72,7 +64,7 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
 			password: pass,
 			profileImage,
 			role: role as User["role"],
-			designation: designationEnum as User["designation"],
+			designation: designationEnum,
 		},
 	});
 	// await sendMailToCreatedUser(user.email,pass);
@@ -130,11 +122,22 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
  * @param res
  */
 export const profile = asyncHandler(async (req: Request, res: Response) => {
-	const userId = req.params.userId || req.user?.userId;
-	if (!userId) throw new AppError("userid not found", 401);
+	const userId = req.params.userId;
+	
+	if (!userId) {
+		throw new AppError("userId parameter is required", 400);
+	}
+	
+	const userIdNum = Number(userId);
+	
+	// Validate that userId is a valid number
+	if (isNaN(userIdNum)) {
+		throw new AppError("Invalid user id", 400);
+	}
+	
 	const user = await prisma.user.findUnique({
 		where: {
-			id: userId as number,
+			id: userIdNum,
 		},
 		select: {
 			id: true,
@@ -151,7 +154,10 @@ export const profile = asyncHandler(async (req: Request, res: Response) => {
 			role: true,
 			Social: {
 				select: {
-					userId: false
+					platform: true,
+					iconURL: true,
+					url: true,
+					id: true,
 				}
 			},
 		},
@@ -317,7 +323,7 @@ export const getPeopleByDesignation = asyncHandler(async (req: Request, res: Res
 	const skip = (pageNumber - 1) * limitNumber;
 	const people = await prisma.user.findMany({
 		where: {
-			designation: designationEnum as unknown as User["designation"],
+			designation: designationEnum,
 		},
 		select: {
 			id: true,

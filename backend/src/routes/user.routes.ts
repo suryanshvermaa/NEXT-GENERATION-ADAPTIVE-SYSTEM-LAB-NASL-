@@ -20,6 +20,6 @@ userRouter
 	.put("/updateProfile", auth, updateProfile)
 	.get("/search", searchingUserByEmail) // query param: query
 	.get("/getPeople", getPeopleByDesignation) // query param: designation, page, limit
-	.get("/profile/:userId", profile); // param: userId
+	.get("/profile/:userId", profile); // param: userId - Public route
 
 export default userRouter;
