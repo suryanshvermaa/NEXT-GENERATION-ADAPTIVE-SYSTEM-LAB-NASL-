@@ -339,11 +339,8 @@
     <!-- Left: Profile Image -->
     <div class="col-md-3 text-center">
       <img src="" class="img-fluid rounded-circle mb-3" alt="Profile" style="width: 150px;" id="profile_icon">
-      <div class="badge-icons d-flex justify-content-center">
-        <a href="#" id="googleUrl"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzf-mFSVPG0NB4zca3DW3zh0EEgYKyyjrmNg&s" alt="Google"></a>
-        <a href="#" id="linkedInUrl"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/500px-LinkedIn_logo_initials.png" alt="linkedIn"></a>
-
-        <a href="#" id="twitterUrl"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Logo_of_Twitter.svg/2491px-Logo_of_Twitter.svg.png" alt="Twitter"></a>
+      <div id="socialLinksContainer" class="badge-icons d-flex justify-content-center flex-wrap gap-2">
+        <!-- Dynamic social links will be inserted here -->
       </div>
     </div>
 
@@ -360,16 +357,16 @@
    <div class="col-md-3">
   <div class="row g-3">
     <div class="col-6">
-      <div class="stats-box"><span>5</span> Journals</div>
+      <div class="stats-box"><span>0</span> Journals</div>
     </div>
     <div class="col-6">
-      <div class="stats-box"><span>3</span> Conference</div>
+      <div class="stats-box"><span>0</span> Conference</div>
     </div>
     <div class="col-6">
-      <div class="stats-box"><span>2</span> Patents</div>
+      <div class="stats-box"><span>0</span> Patents</div>
     </div>
     <div class="col-6">
-      <div class="stats-box"><span>1</span> Book</div>
+      <div class="stats-box"><span>0</span> Book</div>
     </div>
   </div>
 </div>
@@ -383,7 +380,8 @@
   </div>
 
   <!-- Accordion Section -->
-  <div class="accordion mt-4" id="accordionExample">
+  <!-- Accordion Section -->
+<div class="accordion mt-4" id="accordionExample">
   <!-- Journal Accordion -->
   <div class="accordion-item">
     <h2 class="accordion-header" id="headingJournal">
@@ -429,8 +427,10 @@
     </div>
   </div>
 </div>
+  </div>
 </div>
 
+</div>
 </div>
 </div>
 
@@ -524,135 +524,323 @@
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../js/navbar.js"></script>
-<script src="../js/footer.js"></script>
 <script src="/js/config.js"></script>
+<script src="/js/navbar.js"></script>
+<script src="/js/footer.js"></script>
 <script>
-  // const token = localStorage.getItem("authToken");
+  // Global variables accessible by all subsequent scripts
+  const token = localStorage.getItem("authToken");
+  const storedUser = JSON.parse(localStorage.getItem("user") || "{}") || {};
+  const authorId = Number(storedUser?.id);
+  const userRole = storedUser?.role;
+</script>
+<script>
+  const statusEl = document.getElementById("profile-status");
+
+  function setStatus(message, type) {
+    if (!statusEl) return;
+    statusEl.classList.remove("d-none", "alert-info", "alert-success", "alert-warning", "alert-danger");
+    statusEl.classList.add(type || "alert-info");
+    statusEl.textContent = message;
+  }
+
+  function clearStatus() {
+    if (!statusEl) return;
+    statusEl.classList.add("d-none");
+    statusEl.textContent = "";
+  }
+
+  if (!token) {
+    setStatus("You are not logged in. Please login to view/edit your profile.", "alert-warning");
+  }
+
+  // Get userId from URL parameter or from stored user
   const urlParams = new URLSearchParams(window.location.search);
-const userId = urlParams.get("userId");
+  let userId = urlParams.get('userId');
+  
+  // If no userId in URL, use the stored user's ID
+  if (!userId && storedUser) {
+    userId = storedUser.id;
+  }
+  
+  if (!userId) {
+    setStatus("User ID not found. Please login or provide a valid user ID.", "alert-danger");
+    throw new Error("No userId available");
+  }
 
-if (!userId) {
-  alert("No user ID provided in URL.");
-  throw new Error("Missing user ID");
-}
+  let currentUser = null;
 
-  fetch(`${window.NASL.API_BASE}/api/user/profile/${encodeURIComponent(userId)}`)
+  fetch(`${window.NASL.API_BASE}/api/user/profile/${userId}`)
   .then(response => {
     if (!response.ok) throw new Error("Failed to fetch profile");
     return response.json();
   })
   .then(result => {
-    // console.log(result);
-    const { user } = result.data;
-    let publications =  user.publications; // for debugging
+    let { user } = result.data;
+    currentUser = user || null;
+    console.log("User data loaded:", user);
 
     // Profile image
     const profileImg = document.getElementById("profile_icon");
-    profileImg.src = user.profileImage || "/assets/default-avatar.svg";
-    profileImg.alt = user.name || "Profile";
-
-    // Basic Info
-    document.getElementById("username").innerText = user.name || "No Name";
-    document.getElementById("user_email").innerHTML = `<i class="fas fa-envelope"></i> ${user.email || "N/A"}`;
-    document.getElementById("user_designation").innerHTML = `<strong>Designation:</strong> ${user.designation || "N/A"}`;
-    document.getElementById("user_contactNumber").innerHTML = `<i class="fas fa-phone"></i> ${user.contactNumber || "N/A"}`;
-
-    // About
-    document.getElementById("user_about").innerHTML = user.about || "<i>No about info provided.</i>";
-
-    // Social Links
-    const googleAnchor = document.getElementById("googleUrl");
-    const linkedInAnchor = document.getElementById("linkedInUrl");
-    const twitterAnchor = document.getElementById("twitterUrl");
-    if (user.social[2].url) {
-      googleAnchor.href = user.social[2].url;
-      googleAnchor.target = "_blank";
-    } else {
-      googleAnchor.style.display = "none";
+    if (profileImg) {
+      profileImg.src = user.profileImage || "/assets/default-avatar.svg";
+      profileImg.alt = user.name || "Profile";
     }
 
-    if (user.social[1].url) {
-      linkedInAnchor.href = user.social[1].url;
-      linkedInAnchor.target = "_blank";
-    } else {
-      linkedInAnchor.style.display = "none";
+    // Basic Info - Only show fields that have values
+    const usernameEl = document.getElementById("username");
+    const emailEl = document.getElementById("user_email");
+    const designationEl = document.getElementById("user_designation");
+    const contactEl = document.getElementById("user_contactNumber");
+    const aboutEl = document.getElementById("user_about");
+
+    if (usernameEl) usernameEl.innerText = user.name || "No Name";
+    
+    if (emailEl && user.email) {
+      emailEl.innerHTML = `<i class="fas fa-envelope"></i> ${user.email}`;
+    } else if (emailEl) {
+      emailEl.style.display = "none";
+    }
+    
+    if (designationEl && user.designation) {
+      designationEl.innerHTML = `<strong>Designation:</strong> ${user.designation}`;
+    } else if (designationEl) {
+      designationEl.style.display = "none";
+    }
+    
+    if (contactEl && user.contactNumber) {
+      contactEl.innerHTML = `<i class="fas fa-phone"></i> ${user.contactNumber}`;
+    } else if (contactEl) {
+      contactEl.style.display = "none";
+    }
+    
+    if (aboutEl && user.about) {
+      aboutEl.innerHTML = user.about;
+    } else if (aboutEl) {
+      aboutEl.innerHTML = "<i>No about info provided.</i>";
     }
 
-    if (user.social[0].url) {
-      twitterAnchor.href = user.social[0].url;
-      twitterAnchor.target = "_blank";
-    } else {
-      twitterAnchor.style.display = "none";
+    // Display Social Links dynamically
+    const socialLinksContainer = document.getElementById("socialLinksContainer");
+    if (socialLinksContainer && user.Social && Array.isArray(user.Social) && user.Social.length > 0) {
+      socialLinksContainer.innerHTML = "";
+      user.Social.forEach(social => {
+        const link = document.createElement("a");
+        link.href = social.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.className = "social-link-item";
+        link.title = social.platform;
+        
+        if (social.iconURL) {
+          const img = document.createElement("img");
+          img.src = social.iconURL;
+          img.alt = social.platform;
+          img.style.width = "40px";
+          img.style.height = "40px";
+          img.style.objectFit = "contain";
+          link.appendChild(img);
+        } else {
+          const icon = document.createElement("i");
+          icon.className = "fas fa-link fa-2x";
+          link.appendChild(icon);
+        }
+        
+        socialLinksContainer.appendChild(link);
+      });
+    } else if (socialLinksContainer) {
+      socialLinksContainer.innerHTML = '<small class="text-muted">No social links added</small>';
     }
 
+    clearStatus();
 
-  // Publications
+  })
+  .catch(error => {
+    console.error("Error loading profile data:", error);
+    setStatus("Failed to load profile. Please re-login and try again.", "alert-danger");
+  });
+</script>
+<script>
+  // Publications section - uses global token and authorId variables
+
+  if (!authorId || Number.isNaN(authorId)) {
+    console.warn("Invalid user ID for publications; skipping.");
+  }
+
   const typeToContainerId = {
     journal: "journalContainer",
     conference: "conferenceContainer",
     patent: "patentContainer"
   };
-  function fetchAndRender(type) {
-  const container = document.getElementById(typeToContainerId[type]);
-  container.innerHTML = `<p>Loading ${type}...</p>`;
 
-  // Example: Assuming `publications` is globally available or fetched somewhere else
-  // You must ensure this array is assigned before calling this function
-  // For now, assuming publications is globally available
-  const filteredPublications = publications.filter(paper => paper.type === type);
+  const typeToEndpoint = {
+    journal: "/api/journal-paper/get-all-by-user-id",
+    conference: "/api/conference-paper/get-all-by-user-id",
+    patent: "/api/patent/get-all-by-user-id"
+  };
 
-  if (!filteredPublications || filteredPublications.length === 0) {
-    container.innerHTML = `<p>No ${type} found.</p>`;
-    return;
-  }
+  const paginationState = {
+    journal: { page: 1, limit: 10, hasMore: true },
+    conference: { page: 1, limit: 10, hasMore: true },
+    patent: { page: 1, limit: 10, hasMore: true }
+  };
 
-  container.innerHTML = ""; // Clear existing content before rendering
-
-  filteredPublications.forEach((paper) => {
-    const card = document.createElement("div");
-    card.className = "card";
-
-    let adminButtons = "";
-    if (userRole === "ADMIN" || userRole === "USER") {
-      adminButtons = `
-        <div class="card-icons">
-          <a class="icon-btn edit-btn" data-id="${paper.id}" title="Edit">
-            <span class="material-symbols-outlined">edit_document</span>
-          </a>
-          <a class="icon-btn delete-btn" data-id="${paper.id}" title="Delete">
-            <span class="material-symbols-outlined">delete</span>
-          </a>
-        </div>`;
+  function fetchAndRender(type, isLoadMore = false) {
+    const container = document.getElementById(typeToContainerId[type]);
+    
+    if (!isLoadMore) {
+      container.innerHTML = `<p>Loading ${type}...</p>`;
+      paginationState[type].page = 1;
     }
 
-    card.innerHTML = `
-      <div class="card-content toggle-wrapper" style="max-height: 150px; overflow: hidden; position: relative;">
-        <h2 style="text-align:center;">${paper.title}</h2>
-        <div style="display:none;" class="content-para">${paper.journal || paper.content || paper.description || ""}</div>
-      </div>
-      ${adminButtons}
-    `;
+    const endpoint = typeToEndpoint[type];
+    const { page, limit } = paginationState[type];
 
-    container.appendChild(card);
+  fetch(`${window.NASL.API_BASE}${endpoint}/${authorId}?page=${page}&limit=${limit}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`Failed to fetch ${type}`);
+        return res.json();
+      })
+      .then((result) => {
+        console.log(`${type} response:`, result);
+        
+        let publications = [];
+        if (type === 'journal') {
+          publications = result.data?.journalPapers || [];
+        } else if (type === 'conference') {
+          publications = result.data?.conferencePapers || [];
+        } else if (type === 'patent') {
+          publications = result.data?.patents || [];
+        }
+
+        if (!isLoadMore) {
+          container.innerHTML = "";
+        } else {
+          const loadMoreBtn = container.querySelector('.load-more-btn');
+          if (loadMoreBtn) loadMoreBtn.remove();
+        }
+
+        if (!publications || publications.length === 0) {
+          if (!isLoadMore) {
+            container.innerHTML = `<p>No ${type} found.</p>`;
+          }
+          paginationState[type].hasMore = false;
+          return;
+        }
+
+        publications.forEach((paper) => {
+          const card = document.createElement("div");
+          card.className = "card mb-3";
+
+          let adminButtons = "";
+          if (userRole === "ADMIN" || authorId === storedUser?.id) {
+            adminButtons = `
+              <div class="card-icons">
+                <a class="icon-btn delete-btn" data-id="${paper.id}" data-type="${type}" title="Delete">
+                  <span class="material-symbols-outlined">delete</span>
+                </a>
+              </div>`;
+          }
+
+          let authorsDisplay = "";
+          if (type === 'patent') {
+            const inventors = Array.isArray(paper.inventors) ? paper.inventors : [];
+            authorsDisplay = inventors.map(inv => inv.name).join(", ") || "N/A";
+          } else {
+            const authors = Array.isArray(paper.authors) ? paper.authors : [];
+            authorsDisplay = authors.map(auth => auth.name).join(", ") || "N/A";
+          }
+
+          card.innerHTML = `
+            <div class="card-content">
+              <h2 style="font-size: 1.2rem; margin-bottom: 10px;">${paper.title || "Untitled"}</h2>
+              <p><strong>${type === 'patent' ? 'Inventors' : 'Authors'}:</strong> ${authorsDisplay}</p>
+              ${type === 'journal' ? `<p><strong>Journal:</strong> ${paper.journal || "N/A"}</p>` : ''}
+              ${type === 'journal' ? `<p><strong>Year:</strong> ${paper.year || "N/A"}</p>` : ''}
+              ${type === 'conference' ? `<p><strong>Conference:</strong> ${paper.conference || "N/A"}</p>` : ''}
+              ${type === 'conference' ? `<p><strong>Year:</strong> ${paper.year || "N/A"}</p>` : ''}
+              ${type === 'patent' ? `<p><strong>Patent Number:</strong> ${paper.patentNumber || "N/A"}</p>` : ''}
+              ${type === 'patent' ? `<p><strong>Date:</strong> ${paper.dateOfFiling ? new Date(paper.dateOfFiling).toLocaleDateString() : "N/A"}</p>` : ''}
+            </div>
+            ${adminButtons}
+          `;
+
+          container.appendChild(card);
+        });
+
+        if (publications.length === limit) {
+          const loadMoreBtn = document.createElement("button");
+          loadMoreBtn.className = "btn btn-primary load-more-btn mt-3";
+          loadMoreBtn.textContent = "Load More";
+          loadMoreBtn.onclick = () => {
+            paginationState[type].page += 1;
+            fetchAndRender(type, true);
+          };
+          container.appendChild(loadMoreBtn);
+        } else {
+          paginationState[type].hasMore = false;
+        }
+      })
+      .catch((err) => {
+        if (!isLoadMore) {
+          container.innerHTML = `<p>Error loading ${type}: ${err.message}</p>`;
+        }
+        console.error(`Error fetching ${type}:`, err);
+      });
+  }
+
+  document.addEventListener("click", async (e) => {
+    if (e.target.closest(".delete-btn")) {
+      const btn = e.target.closest(".delete-btn");
+      const id = btn.dataset.id;
+      const type = btn.dataset.type;
+      
+      if (!confirm(`Are you sure you want to delete this ${type}?`)) return;
+
+      try {
+        const endpoint = typeToEndpoint[type].replace("/get-all-by-user-id", "/delete");
+        const res = await fetch(`${window.NASL.API_BASE}${endpoint}/${id}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) throw new Error("Failed to delete");
+
+        alert(`${type} deleted successfully`);
+        fetchAndRender(type);
+      } catch (err) {
+        alert(`Error deleting ${type}: ${err.message}`);
+      }
+    }
   });
-}
+
   // Setup event listeners for tab clicks
-  
   document.getElementById("collapseJournal").addEventListener("show.bs.collapse", () => {
-    fetchAndRender("journal");
+    if (document.getElementById("journalContainer").innerHTML === "") {
+      fetchAndRender("journal");
+    }
   });
 
   document.getElementById("collapseConference").addEventListener("show.bs.collapse", () => {
-    fetchAndRender("conference");
+    if (document.getElementById("conferenceContainer").innerHTML === "") {
+      fetchAndRender("conference");
+    }
   });
 
   document.getElementById("collapsePatent").addEventListener("show.bs.collapse", () => {
-    fetchAndRender("patent");
-  })
-  }).catch(error => {
-    console.error("Error loading profile data:", error);
+    if (document.getElementById("patentContainer").innerHTML === "") {
+      fetchAndRender("patent");
+    }
   });
+
 </script>
+
   </body>
 </html>

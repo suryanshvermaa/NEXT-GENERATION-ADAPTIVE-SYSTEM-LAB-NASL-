@@ -391,16 +391,8 @@
       </button>
     </h2>
     <div id="collapseJournal" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-      <div class="accordion-body">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6 class="mb-0">Your Journal Papers</h6>
-          <button class="btn btn-sm btn-primary" onclick="pubUI.showCreateModal('journal')">
-            <i class="fas fa-plus"></i> Add Journal Paper
-          </button>
-        </div>
-        <div id="journalContainer">
-          <!-- Journal content loaded dynamically -->
-        </div>
+      <div class="accordion-body" id="journalContainer">
+        <!-- Journal content loaded dynamically -->
       </div>
     </div>
   </div>
@@ -414,16 +406,8 @@
       </button>
     </h2>
     <div id="collapsePatent" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-      <div class="accordion-body">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6 class="mb-0">Your Patents</h6>
-          <button class="btn btn-sm btn-primary" onclick="pubUI.showCreateModal('patent')">
-            <i class="fas fa-plus"></i> Add Patent
-          </button>
-        </div>
-        <div id="patentContainer">
-          <!-- Patent content loaded dynamically -->
-        </div>
+      <div class="accordion-body" id="patentContainer">
+        <!-- Patent content loaded dynamically -->
       </div>
     </div>
   </div>
@@ -437,16 +421,8 @@
       </button>
     </h2>
     <div id="collapseConference" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-      <div class="accordion-body">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6 class="mb-0">Your Conference Papers</h6>
-          <button class="btn btn-sm btn-primary" onclick="pubUI.showCreateModal('conference')">
-            <i class="fas fa-plus"></i> Add Conference Paper
-          </button>
-        </div>
-        <div id="conferenceContainer">
-          <!-- Conference content loaded dynamically -->
-        </div>
+      <div class="accordion-body" id="conferenceContainer">
+        <!-- Conference content loaded dynamically -->
       </div>
     </div>
   </div>
@@ -459,59 +435,33 @@
     href="#edit-profile"
     id="edit-profile-link"
     class="btn btn-success"
-    onclick="toggleEditProfile(event)"
   >
     Edit Profile
   </a>
 </div>
 
 <!-- ✅ EDIT PROFILE -->
-<div id="edit-profile" class="mt-4 bg-white rounded-3 shadow-sm p-4" style="display: none;">
+<div id="edit-profile" class="mt-4 bg-white rounded-3 shadow-sm p-4">
   <h5 class="fw-bold mb-3">EDIT PROFILE</h5>
 
   <div id="profile-status" class="alert alert-info d-none" role="alert"></div>
 
   <form id="editProfileForm" class="row g-3" autocomplete="off">
-    <div class="col-12 col-md-6">
+    <div class="col-12 col-md-4">
       <label class="form-label" for="editProfileImage">Update Photo</label>
       <input class="form-control" type="file" id="editProfileImage" accept="image/*" />
-      <div class="form-text">Upload a new profile image</div>
+      <div class="form-text">If you pick a file, it will be uploaded and saved.</div>
     </div>
 
-    <div class="col-12 col-md-6">
+    <div class="col-12 col-md-4">
       <label class="form-label" for="editName">Name</label>
       <input class="form-control" type="text" id="editName" placeholder="Your name" />
     </div>
 
-    <div class="col-12 col-md-6">
+    <div class="col-12 col-md-4">
       <label class="form-label" for="editEmail">Email</label>
       <input class="form-control" type="email" id="editEmail" placeholder="Your email" />
-    </div>
-
-    <div class="col-12 col-md-6">
-      <label class="form-label" for="editContactNumber">Contact Number</label>
-      <input class="form-control" type="tel" id="editContactNumber" placeholder="Contact number" />
-    </div>
-
-    <div class="col-12">
-      <label class="form-label" for="editAbout">About</label>
-      <textarea class="form-control" id="editAbout" rows="3" placeholder="Tell us about yourself"></textarea>
-    </div>
-
-    <div class="col-12">
-      <hr class="my-3">
-      <h6 class="fw-bold mb-3">Social Links</h6>
-      <div id="socialLinksEdit">
-        <!-- Dynamic social link inputs will be added here -->
-      </div>
-      <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addSocialLink">
-        <i class="fas fa-plus"></i> Add Social Link
-      </button>
-    </div>
-
-    <div class="col-12">
-      <hr class="my-3">
-      <h6 class="fw-bold mb-3">Change Password (Optional)</h6>
+      <div class="form-text">If your backend blocks email updates, you’ll see the error.</div>
     </div>
 
     <div class="col-12 col-md-4">
@@ -526,7 +476,7 @@
 
     <div class="col-12">
       <button type="submit" class="btn btn-primary">Save Changes</button>
-      <button type="button" class="btn btn-outline-secondary ms-2" onclick="window.location.reload()">Cancel</button>
+      <a href="../forms_html/upd_user.html" class="btn btn-outline-secondary ms-2">Advanced Edit</a>
     </div>
   </form>
 </div>
@@ -627,18 +577,12 @@
 <script src="/js/config.js"></script>
 <script src="/js/navbar.js"></script>
 <script src="/js/footer.js"></script>
-<script src="/js/publicationCRUD.js"></script>
-<script src="/js/publicationUI.js"></script>
 <script>
   // Global variables accessible by all subsequent scripts
   const token = localStorage.getItem("authToken");
   const storedUser = JSON.parse(localStorage.getItem("user") || "{}") || {};
   const authorId = Number(storedUser?.id);
   const userRole = storedUser?.role;
-  
-  // Initialize CRUD managers
-  const pubCRUD = new PublicationCRUD();
-  const pubUI = new PublicationUI(pubCRUD);
 </script>
 <script>
   const statusEl = document.getElementById("profile-status");
@@ -655,127 +599,6 @@
     statusEl.classList.add("d-none");
     statusEl.textContent = "";
   }
-
-  // Toggle edit profile visibility
-  function toggleEditProfile(event) {
-    event.preventDefault();
-    const editSection = document.getElementById("edit-profile");
-    const editBtn = document.getElementById("edit-profile-link");
-    
-    if (editSection.style.display === "none") {
-      editSection.style.display = "block";
-      editBtn.textContent = "Cancel Edit";
-      editBtn.classList.remove("btn-success");
-      editBtn.classList.add("btn-secondary");
-      // Scroll to edit section
-      editSection.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      editSection.style.display = "none";
-      editBtn.textContent = "Edit Profile";
-      editBtn.classList.remove("btn-secondary");
-      editBtn.classList.add("btn-success");
-    }
-  }
-
-  // Social Links Management
-  let socialLinksData = [];
-
-  // Default social platform options with icons
-  const defaultSocialPlatforms = {
-    LinkedIn: "https://cdn-icons-png.flaticon.com/512/174/174857.png",
-    Twitter: "https://cdn-icons-png.flaticon.com/512/733/733579.png",
-    GitHub: "https://cdn-icons-png.flaticon.com/512/733/733553.png",
-    "Google Scholar": "https://cdn-icons-png.flaticon.com/512/300/300221.png",
-    ResearchGate: "https://upload.wikimedia.org/wikipedia/commons/5/5e/ResearchGate_icon_SVG.svg",
-    Facebook: "https://cdn-icons-png.flaticon.com/512/733/733547.png",
-    Instagram: "https://cdn-icons-png.flaticon.com/512/2111/2111463.png",
-    YouTube: "https://cdn-icons-png.flaticon.com/512/733/733646.png",
-    Custom: ""
-  };
-
-  function loadSocialLinksForEdit(socials) {
-    socialLinksData = socials.map(s => ({
-      platform: s.platform || "",
-      url: s.url || "",
-      icon: s.iconURL || ""
-    }));
-    renderSocialLinksEdit();
-  }
-
-  function renderSocialLinksEdit() {
-    const container = document.getElementById("socialLinksEdit");
-    if (!container) return;
-
-    container.innerHTML = "";
-    
-    socialLinksData.forEach((social, index) => {
-      const row = document.createElement("div");
-      row.className = "row g-2 mb-2 align-items-center";
-      
-      // Create platform dropdown
-      let platformOptions = '<option value="">Select Platform</option>';
-      for (let platform in defaultSocialPlatforms) {
-        const selected = social.platform === platform ? 'selected' : '';
-        platformOptions += `<option value="${platform}" ${selected}>${platform}</option>`;
-      }
-      
-      row.innerHTML = `
-        <div class="col-md-3">
-          <select class="form-control form-control-sm" onchange="updateSocialPlatform(${index}, this.value)">
-            ${platformOptions}
-          </select>
-        </div>
-        <div class="col-md-6">
-          <input type="url" class="form-control form-control-sm" placeholder="URL" 
-                 value="${social.url}" onchange="updateSocialLink(${index}, 'url', this.value)">
-        </div>
-        <div class="col-md-2">
-          ${social.icon ? `<img src="${social.icon}" alt="Icon" style="width:30px; height:30px; object-fit:contain;">` : '<small class="text-muted">No icon</small>'}
-        </div>
-        <div class="col-md-1">
-          <button type="button" class="btn btn-sm btn-danger" onclick="removeSocialLink(${index})">
-            <i class="fas fa-trash"></i>
-          </button>
-        </div>
-      `;
-      container.appendChild(row);
-    });
-  }
-
-  function updateSocialPlatform(index, platform) {
-    if (socialLinksData[index]) {
-      socialLinksData[index].platform = platform;
-      // Auto-set icon based on platform
-      if (defaultSocialPlatforms[platform]) {
-        socialLinksData[index].icon = defaultSocialPlatforms[platform];
-      }
-      renderSocialLinksEdit();
-    }
-  }
-
-  function updateSocialLink(index, field, value) {
-    if (socialLinksData[index]) {
-      socialLinksData[index][field] = value;
-    }
-  }
-
-  function removeSocialLink(index) {
-    socialLinksData.splice(index, 1);
-    renderSocialLinksEdit();
-  }
-
-  function addSocialLink() {
-    socialLinksData.push({ platform: "", url: "", icon: "" });
-    renderSocialLinksEdit();
-  }
-
-  // Add Social Link button handler
-  document.addEventListener("DOMContentLoaded", () => {
-    const addBtn = document.getElementById("addSocialLink");
-    if (addBtn) {
-      addBtn.addEventListener("click", addSocialLink);
-    }
-  });
 
   if (!token) {
     setStatus("You are not logged in. Please login to view/edit your profile.", "alert-warning");
@@ -805,73 +628,64 @@
   .then(result => {
     let { user } = result.data;
     currentUser = user || null;
-    console.log("User data loaded:", user);
+    // console.log(user); // for debugging
 
     // Profile image
     const profileImg = document.getElementById("profile_icon");
-    if (profileImg) {
-      profileImg.src = user.profileImage || "/assets/default-avatar.svg";
-      profileImg.alt = user.name || "Profile";
-    }
+    profileImg.src = user.profileImage || "/assets/default-avatar.svg";
+    profileImg.alt = user.name || "Profile";
 
-    // Basic Info
-    const usernameEl = document.getElementById("username");
-    const emailEl = document.getElementById("user_email");
-    const designationEl = document.getElementById("user_designation");
-    const contactEl = document.getElementById("user_contactNumber");
-    const aboutEl = document.getElementById("user_about");
-
-    if (usernameEl) usernameEl.innerText = user.name || "No Name";
-    if (emailEl) emailEl.innerHTML = `<i class="fas fa-envelope"></i> ${user.email || "N/A"}`;
-    if (designationEl) designationEl.innerHTML = `<strong>Designation:</strong> ${user.designation || "N/A"}`;
-    if (contactEl) contactEl.innerHTML = `<i class="fas fa-phone"></i> ${user.contactNumber || "N/A"}`;
-    if (aboutEl) aboutEl.innerHTML = user.about || "<i>No about info provided.</i>";
-
-    // Display Social Links dynamically
-    const socialLinksContainer = document.getElementById("socialLinksContainer");
-    if (socialLinksContainer && user.Social && Array.isArray(user.Social) && user.Social.length > 0) {
-      socialLinksContainer.innerHTML = "";
-      user.Social.forEach(social => {
-        const link = document.createElement("a");
-        link.href = social.url;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-        link.className = "social-link-item";
-        link.title = social.platform;
-        
-        if (social.iconURL) {
-          const img = document.createElement("img");
-          img.src = social.iconURL;
-          img.alt = social.platform;
-          img.style.width = "40px";
-          img.style.height = "40px";
-          img.style.objectFit = "contain";
-          link.appendChild(img);
-        } else {
-          const icon = document.createElement("i");
-          icon.className = "fas fa-link fa-2x";
-          link.appendChild(icon);
-        }
-        
-        socialLinksContainer.appendChild(link);
-      });
-    } else if (socialLinksContainer) {
-      socialLinksContainer.innerHTML = '<small class="text-muted">No social links added</small>';
-    }
-
-    // Prefill edit form with current user data
+    // Prefill edit form
     const editName = document.getElementById("editName");
     const editEmail = document.getElementById("editEmail");
-    const editContactNumber = document.getElementById("editContactNumber");
-    const editAbout = document.getElementById("editAbout");
-    
     if (editName) editName.value = user.name || "";
     if (editEmail) editEmail.value = user.email || "";
-    if (editContactNumber) editContactNumber.value = user.contactNumber || "";
-    if (editAbout) editAbout.value = user.about || "";
 
-    // Load existing social links into edit form
-    loadSocialLinksForEdit(user.Social || []);
+    // Basic Info
+    document.getElementById("username").innerText = user.name || "No Name";
+    document.getElementById("user_email").innerHTML = `<i class="fas fa-envelope"></i> ${user.email || "N/A"}`;
+    document.getElementById("user_designation").innerHTML = `<strong>Designation:</strong> ${user.designation || "N/A"}`;
+    document.getElementById("user_contactNumber").innerHTML = `<i class="fas fa-phone"></i> ${user.contactNumber || "N/A"}`;
+
+    // About
+    document.getElementById("user_about").innerHTML = user.about || "<i>No about info provided.</i>";
+
+    // Social Links (supports either user.social[] or direct fields)
+    const googleAnchor = document.getElementById("googleUrl");
+    const linkedInAnchor = document.getElementById("linkedInUrl");
+    const twitterAnchor = document.getElementById("twitterUrl");
+
+    const social = Array.isArray(user.social) ? user.social : [];
+    const twitterUrl = social?.[0]?.url || user.twitter || "";
+    const linkedInUrl = social?.[1]?.url || user.linkedin || "";
+    const googleUrl = social?.[2]?.url || user.google || "";
+
+    if (googleAnchor) {
+      if (googleUrl) {
+        googleAnchor.href = googleUrl;
+        googleAnchor.target = "_blank";
+      } else {
+        googleAnchor.style.display = "none";
+      }
+    }
+
+    if (linkedInAnchor) {
+      if (linkedInUrl) {
+        linkedInAnchor.href = linkedInUrl;
+        linkedInAnchor.target = "_blank";
+      } else {
+        linkedInAnchor.style.display = "none";
+      }
+    }
+
+    if (twitterAnchor) {
+      if (twitterUrl) {
+        twitterAnchor.href = twitterUrl;
+        twitterAnchor.target = "_blank";
+      } else {
+        twitterAnchor.style.display = "none";
+      }
+    }
 
     clearStatus();
 
@@ -894,33 +708,14 @@
     patent: "patentContainer"
   };
 
-  const typeToEndpoint = {
-    journal: "/api/journal-paper/get-all-by-user-id",
-    conference: "/api/conference-paper/get-all-by-user-id",
-    patent: "/api/patent/get-all-by-user-id"
-  };
-
-  const paginationState = {
-    journal: { page: 1, limit: 10, hasMore: true },
-    conference: { page: 1, limit: 10, hasMore: true },
-    patent: { page: 1, limit: 10, hasMore: true }
-  };
-
-  function fetchAndRender(type, isLoadMore = false) {
+  function fetchAndRender(type) {
     const container = document.getElementById(typeToContainerId[type]);
-    
-    if (!isLoadMore) {
-      container.innerHTML = `<p>Loading ${type}...</p>`;
-      paginationState[type].page = 1;
-    }
+    container.innerHTML = `<p>Loading ${type}...</p>`;
 
-    const endpoint = typeToEndpoint[type];
-    const { page, limit } = paginationState[type];
-
-  fetch(`${window.NASL.API_BASE}${endpoint}/${authorId}?page=${page}&limit=${limit}`, {
+  fetch(`${window.NASL.API_BASE}/api/publication/get-all-by-authorId/${encodeURIComponent(authorId)}/${encodeURIComponent(type)}`, {
       method: "GET",
       headers: {
-        "Content-Type": "application/json"
+        Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => {
@@ -928,192 +723,59 @@
         return res.json();
       })
       .then((result) => {
-        console.log(`${type} response:`, result);
-        
-        let publications = [];
-        if (type === 'journal') {
-          publications = result.data?.journalPapers || [];
-        } else if (type === 'conference') {
-          publications = result.data?.conferencePapers || [];
-        } else if (type === 'patent') {
-          publications = result.data?.patents || [];
-        }
-
-        if (!isLoadMore) {
-          container.innerHTML = "";
-        } else {
-          const loadMoreBtn = container.querySelector('.load-more-btn');
-          if (loadMoreBtn) loadMoreBtn.remove();
-        }
+        const { publications } = result.data;
+        container.innerHTML = "";
 
         if (!publications || publications.length === 0) {
-          if (!isLoadMore) {
-            container.innerHTML = `<p>No ${type} found.</p>`;
-          }
-          paginationState[type].hasMore = false;
+          container.innerHTML = `<p>No ${type} found.</p>`;
           return;
         }
 
         publications.forEach((paper) => {
           const card = document.createElement("div");
-          card.className = "card mb-3";
-          card.style.position = "relative";
+          card.className = "card";
 
-          let authorsDisplay = "";
-          if (type === 'patent') {
-            const inventors = Array.isArray(paper.inventors) ? paper.inventors : [];
-            authorsDisplay = inventors.map(inv => inv.name).join(", ") || "N/A";
-          } else {
-            const authors = Array.isArray(paper.authors) ? paper.authors : [];
-            authorsDisplay = authors.map(auth => auth.name).join(", ") || "N/A";
+          let adminButtons = "";
+          if (userRole === "ADMIN" || userRole === "USER") {
+            adminButtons = `
+              <div class="card-icons">
+                <a class="icon-btn edit-btn" data-id="${paper.id}" title="Edit">
+                  <span class="material-symbols-outlined">edit_document</span>
+                </a>
+                <a class="icon-btn delete-btn" data-id="${paper.id}" title="Delete">
+                  <span class="material-symbols-outlined">delete</span>
+                </a>
+              </div>`;
           }
 
-          // Action buttons (Edit & Delete)
-          const actionButtons = `
-            <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 8px;">
-              <button class="btn btn-sm btn-outline-primary edit-pub-btn" 
-                      data-id="${paper.id}" 
-                      data-type="${type}" 
-                      title="Edit">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger delete-pub-btn" 
-                      data-id="${paper.id}" 
-                      data-type="${type}" 
-                      title="Delete">
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
-          `;
-
           card.innerHTML = `
-            ${actionButtons}
-            <div class="card-content">
-              <h2 style="font-size: 1.2rem; margin-bottom: 10px;">${paper.title || "Untitled"}</h2>
-              <p><strong>${type === 'patent' ? 'Inventors' : 'Authors'}:</strong> ${authorsDisplay}</p>
-              ${type === 'journal' ? `<p><strong>Journal:</strong> ${paper.journal || "N/A"}</p>` : ''}
-              ${type === 'journal' ? `<p><strong>Year:</strong> ${paper.year || "N/A"}</p>` : ''}
-              ${type === 'journal' && paper.quartile ? `<p><strong>Quartile:</strong> ${paper.quartile}</p>` : ''}
-              ${type === 'journal' && paper.doi ? `<p><strong>DOI:</strong> ${paper.doi}</p>` : ''}
-              ${type === 'conference' ? `<p><strong>Conference:</strong> ${paper.conference || "N/A"}</p>` : ''}
-              ${type === 'conference' ? `<p><strong>Year:</strong> ${paper.year || "N/A"}</p>` : ''}
-              ${type === 'conference' && paper.doi ? `<p><strong>DOI:</strong> ${paper.doi}</p>` : ''}
-              ${type === 'patent' && paper.grantNo ? `<p><strong>Grant Number:</strong> ${paper.grantNo}</p>` : ''}
-              ${type === 'patent' && paper.type ? `<p><strong>Type:</strong> ${paper.type}</p>` : ''}
-              ${type === 'patent' && paper.grantDate ? `<p><strong>Grant Date:</strong> ${new Date(paper.grantDate).toLocaleDateString()}</p>` : ''}
+            <div class="card-content toggle-wrapper" style="max-height: 150px; overflow: hidden; position: relative;">
+              <h2 style="text-align:center;">${paper.title}</h2>
+              <div style="display:none;" class="content-para">${paper.journal || paper.content || paper.description || ""}</div>
             </div>
+            ${adminButtons}
           `;
 
           container.appendChild(card);
         });
-
-        if (publications.length === limit) {
-          const loadMoreBtn = document.createElement("button");
-          loadMoreBtn.className = "btn btn-primary load-more-btn mt-3";
-          loadMoreBtn.textContent = "Load More";
-          loadMoreBtn.onclick = () => {
-            paginationState[type].page += 1;
-            fetchAndRender(type, true);
-          };
-          container.appendChild(loadMoreBtn);
-        } else {
-          paginationState[type].hasMore = false;
-        }
       })
       .catch((err) => {
-        if (!isLoadMore) {
-          container.innerHTML = `<p>Error loading ${type}: ${err.message}</p>`;
-        }
-        console.error(`Error fetching ${type}:`, err);
+        container.innerHTML = `<p>Error loading ${type}: ${err.message}</p>`;
+        console.error(err);
       });
   }
 
-  // Event delegation for edit and delete buttons
-  document.addEventListener("click", async (e) => {
-    // Handle Edit button
-    if (e.target.closest(".edit-pub-btn")) {
-      const btn = e.target.closest(".edit-pub-btn");
-      const id = parseInt(btn.dataset.id);
-      const type = btn.dataset.type;
-      
-      // Fetch the publication data
-      try {
-        const endpoint = typeToEndpoint[type];
-        const res = await fetch(`${window.NASL.API_BASE}${endpoint}/${id}?id=${id}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" }
-        });
-
-        if (!res.ok) throw new Error('Failed to fetch publication details');
-        
-        const result = await res.json();
-        let pubData = null;
-        
-        if (type === 'journal') {
-          pubData = result.data?.journalPaper;
-        } else if (type === 'conference') {
-          pubData = result.data?.conferencePaper;
-        } else if (type === 'patent') {
-          pubData = result.data?.patent;
-        }
-        
-        if (pubData) {
-          pubUI.showEditModal(type, id, pubData);
-        }
-      } catch (error) {
-        alert(`Error loading publication: ${error.message}`);
-      }
-    }
-    
-    // Handle Delete button
-    if (e.target.closest(".delete-pub-btn")) {
-      const btn = e.target.closest(".delete-pub-btn");
-      const id = parseInt(btn.dataset.id);
-      const type = btn.dataset.type;
-      
-      const card = btn.closest('.card');
-      const title = card.querySelector('h2')?.textContent || 'this item';
-      
-      await pubUI.confirmDelete(type, id, title);
-    }
-    
-    // Legacy delete button handler (deprecated)
-    if (e.target.closest(".delete-btn")) {
-      const btn = e.target.closest(".delete-btn");
-      const id = parseInt(btn.dataset.id);
-      const type = btn.dataset.type;
-      
-      const card = btn.closest('.card');
-      const title = card.querySelector('h2')?.textContent || 'this item';
-      
-      await pubUI.confirmDelete(type, id, title);
-    }
-  });
-
-  // Global function to reload all publications
-  window.loadAllPublications = function() {
-    fetchAndRender("journal");
-    fetchAndRender("conference");
-    fetchAndRender("patent");
-  };
-
   // Setup event listeners for tab clicks
   document.getElementById("collapseJournal").addEventListener("show.bs.collapse", () => {
-    if (document.getElementById("journalContainer").innerHTML === "") {
-      fetchAndRender("journal");
-    }
+    fetchAndRender("journal");
   });
 
   document.getElementById("collapseConference").addEventListener("show.bs.collapse", () => {
-    if (document.getElementById("conferenceContainer").innerHTML === "") {
-      fetchAndRender("conference");
-    }
+    fetchAndRender("conference");
   });
 
   document.getElementById("collapsePatent").addEventListener("show.bs.collapse", () => {
-    if (document.getElementById("patentContainer").innerHTML === "") {
-      fetchAndRender("patent");
-    }
+    fetchAndRender("patent");
   });
 
 </script>
@@ -1169,8 +831,6 @@
 
       const name = (document.getElementById("editName")?.value || "").trim();
       const email = (document.getElementById("editEmail")?.value || "").trim();
-      const contactNumber = (document.getElementById("editContactNumber")?.value || "").trim();
-      const about = (document.getElementById("editAbout")?.value || "").trim();
       const password = (document.getElementById("editPassword")?.value || "");
       const passwordConfirm = (document.getElementById("editPasswordConfirm")?.value || "");
 
@@ -1191,15 +851,7 @@
         const payload = {};
         if (name) payload.name = name;
         if (email) payload.email = email;
-        if (contactNumber) payload.contactNumber = contactNumber;
-        if (about) payload.about = about;
         if (password) payload.password = password;
-
-        // Add social links - filter out empty ones
-        const validSocials = socialLinksData.filter(s => s.platform && s.url);
-        if (validSocials.length > 0) {
-          payload.social = validSocials;
-        }
 
         const file = editImage && editImage.files && editImage.files[0];
         if (file) {
@@ -1226,7 +878,7 @@
         }
 
         setStatus("Profile updated successfully.", "alert-success");
-        setTimeout(() => window.location.reload(), 1000);
+        setTimeout(() => window.location.reload(), 600);
       } catch (err) {
         console.error(err);
         setStatus(err?.message || "Update failed.", "alert-danger");

@@ -452,23 +452,23 @@
         document.getElementById("addButton").style.display = "block";
       }
 
-      // 2. Fetch and render journal papers
+      // 2. Fetch and render patents
       fetch(
-  `${window.NASL.API_BASE}/api/publication/get-all?type=${encodeURIComponent(type)}`
+  `${window.NASL.API_BASE}/api/patent/get-all?page=1&limit=100`
       )
         .then((response) => {
-          if (!response.ok) throw new Error("Failed to fetch Patents ");
+          if (!response.ok) throw new Error("Failed to fetch patents");
           return response.json();
         })
         .then((result) => {
-          const { publications } = result.data;
-          console.log("Patents:", publications);
+          const { patents } = result.data;
+          console.log("Patents:", patents);
 
-          publications.forEach((patent) => {
+          patents.forEach((patent) => {
             const card = document.createElement("div");
             card.className = "card";
 
-            // 3. Build action buttons only if user is ADMIN
+            // 3. Build action buttons only if user is ADMIN or USER
             let adminButtons = "";
             if (userRole === "ADMIN" || userRole=== "USER") {
               adminButtons = `
@@ -483,12 +483,25 @@
         `;
             }
 
+            // Format inventors array to display
+            const inventorsDisplay = Array.isArray(patent.inventors) 
+              ? patent.inventors.join(", ") 
+              : patent.inventors;
+
+            // Format dates
+            const grantDateFormatted = patent.grantDate ? new Date(patent.grantDate).toLocaleDateString() : 'N/A';
+            const publicationDateFormatted = patent.publicationDate ? new Date(patent.publicationDate).toLocaleDateString() : 'N/A';
+
             // 4. Inject card HTML
             card.innerHTML = `
             <div class="card-content toggle-wrapper" style="max-height: 150px; overflow: hidden; position: relative;">
               <h2 style="text-align:center;">${patent.title}</h2>
-              <div class="patent-details;">${patent.content}</div>
-            
+              <p><strong>Inventors (IDs):</strong> ${inventorsDisplay || 'N/A'}</p>
+              ${patent.type ? `<p><strong>Type:</strong> ${patent.type}</p>` : ''}
+              ${patent.grantNo ? `<p><strong>Grant Number:</strong> ${patent.grantNo}</p>` : ''}
+              ${patent.grantDate ? `<p><strong>Grant Date:</strong> ${grantDateFormatted}</p>` : ''}
+              ${patent.publicationDate ? `<p><strong>Publication Date:</strong> ${publicationDateFormatted}</p>` : ''}
+            </div>
             ${adminButtons}
           `;
 
@@ -496,7 +509,7 @@
           });
 
           // 5. Setup delete button logic
-          if (userRole === "ADMIN") {
+          if (userRole === "ADMIN" || userRole === "USER") {
             document.querySelectorAll(".delete-btn").forEach((btn) => {
               btn.addEventListener("click", async function () {
                 const id = this.getAttribute("data-id");
@@ -507,7 +520,7 @@
                 ) {
                   try {
                     const res = await fetch(
-                      `${window.NASL.API_BASE}/api/publication/${id}`,
+                      `${window.NASL.API_BASE}/api/patent/${id}`,
                       {
                         method: "DELETE",
                         headers: {

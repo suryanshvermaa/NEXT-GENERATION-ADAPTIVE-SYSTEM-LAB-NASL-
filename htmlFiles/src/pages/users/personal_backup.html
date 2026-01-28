@@ -1,45 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Journal Papers</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-      rel="stylesheet"
-    />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile Page</title>
 
-    <link href="../css/style.css" rel="stylesheet" />
-    <style>
-      body {
-        font-family: "Segoe UI", sans-serif;
-        background-color: #ffffff;
-        margin: 0;
-        padding-top: 6rem;
-      }
+  <!-- Bootstrap & Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <link href="../css/style.css" rel="stylesheet">
 
-      h1 {
-        color: #254d70;
-        text-align: center;
-        letter-spacing: 1.5px;
-        font-weight: 700;
-        margin-bottom: 50px;
-      }
-
-      .container {
-        display: flex;
-        flex-direction: column;
-        gap: 40px;
-        max-width: 1150px;
-        margin: auto;
-        padding: 0 1.5rem 4rem;
-      }
-
-      .card {
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+    }
+    .profile-card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 30px;
+      margin-top: 120px;
+    }
+    .stats-box {
+      background-color: #254D70 ;
+      color: white;
+      border-radius: 8px;
+      text-align: center;
+      padding: 15px;
+      font-weight: 600;
+    }
+    .stats-box span {
+      font-size: 24px;
+      display: block;
+    }
+    .badge-icons img {
+      height: 40px;
+      margin-right: 10px;
+    }
+    .accordion-button {
+      background-color: #254D70 !important;
+      color: #fff;
+      font-weight: 600;
+    }
+    .card {
         display: flex;
         flex-direction: row;
         background: #f9f9f9;
@@ -125,12 +129,13 @@
         .icon-btn .material-symbols-outlined {
           color: rgb(25, 22, 22);
           font-size: 24px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="navbar-placeholder">
+        }}
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div id="navbar-placeholder">
       <div class="nav_bar">
   <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
     <div class="container-fluid">
@@ -328,20 +333,109 @@
 
 </div>
 
-    <h1>Journal Papers</h1>
+<!-- ✅ PROFILE CARD -->
+<div class="container profile-card mb-5">
+  <div class="row align-items-center">
+    <!-- Left: Profile Image -->
+    <div class="col-md-3 text-center">
+      <img src="" class="img-fluid rounded-circle mb-3" alt="Profile" style="width: 150px;" id="profile_icon">
+      <div class="badge-icons d-flex justify-content-center">
+        <a href="#" id="googleUrl"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzf-mFSVPG0NB4zca3DW3zh0EEgYKyyjrmNg&s" alt="Google"></a>
+        <a href="#" id="linkedInUrl"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/500px-LinkedIn_logo_initials.png" alt="linkedIn"></a>
 
-    <div class="container" id="journalContainer"></div>
+        <a href="#" id="twitterUrl"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Logo_of_Twitter.svg/2491px-Logo_of_Twitter.svg.png" alt="Twitter"></a>
+      </div>
+    </div>
 
-    <a
-      href="../forms_html/journal.html"
-      id="addButton"
-      class="btn btn-success mx-auto mb-4"
-      style="max-width: 200px; display: none"
-    >
-      + Add Journal Papers
-    </a>
+    <!-- Middle: Info -->
+    <div class="col-md-6">
+      <h3 class="fw-bold" id="username"></h3>
+      <p class="mb-1" id="user_designation"><strong>Designation:</strong></p>
+      <p class="mb-1" id="user_email"><i class="fas fa-envelope"></i></p>
+      <p class="mb-1" id="user_contactNumber"><i class="fas fa-phone"></i></p>
+     
+    </div>
 
-   <footer class="text-center text-lg-start text-white">
+    <!-- Right: Stats -->
+   <div class="col-md-3">
+  <div class="row g-3">
+    <div class="col-6">
+      <div class="stats-box"><span>5</span> Journals</div>
+    </div>
+    <div class="col-6">
+      <div class="stats-box"><span>3</span> Conference</div>
+    </div>
+    <div class="col-6">
+      <div class="stats-box"><span>2</span> Patents</div>
+    </div>
+    <div class="col-6">
+      <div class="stats-box"><span>1</span> Book</div>
+    </div>
+  </div>
+</div>
+
+  <!-- ABOUT Section -->
+  <div class="mt-4">
+    <h5 class="fw-bold">ABOUT</h5>
+    <p class="text-muted" id="user_about">
+      
+    </p>
+  </div>
+
+  <!-- Accordion Section -->
+  <div class="accordion mt-4" id="accordionExample">
+  <!-- Journal Accordion -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingJournal">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseJournal" aria-expanded="false" aria-controls="collapseJournal">
+        Journal Papers
+      </button>
+    </h2>
+    <div id="collapseJournal" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+      <div class="accordion-body" id="journalContainer">
+        <!-- Journal content loaded dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Patent Accordion -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingPatent">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapsePatent" aria-expanded="false" aria-controls="collapsePatent">
+        Patents
+      </button>
+    </h2>
+    <div id="collapsePatent" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+      <div class="accordion-body" id="patentContainer">
+        <!-- Patent content loaded dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Conference Accordion -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingConference">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseConference" aria-expanded="false" aria-controls="collapseConference">
+        Conference
+      </button>
+    </h2>
+    <div id="collapseConference" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+      <div class="accordion-body" id="conferenceContainer">
+        <!-- Conference content loaded dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- Footer -->
+<footer class="text-center text-lg-start text-white">
   <div class="container py-4">
     <div class="row my-2">
       <div class="col-lg-3 col-md-4 mb-4 mb-md-0">
@@ -427,125 +521,138 @@
   </div>
 </footer>
 
-    <!-- Scripts -->
-    <script src="../js/navbar.js"></script>
-    <script src="../js/footer.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.min.js"></script>
-  <script src="/js/config.js"></script>
 
-    <script>
-      const container = document.getElementById("journalContainer");
-      document.getElementById("addButton").style.display = "none";
-      const type = "journal"
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/navbar.js"></script>
+<script src="../js/footer.js"></script>
+<script src="/js/config.js"></script>
+<script>
+  // const token = localStorage.getItem("authToken");
+  const urlParams = new URLSearchParams(window.location.search);
+const userId = urlParams.get("userId");
 
-      // 1. Get user role from localStorage
-      // let userRole = null;
-      try {
-        // const userData = JSON.parse(localStorage.getItem("user"));
-        userRole = userData?.role;
-        console.log("User role:", userRole);
-      } catch (err) {
-        console.error("Error reading user role from localStorage:", err);
-      }
+if (!userId) {
+  alert("No user ID provided in URL.");
+  throw new Error("Missing user ID");
+}
 
-      if (userRole === "ADMIN" || userRole === "USER") {
-        document.getElementById("addButton").style.display = "block";
-      }
+  fetch(`${window.NASL.API_BASE}/api/user/profile/${encodeURIComponent(userId)}`)
+  .then(response => {
+    if (!response.ok) throw new Error("Failed to fetch profile");
+    return response.json();
+  })
+  .then(result => {
+    // console.log(result);
+    const { user } = result.data;
+    let publications =  user.publications; // for debugging
 
-      // 2. Fetch and render journal papers
-      fetch(
-  `${window.NASL.API_BASE}/api/journal-paper/get-all?page=1&limit=100`
-      )
-        .then((response) => {
-          if (!response.ok) throw new Error("Failed to fetch journal papers");
-          return response.json();
-        })
-        .then((result) => {
-          console.log(result)
-          const { journalPapers } = result.data;
-          console.log("Journal papers:", journalPapers);
+    // Profile image
+    const profileImg = document.getElementById("profile_icon");
+    profileImg.src = user.profileImage || "/assets/default-avatar.svg";
+    profileImg.alt = user.name || "Profile";
 
-          journalPapers.forEach((paper) => {
-            const card = document.createElement("div");
-            card.className = "card";
+    // Basic Info
+    document.getElementById("username").innerText = user.name || "No Name";
+    document.getElementById("user_email").innerHTML = `<i class="fas fa-envelope"></i> ${user.email || "N/A"}`;
+    document.getElementById("user_designation").innerHTML = `<strong>Designation:</strong> ${user.designation || "N/A"}`;
+    document.getElementById("user_contactNumber").innerHTML = `<i class="fas fa-phone"></i> ${user.contactNumber || "N/A"}`;
 
-            // 3. Build action buttons only if user is ADMIN or USER
-            let adminButtons = "";
-            if (userRole === "ADMIN" || userRole=== "USER") {
-              adminButtons = `
-          <div class="card-icons">
-            <a class="icon-btn edit-btn" data-id="${paper.id}" title="Edit">
-              <span class="material-symbols-outlined">edit_document</span>
-            </a>
-            <a class="icon-btn delete-btn" data-id="${paper.id}" title="Delete">
-              <span class="material-symbols-outlined">delete</span>
-            </a>
-          </div>
-        `;
-            }
+    // About
+    document.getElementById("user_about").innerHTML = user.about || "<i>No about info provided.</i>";
 
-            // Format authors array to display as string
-            const authorsDisplay = Array.isArray(paper.authors) 
-              ? paper.authors.join(", ") 
-              : paper.authors;
+    // Social Links
+    const googleAnchor = document.getElementById("googleUrl");
+    const linkedInAnchor = document.getElementById("linkedInUrl");
+    const twitterAnchor = document.getElementById("twitterUrl");
+    if (user.social[2].url) {
+      googleAnchor.href = user.social[2].url;
+      googleAnchor.target = "_blank";
+    } else {
+      googleAnchor.style.display = "none";
+    }
 
-            // 4. Inject card HTML
-            card.innerHTML = `
-            <div class="card-content toggle-wrapper" style="max-height: 150px; overflow: hidden; position: relative;">
-              <h2 style="text-align:center;">${paper.title}</h2>
-              <p><strong>Journal:</strong> ${paper.journal || 'N/A'}</p>
-              <p><strong>Authors:</strong> ${authorsDisplay || 'N/A'}</p>
-              ${paper.year ? `<p><strong>Year:</strong> ${paper.year}</p>` : ''}
-              ${paper.volume ? `<p><strong>Volume:</strong> ${paper.volume}</p>` : ''}
-              ${paper.quartile ? `<p><strong>Quartile:</strong> ${paper.quartile}</p>` : ''}
-              ${paper.doi ? `<p><strong>DOI:</strong> ${paper.doi}</p>` : ''}
-            </div>
-            ${adminButtons}
-          `;
+    if (user.social[1].url) {
+      linkedInAnchor.href = user.social[1].url;
+      linkedInAnchor.target = "_blank";
+    } else {
+      linkedInAnchor.style.display = "none";
+    }
 
-            container.appendChild(card);
-          });
+    if (user.social[0].url) {
+      twitterAnchor.href = user.social[0].url;
+      twitterAnchor.target = "_blank";
+    } else {
+      twitterAnchor.style.display = "none";
+    }
 
-          // 5. Setup delete button logic
-          if (userRole === "ADMIN" || userRole === "USER") {
-            document.querySelectorAll(".delete-btn").forEach((btn) => {
-              btn.addEventListener("click", async function () {
-                const id = this.getAttribute("data-id");
-                const token = localStorage.getItem("authToken");
 
-                if (
-                  confirm("Are you sure you want to delete this journal paper?")
-                ) {
-                  try {
-                    const res = await fetch(
-                      `${window.NASL.API_BASE}/api/journal-paper/${id}`,
-                      {
-                        method: "DELETE",
-                        headers: {
-                          Authorization: `Bearer ${token}`,
-                        },
-                      }
-                    );
+  // Publications
+  const typeToContainerId = {
+    journal: "journalContainer",
+    conference: "conferenceContainer",
+    patent: "patentContainer"
+  };
+  function fetchAndRender(type) {
+  const container = document.getElementById(typeToContainerId[type]);
+  container.innerHTML = `<p>Loading ${type}...</p>`;
 
-                    const data = await res.json();
-                    if (res.ok) {
-                      alert("Deleted successfully");
-                      location.reload();
-                    } else {
-                      alert(data.message || "Failed to delete");
-                    }
-                  } catch (err) {
-                    console.error("Delete Error:", err);
-                  }
-                }
-              });
-            });
-          }
-        })
-        .catch((error) => {
-          console.error("Error loading journal papers:", error);
-        });
-    </script>
+  // Example: Assuming `publications` is globally available or fetched somewhere else
+  // You must ensure this array is assigned before calling this function
+  // For now, assuming publications is globally available
+  const filteredPublications = publications.filter(paper => paper.type === type);
+
+  if (!filteredPublications || filteredPublications.length === 0) {
+    container.innerHTML = `<p>No ${type} found.</p>`;
+    return;
+  }
+
+  container.innerHTML = ""; // Clear existing content before rendering
+
+  filteredPublications.forEach((paper) => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    let adminButtons = "";
+    if (userRole === "ADMIN" || userRole === "USER") {
+      adminButtons = `
+        <div class="card-icons">
+          <a class="icon-btn edit-btn" data-id="${paper.id}" title="Edit">
+            <span class="material-symbols-outlined">edit_document</span>
+          </a>
+          <a class="icon-btn delete-btn" data-id="${paper.id}" title="Delete">
+            <span class="material-symbols-outlined">delete</span>
+          </a>
+        </div>`;
+    }
+
+    card.innerHTML = `
+      <div class="card-content toggle-wrapper" style="max-height: 150px; overflow: hidden; position: relative;">
+        <h2 style="text-align:center;">${paper.title}</h2>
+        <div style="display:none;" class="content-para">${paper.journal || paper.content || paper.description || ""}</div>
+      </div>
+      ${adminButtons}
+    `;
+
+    container.appendChild(card);
+  });
+}
+  // Setup event listeners for tab clicks
+  
+  document.getElementById("collapseJournal").addEventListener("show.bs.collapse", () => {
+    fetchAndRender("journal");
+  });
+
+  document.getElementById("collapseConference").addEventListener("show.bs.collapse", () => {
+    fetchAndRender("conference");
+  });
+
+  document.getElementById("collapsePatent").addEventListener("show.bs.collapse", () => {
+    fetchAndRender("patent");
+  })
+  }).catch(error => {
+    console.error("Error loading profile data:", error);
+  });
+</script>
   </body>
 </html>
