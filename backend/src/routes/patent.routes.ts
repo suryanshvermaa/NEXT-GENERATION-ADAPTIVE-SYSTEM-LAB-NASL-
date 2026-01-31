@@ -13,11 +13,11 @@ import { PERMISSIONS } from "../RBAC/permissions";
 const patentRouter = Router();
 
 patentRouter
-	.post("/create", auth,authorizePermission(PERMISSIONS.CREATE_PATENT), createPatent)
+	.post("/create", auth, createPatent)
 	.get("/get-all", getAllPatents) // query params: page, limit
 	.get("/:id", getPatentById)
-	.put("/:id", auth, authorizePermission(PERMISSIONS.UPDATE_PATENT), updatePatent)
-	.delete("/:id", auth, authorizePermission(PERMISSIONS.DELETE_PATENT), deletePatent)
+	.put("/:id", auth, updatePatent)
+	.delete("/:id", auth, deletePatent)
 	.get("/get-all-by-user-id/:userId", getAllPatentsByInventorId); // query params: page, limit
 
 export default patentRouter;

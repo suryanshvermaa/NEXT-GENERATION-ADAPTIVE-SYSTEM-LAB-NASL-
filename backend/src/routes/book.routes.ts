@@ -13,11 +13,11 @@ import { authorizePermission } from "../middlewares/role.middleware";
 const bookRouter = Router();
 
 bookRouter
-	.post("/create", auth, authorizePermission(PERMISSIONS.CREATE_BOOK), createBook)
+	.post("/create", auth, createBook)
 	.get("/get-all", getAllBooks) // query params: page, limit
 	.get("/:id", getBookById)
-	.put("/:id", auth, authorizePermission(PERMISSIONS.UPDATE_BOOK), updateBook)
-	.delete("/:id",auth, authorizePermission(PERMISSIONS.DELETE_BOOK), deleteBook)
+	.put("/:id", auth, updateBook)
+	.delete("/:id",auth, deleteBook)
 	.get("/get-all-by-user-id", getAllBooksByUserId); // query params: page, limit
 
 export default bookRouter;
