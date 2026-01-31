@@ -546,7 +546,7 @@
   // Global variables accessible by all subsequent scripts
   const token = localStorage.getItem("authToken");
   const storedUser = JSON.parse(localStorage.getItem("user") || "{}") || {};
-  const authorId = Number(storedUser?.id);
+  let authorId = Number.NaN;
   const userRole = storedUser?.role;
 </script>
 <script>
@@ -581,6 +581,13 @@
   if (!userId) {
     setStatus("User ID not found. Please login or provide a valid user ID.", "alert-danger");
     throw new Error("No userId available");
+  }
+
+  // Use the profile's userId for publications fetch (works even when not logged in)
+  authorId = Number(userId);
+  if (Number.isNaN(authorId) || authorId <= 0) {
+    setStatus("Invalid user ID in URL. Please open a valid profile.", "alert-danger");
+    throw new Error("Invalid userId");
   }
 
   let currentUser = null;
@@ -912,27 +919,23 @@
 
   // Setup event listeners for tab clicks
   document.getElementById("collapseJournal").addEventListener("show.bs.collapse", () => {
-    if (document.getElementById("journalContainer").innerHTML === "") {
-      fetchAndRender("journal");
-    }
+    const container = document.getElementById("journalContainer");
+    if (container && container.textContent.trim() === "") fetchAndRender("journal");
   });
 
   document.getElementById("collapseConference").addEventListener("show.bs.collapse", () => {
-    if (document.getElementById("conferenceContainer").innerHTML === "") {
-      fetchAndRender("conference");
-    }
+    const container = document.getElementById("conferenceContainer");
+    if (container && container.textContent.trim() === "") fetchAndRender("conference");
   });
 
   document.getElementById("collapsePatent").addEventListener("show.bs.collapse", () => {
-    if (document.getElementById("patentContainer").innerHTML === "") {
-      fetchAndRender("patent");
-    }
+    const container = document.getElementById("patentContainer");
+    if (container && container.textContent.trim() === "") fetchAndRender("patent");
   });
 
   document.getElementById("collapseBook").addEventListener("show.bs.collapse", () => {
-    if (document.getElementById("bookContainer").innerHTML === "") {
-      fetchAndRender("book");
-    }
+    const container = document.getElementById("bookContainer");
+    if (container && container.textContent.trim() === "") fetchAndRender("book");
   });
 
 </script>
