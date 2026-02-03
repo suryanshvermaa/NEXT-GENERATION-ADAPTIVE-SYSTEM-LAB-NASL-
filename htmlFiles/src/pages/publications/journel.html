@@ -470,9 +470,11 @@
         currentPage = page;
         container.innerHTML = '<p style="text-align: center; padding: 40px;">Loading...</p>';
         
-        const url = currentUserId
-          ? `${window.NASL.API_BASE}/api/journal-paper/get-all-by-user-id/${encodeURIComponent(currentUserId)}?page=${page}&limit=${limit}`
-          : `${window.NASL.API_BASE}/api/journal-paper/get-all?page=${page}&limit=${limit}`;
+        const url = isAdmin
+          ? `${window.NASL.API_BASE}/api/journal-paper/get-all?page=${page}&limit=${limit}`
+          : (currentUserId
+              ? `${window.NASL.API_BASE}/api/journal-paper/get-all-by-user-id/${encodeURIComponent(currentUserId)}?page=${page}&limit=${limit}`
+              : `${window.NASL.API_BASE}/api/journal-paper/get-all?page=${page}&limit=${limit}`);
 
         // Fetch and render journal papers
         fetch(url)

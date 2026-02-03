@@ -964,6 +964,20 @@
     book: { page: 1, limit: 4, hasMore: true, totalPages: 1 }
   };
 
+  // Viewer permissions: admin can manage anyone, users can manage only their own
+  let viewerUserId = null;
+  let viewerRole = null;
+  try {
+    const viewer = JSON.parse(localStorage.getItem('user'));
+    viewerUserId = viewer?.id ?? null;
+    viewerRole = viewer?.role ?? null;
+  } catch {
+    viewerUserId = null;
+    viewerRole = null;
+  }
+  const viewerIsAdmin = viewerRole === 'ADMIN';
+  const canManageThisProfilePublications = viewerIsAdmin || (viewerUserId != null && Number(viewerUserId) === Number(authorId));
+
   function fetchAndRender(type, isLoadMore = false) {
     const container = document.getElementById(typeToContainerId[type]);
     
@@ -1055,7 +1069,7 @@
           }
 
           // Action buttons (Edit & Delete)
-          const actionButtons = `
+          const actionButtons = canManageThisProfilePublications ? `
             <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 8px;">
               <button class="btn btn-sm btn-outline-primary edit-pub-btn" 
                       data-id="${paper.id}" 
@@ -1070,7 +1084,7 @@
                 <i class="fas fa-trash"></i>
               </button>
             </div>
-          `;
+          ` : '';
 
           card.innerHTML = `
             ${actionButtons}
@@ -1159,6 +1173,10 @@
   document.addEventListener("click", async (e) => {
     // Handle Edit button
     if (e.target.closest(".edit-pub-btn")) {
+      if (!canManageThisProfilePublications) {
+        alert('You are not authorized to edit these publications.');
+        return;
+      }
       const btn = e.target.closest(".edit-pub-btn");
       const id = parseInt(btn.dataset.id);
       const type = btn.dataset.type;
@@ -1196,24 +1214,32 @@
     
     // Handle Delete button
     if (e.target.closest(".delete-pub-btn")) {
+      if (!canManageThisProfilePublications) {
+        alert('You are not authorized to delete these publications.');
+        return;
+      }
       const btn = e.target.closest(".delete-pub-btn");
       const id = parseInt(btn.dataset.id);
       const type = btn.dataset.type;
       
-      const card = btn.closest('.card');
-      const title = card.querySelector('h2')?.textContent || 'this item';
+      const card = btn.closest('.publication-card') || btn.closest('.card');
+      const title = (card?.querySelector('h2')?.textContent || '').trim() || 'this item';
       
       await pubUI.confirmDelete(type, id, title);
     }
     
     // Legacy delete button handler (deprecated)
     if (e.target.closest(".delete-btn")) {
+      if (!canManageThisProfilePublications) {
+        alert('You are not authorized to delete these publications.');
+        return;
+      }
       const btn = e.target.closest(".delete-btn");
       const id = parseInt(btn.dataset.id);
       const type = btn.dataset.type;
       
-      const card = btn.closest('.card');
-      const title = card.querySelector('h2')?.textContent || 'this item';
+      const card = btn.closest('.publication-card') || btn.closest('.card');
+      const title = (card?.querySelector('h2')?.textContent || '').trim() || 'this item';
       
       await pubUI.confirmDelete(type, id, title);
     }

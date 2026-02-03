@@ -482,9 +482,11 @@
         currentPage = page;
         container.innerHTML = '<p>Loading...</p>';
 
-        const url = currentUserId
-          ? `${window.NASL.API_BASE}/api/book/get-all-by-user-id/${encodeURIComponent(currentUserId)}?page=${page}&limit=${limit}`
-          : `${window.NASL.API_BASE}/api/book/get-all?page=${page}&limit=${limit}`;
+        const url = isAdmin
+          ? `${window.NASL.API_BASE}/api/book/get-all?page=${page}&limit=${limit}`
+          : (currentUserId
+              ? `${window.NASL.API_BASE}/api/book/get-all-by-user-id/${encodeURIComponent(currentUserId)}?page=${page}&limit=${limit}`
+              : `${window.NASL.API_BASE}/api/book/get-all?page=${page}&limit=${limit}`);
 
         fetch(url)
         .then(async (response) => {
