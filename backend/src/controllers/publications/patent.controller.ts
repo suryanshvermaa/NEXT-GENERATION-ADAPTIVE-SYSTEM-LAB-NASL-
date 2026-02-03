@@ -163,13 +163,17 @@ export const deletePatent = asyncHandler(
  */
 export const getAllPatentsByInventorId = asyncHandler(
 	async (req: Request, res: Response) => {
-		const userId = req.params.userId || req.user?.userId;
+		const rawUserId = req.params.userId ?? req.user?.userId;
+		const userId = Number(rawUserId);
+		if (!rawUserId || Number.isNaN(userId)) {
+			throw new AppError("Invalid user id", 400);
+		}
 		const page = parseInt(req.query.page as string) || 1;
 		const limit = parseInt(req.query.limit as string) || 10;
 		const skip = (page - 1) * limit;
 		const patents = await prisma.patent.findMany({
 			where: {
-				createdBy: userId as number,
+				createdBy: userId,
 			},
 			orderBy: { createdAt: "desc" },
 			skip,

@@ -950,6 +950,13 @@
     book: "/api/book/get-all-by-user-id"
   };
 
+  const typeToDetailEndpoint = {
+    journal: "/api/journal-paper",
+    conference: "/api/conference-paper",
+    patent: "/api/patent",
+    book: "/api/book"
+  };
+
   const paginationState = {
     journal: { page: 1, limit: 4, hasMore: true, totalPages: 1 },
     conference: { page: 1, limit: 4, hasMore: true, totalPages: 1 },
@@ -974,9 +981,13 @@
         "Content-Type": "application/json"
       },
     })
-      .then((res) => {
-        if (!res.ok) throw new Error(`Failed to fetch ${type}`);
-        return res.json();
+      .then(async (res) => {
+        const payload = await res.json().catch(() => ({}));
+        if (res.status === 404) {
+          return { data: { journalPapers: [], conferencePapers: [], patents: [], books: [] } };
+        }
+        if (!res.ok) throw new Error(payload.message || `Failed to fetch ${type}`);
+        return payload;
       })
       .then((result) => {
         console.log(`${type} response:`, result);
@@ -1154,7 +1165,7 @@
       
       // Fetch the publication data
       try {
-        const endpoint = typeToEndpoint[type];
+        const endpoint = typeToDetailEndpoint[type];
         const res = await fetch(`${window.NASL.API_BASE}${endpoint}/${id}?id=${id}`, {
           method: "GET",
           headers: { "Content-Type": "application/json" }

@@ -645,6 +645,12 @@
         })
         .catch((error) => {
           console.error("Error loading patents:", error);
+          container.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; border: 2px dashed #dee2e6; border-radius: 12px; background: #f8f9fa;">
+              <i class="fas fa-exclamation-circle" style="font-size: 48px; color: #dc3545; margin-bottom: 16px;"></i>
+              <p style="color: #6c757d; font-size: 18px; margin: 0;">${error.message || 'Failed to load patents'}</p>
+            </div>
+          `;
         });
       }
 
