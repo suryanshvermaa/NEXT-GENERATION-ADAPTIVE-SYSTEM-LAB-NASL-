@@ -4,6 +4,7 @@ import response from "../utils/response";
 import { AppError } from "../utils/error";
 import prisma from "../config/db";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { createToken } from "../middlewares/auth.middleware";
 import { signedUrl } from "../s3";
 import { getUserInfo } from "../auth/googleAuth";
@@ -55,8 +56,9 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
 		},
 	});
 	if (isExisting) throw new AppError("email already in use", 400);
-	let pass = "";
-	if (password) pass = await bcrypt.hash(password, 10);
+	// Never email/store raw passwords; store hash and email a temporary password.
+	const plainPassword = password || crypto.randomBytes(9).toString("base64url");
+	const pass = await bcrypt.hash(plainPassword, 10);
 	const user = await prisma.user.create({
 		data: {
 			name,
@@ -67,7 +69,13 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
 			designation: designationEnum,
 		},
 	});
-	// await sendMailToCreatedUser(user.email,pass);
+	try {
+		await sendMailToCreatedUser(user.email, plainPassword);
+	} catch (err) {
+		// Make the failure visible to the frontend instead of a generic ECONNREFUSED.
+		const message = err instanceof Error ? err.message : "Failed to send account email";
+		throw new AppError(message, 502);
+	}
 	return response(res, 201, `${name} is ceated successfully`, {
 		user: {
 			name: user.name,

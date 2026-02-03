@@ -197,13 +197,17 @@ export const deleteBookChapter = asyncHandler(
  */
 export const getAllBookChaptersByUserId = asyncHandler(
 	async (req: Request, res: Response) => {
-		const userId = req.user?.userId;
+		const userId = req.params.userId || req.user?.userId;
 		const { page = 1, limit = 10 } = req.query;
 		const skip = (Number(page) - 1) * Number(limit);
 		if (!userId) throw new AppError("User id is required", 400);
+		const userIdNumber = Number(userId);
+		if (Number.isNaN(userIdNumber)) {
+			throw new AppError("Invalid user id", 400);
+		}
 		const bookChapters = await prisma.book_Chapter.findMany({
 			where: {
-				createdBy: userId as number,
+				createdBy: userIdNumber,
 			},
 			skip: skip,
 			take: Number(limit)

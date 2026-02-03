@@ -16,8 +16,7 @@ const escapeHtml = (value: string) =>
 export const mailForCreateUserByAdmin = (
     email: string,
     password: string,
-    loginUrl: string =
-        process.env.LOGIN_URL!
+    loginUrl: string = process.env.LOGIN_URL ?? ""
 ) => {
     const safeEmail = escapeHtml(email);
     const safePassword = escapeHtml(password);
