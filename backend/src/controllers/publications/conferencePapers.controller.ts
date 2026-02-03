@@ -101,7 +101,7 @@ export const updateConferencePaper = asyncHandler(
 				400
 			);
 		const existingConferencePaper = await prisma.conference_Paper.findUnique({
-			where: { id: id as number },
+			where: { id: Number(id) },
 		});
 		if (!existingConferencePaper)
 			throw new AppError("Conference paper not found", 404);
@@ -109,7 +109,7 @@ export const updateConferencePaper = asyncHandler(
 			throw new AppError("You are not authorized to update this conference paper", 403);
 		}
 		const conferencePaper = await prisma.conference_Paper.update({
-			where: { id: id as number },
+			where: { id: Number(id) },
 			data: {
 				title,
 				conference,

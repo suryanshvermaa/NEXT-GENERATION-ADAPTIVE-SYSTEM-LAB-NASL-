@@ -441,11 +441,17 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.min.js"></script>
   <script src="/js/config.js"></script>
+  <script src="/js/publicationCRUD.js"></script>
+  <script src="/js/publicationUI.js"></script>
 
     <script>
       const container = document.getElementById("journalContainer");
       document.getElementById("addButton").style.display = "none";
       const type = "book";
+
+      const pubCRUD = new PublicationCRUD();
+      const pubUI = new PublicationUI(pubCRUD);
+      const bookById = new Map();
 
       // Role + current user (used to optionally filter like profile page)
       let userRole = null;
@@ -463,6 +469,11 @@
         document.getElementById("addButton").style.display = "block";
       }
 
+      const token = localStorage.getItem("authToken");
+      const isAdmin = userRole === "ADMIN";
+      const canMutate = Boolean(token);
+      document.getElementById("addButton").style.display = canMutate ? "block" : "none";
+
       let currentPage = 1;
       const limit = 10;
 
@@ -476,13 +487,17 @@
           : `${window.NASL.API_BASE}/api/book/get-all?page=${page}&limit=${limit}`;
 
         fetch(url)
-        .then((response) => {
-          if (!response.ok) throw new Error("Failed to fetch books");
-          return response.json();
+        .then(async (response) => {
+          const payload = await response.json().catch(() => ({}));
+          if (response.status === 404) {
+            return { data: { books: [] } };
+          }
+          if (!response.ok) throw new Error(payload.message || "Failed to fetch books");
+          return payload;
         })
         .then((result) => {
           console.log(result)
-          const { books } = result.data;
+          const books = result?.data?.books || [];
           console.log("Books:", books);
 
           if (!books || books.length === 0) {
@@ -496,14 +511,17 @@
           }
 
           container.innerHTML = '';
+          bookById.clear();
 
           books.forEach((book) => {
+            bookById.set(String(book.id), book);
             const card = document.createElement("div");
             card.className = "card";
 
             // 3. Build action buttons only if user is ADMIN or USER
             let adminButtons = "";
-            if (userRole === "ADMIN" || userRole=== "USER") {
+            const canMutateItem = canMutate && (isAdmin || (currentUserId != null && Number(book.createdBy) === Number(currentUserId)));
+            if (canMutateItem) {
               adminButtons = `
           <div class="card-icons">
             <a class="icon-btn edit-btn" data-id="${book.id}" title="Edit">
@@ -597,38 +615,34 @@
             }
           });
 
-          // 5. Setup delete button logic
-          if (userRole === "ADMIN" || userRole === "USER") {
+          // 5. Setup edit/delete using shared modal + CRUD
+          if (canMutate) {
+            window.loadAllPublications = () => fetchBooks(currentPage);
+
             document.querySelectorAll(".delete-btn").forEach((btn) => {
-              btn.addEventListener("click", async function () {
-                const id = this.getAttribute("data-id");
-                const token = localStorage.getItem("authToken");
-
-                if (
-                  confirm("Are you sure you want to delete this book?")
-                ) {
-                  try {
-                    const res = await fetch(
-                      `${window.NASL.API_BASE}/api/book/${id}`,
-                      {
-                        method: "DELETE",
-                        headers: {
-                          Authorization: `Bearer ${token}`,
-                        },
-                      }
-                    );
-
-                    const data = await res.json();
-                    if (res.ok) {
-                      alert("Deleted successfully");
-                      fetchBooks(currentPage);
-                    } else {
-                      alert(data.message || "Failed to delete");
-                    }
-                  } catch (err) {
-                    console.error("Delete Error:", err);
-                  }
+              btn.addEventListener("click", () => {
+                const id = btn.getAttribute("data-id");
+                const item = bookById.get(String(id));
+                const allowed = isAdmin || (currentUserId != null && Number(item?.createdBy) === Number(currentUserId));
+                if (!allowed) {
+                  alert("You are not authorized to delete this book.");
+                  return;
                 }
+                pubUI.confirmDelete(type, id, item?.title || "Book");
+              });
+            });
+
+            document.querySelectorAll(".edit-btn").forEach((btn) => {
+              btn.addEventListener("click", () => {
+                const id = btn.getAttribute("data-id");
+                const item = bookById.get(String(id));
+                if (!item) return;
+                const allowed = isAdmin || (currentUserId != null && Number(item?.createdBy) === Number(currentUserId));
+                if (!allowed) {
+                  alert("You are not authorized to edit this book.");
+                  return;
+                }
+                pubUI.showEditModal(type, id, item);
               });
             });
           }
@@ -637,6 +651,8 @@
           console.error("Error loading books:", error);
         });
       }
+
+      window.loadAllPublications = () => fetchBooks(currentPage);
 
       // Initial load
       fetchBooks(1);

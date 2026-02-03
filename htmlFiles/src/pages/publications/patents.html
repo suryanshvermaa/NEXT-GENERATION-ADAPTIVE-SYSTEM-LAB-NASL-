@@ -441,11 +441,17 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.min.js"></script>
   <script src="/js/config.js"></script>
+  <script src="/js/publicationCRUD.js"></script>
+  <script src="/js/publicationUI.js"></script>
 
     <script>
       const container = document.getElementById("patentContainer");
       document.getElementById("addButton").style.display = "none";
       const type = "patent";
+
+      const pubCRUD = new PublicationCRUD();
+      const pubUI = new PublicationUI(pubCRUD);
+      const patentById = new Map();
 
       // Role + current user (used to optionally filter like profile page)
       let userRole = null;
@@ -459,9 +465,10 @@
         console.error("Error reading user from localStorage:", err);
       }
 
-      if (userRole === "ADMIN" || userRole=== "USER") {
-        document.getElementById("addButton").style.display = "block";
-      }
+      const token = localStorage.getItem("authToken");
+      const isAdmin = userRole === "ADMIN";
+      const canMutate = Boolean(token);
+      if (canMutate) document.getElementById("addButton").style.display = "block";
 
       let currentPage = 1;
       const limit = 10;
@@ -476,12 +483,18 @@
           : `${window.NASL.API_BASE}/api/patent/get-all?page=${page}&limit=${limit}`;
 
         fetch(url)
-        .then((response) => {
-          if (!response.ok) throw new Error("Failed to fetch patents");
-          return response.json();
+        .then(async (response) => {
+          const payload = await response.json().catch(() => ({}));
+          if (response.status === 404) {
+            return { data: { patents: [] } };
+          }
+          if (!response.ok) {
+            throw new Error(payload.message || "Failed to fetch patents");
+          }
+          return payload;
         })
         .then((result) => {
-          const { patents } = result.data;
+          const patents = result?.data?.patents || [];
           console.log("Patents:", patents);
 
           if (!patents || patents.length === 0) {
@@ -495,14 +508,18 @@
           }
 
           container.innerHTML = '';
+          patentById.clear();
 
           patents.forEach((patent) => {
+            patentById.set(String(patent.id), patent);
             const card = document.createElement("div");
             card.className = "card";
 
-            // 3. Build action buttons only if user is ADMIN or USER
+            const canMutateItem = canMutate && (isAdmin || (currentUserId != null && Number(patent.createdBy) === Number(currentUserId)));
+
+            // 3. Build action buttons only if owner/admin
             let adminButtons = "";
-            if (userRole === "ADMIN" || userRole=== "USER") {
+            if (canMutateItem) {
               adminButtons = `
           <div class="card-icons">
             <a class="icon-btn edit-btn" data-id="${patent.id}" title="Edit">
@@ -593,38 +610,35 @@
             }
           });
 
-          // 5. Setup delete button logic
-          if (userRole === "ADMIN" || userRole === "USER") {
-            document.querySelectorAll(".delete-btn").forEach((btn) => {
-              btn.addEventListener("click", async function () {
-                const id = this.getAttribute("data-id");
-                const token = localStorage.getItem("authToken");
+          // 5. Setup edit/delete using shared modal + CRUD
+          if (canMutate) {
+            document.querySelectorAll(".edit-btn").forEach((btn) => {
+              btn.addEventListener("click", () => {
+                const id = btn.getAttribute("data-id");
+                const patent = patentById.get(String(id));
+                if (!patent) return;
 
-                if (
-                  confirm("Are you sure you want to delete this patent?")
-                ) {
-                  try {
-                    const res = await fetch(
-                      `${window.NASL.API_BASE}/api/patent/${id}`,
-                      {
-                        method: "DELETE",
-                        headers: {
-                          Authorization: `Bearer ${token}`,
-                        },
-                      }
-                    );
-
-                    const data = await res.json();
-                    if (res.ok) {
-                      alert("Deleted successfully");
-                      fetchPatents(currentPage);
-                    } else {
-                      alert(data.message || "Failed to delete");
-                    }
-                  } catch (err) {
-                    console.error("Delete Error:", err);
-                  }
+                const allowed = isAdmin || (currentUserId != null && Number(patent.createdBy) === Number(currentUserId));
+                if (!allowed) {
+                  alert("You are not authorized to edit this patent.");
+                  return;
                 }
+                window.loadAllPublications = () => fetchPatents(currentPage);
+                pubUI.showEditModal(type, id, patent);
+              });
+            });
+
+            document.querySelectorAll(".delete-btn").forEach((btn) => {
+              btn.addEventListener("click", () => {
+                const id = btn.getAttribute("data-id");
+                const patent = patentById.get(String(id));
+                const allowed = isAdmin || (currentUserId != null && Number(patent?.createdBy) === Number(currentUserId));
+                if (!allowed) {
+                  alert("You are not authorized to delete this patent.");
+                  return;
+                }
+                window.loadAllPublications = () => fetchPatents(currentPage);
+                pubUI.confirmDelete(type, id, patent?.title || "this patent");
               });
             });
           }
@@ -633,6 +647,8 @@
           console.error("Error loading patents:", error);
         });
       }
+
+      window.loadAllPublications = () => fetchPatents(currentPage);
 
       // Initial load
       fetchPatents(1);

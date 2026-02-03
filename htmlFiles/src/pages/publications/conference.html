@@ -443,6 +443,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.min.js"></script>
   <script src="/js/config.js"></script>
+  <script src="/js/publicationCRUD.js"></script>
+  <script src="/js/publicationUI.js"></script>
 
     <script>
       const container = document.getElementById("journalContainer");
@@ -450,6 +452,10 @@
       const type = "conference";
       let currentPage = 1;
       const limit = 10;
+
+      const pubCRUD = new PublicationCRUD();
+      const pubUI = new PublicationUI(pubCRUD);
+      const conferenceById = new Map();
 
       // Role + current user (used to optionally filter like profile page)
       let userRole = null;
@@ -467,6 +473,11 @@
         document.getElementById("addButton").style.display = "block";
       }
 
+      const token = localStorage.getItem("authToken");
+      const isAdmin = userRole === "ADMIN";
+      const canMutate = Boolean(token);
+      document.getElementById("addButton").style.display = canMutate ? "block" : "none";
+
       // 2. Fetch and render conference papers with pagination
       function fetchConferencePapers(page = 1) {
         currentPage = page;
@@ -477,13 +488,17 @@
           : `${window.NASL.API_BASE}/api/conference-paper/get-all?page=${page}&limit=${limit}`;
 
         fetch(url)
-        .then((response) => {
-          if (!response.ok) throw new Error("Failed to fetch conference papers");
-          return response.json();
+        .then(async (response) => {
+          const payload = await response.json().catch(() => ({}));
+          if (response.status === 404) {
+            return { data: { conferencePapers: [] } };
+          }
+          if (!response.ok) throw new Error(payload.message || "Failed to fetch conference papers");
+          return payload;
         })
         .then((result) => {
           console.log(result)
-          const { conferencePapers } = result.data;
+          const conferencePapers = result?.data?.conferencePapers || [];
           console.log("Conference papers:", conferencePapers);
 
           if (!conferencePapers || conferencePapers.length === 0) {
@@ -497,14 +512,17 @@
           }
 
           container.innerHTML = '';
+          conferenceById.clear();
           
           conferencePapers.forEach((paper) => {
+            conferenceById.set(String(paper.id), paper);
             const card = document.createElement("div");
             card.className = "card";
 
             // 3. Build action buttons only if user is ADMIN or USER
             let adminButtons = "";
-            if (userRole === "ADMIN" || userRole=== "USER") {
+            const canMutateItem = canMutate && (isAdmin || (currentUserId != null && Number(paper.createdBy) === Number(currentUserId)));
+            if (canMutateItem) {
               adminButtons = `
           <div class="card-icons">
             <a class="icon-btn edit-btn" data-id="${paper.id}" title="Edit">
@@ -604,38 +622,34 @@
             }
           });
 
-          // 5. Setup delete button logic
-          if (userRole === "ADMIN" || userRole === "USER") {
+          // 5. Setup edit/delete using shared modal + CRUD
+          if (canMutate) {
+            window.loadAllPublications = () => fetchConferencePapers(currentPage);
+
             document.querySelectorAll(".delete-btn").forEach((btn) => {
-              btn.addEventListener("click", async function () {
-                const id = this.getAttribute("data-id");
-                const token = localStorage.getItem("authToken");
-
-                if (
-                  confirm("Are you sure you want to delete this conference paper?")
-                ) {
-                  try {
-                    const res = await fetch(
-                      `${window.NASL.API_BASE}/api/conference-paper/${id}`,
-                      {
-                        method: "DELETE",
-                        headers: {
-                          Authorization: `Bearer ${token}`,
-                        },
-                      }
-                    );
-
-                    const data = await res.json();
-                    if (res.ok) {
-                      alert("Deleted successfully");
-                      fetchConferencePapers(currentPage);
-                    } else {
-                      alert(data.message || "Failed to delete");
-                    }
-                  } catch (err) {
-                    console.error("Delete Error:", err);
-                  }
+              btn.addEventListener("click", () => {
+                const id = btn.getAttribute("data-id");
+                const item = conferenceById.get(String(id));
+                const allowed = isAdmin || (currentUserId != null && Number(item?.createdBy) === Number(currentUserId));
+                if (!allowed) {
+                  alert("You are not authorized to delete this conference paper.");
+                  return;
                 }
+                pubUI.confirmDelete(type, id, item?.title || "Conference Paper");
+              });
+            });
+
+            document.querySelectorAll(".edit-btn").forEach((btn) => {
+              btn.addEventListener("click", () => {
+                const id = btn.getAttribute("data-id");
+                const item = conferenceById.get(String(id));
+                if (!item) return;
+                const allowed = isAdmin || (currentUserId != null && Number(item?.createdBy) === Number(currentUserId));
+                if (!allowed) {
+                  alert("You are not authorized to edit this conference paper.");
+                  return;
+                }
+                pubUI.showEditModal(type, id, item);
               });
             });
           }
@@ -644,6 +658,8 @@
           console.error("Error loading conference papers:", error);
         });
       }
+
+      window.loadAllPublications = () => fetchConferencePapers(currentPage);
 
       // Initial load
       fetchConferencePapers(1);

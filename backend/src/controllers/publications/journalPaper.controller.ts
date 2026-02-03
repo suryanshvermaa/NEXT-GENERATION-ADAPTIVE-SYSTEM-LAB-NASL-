@@ -83,7 +83,7 @@ export const updateJournalPaper = asyncHandler(
 			);
 		const existingPaper = await prisma.journal_Paper.findUnique({
 			where: {
-				id: id as number,
+				id: Number(id),
 			},
 		});
 		if (!existingPaper) {
@@ -94,13 +94,13 @@ export const updateJournalPaper = asyncHandler(
 		}
 		const journalPaper = await prisma.journal_Paper.update({
 			where: {
-				id: id as number,
+				id: Number(id),
 			},
 			data: {
 				title,
 				journal,
 				authors: authors.split(",").map((author: string) => (author.trim())),
-				publicationDate: new Date(publicationDate),
+				publicationDate: publicationDate ? new Date(publicationDate) : existingPaper.publicationDate,
 				volume,
 				year,
 				quartile,

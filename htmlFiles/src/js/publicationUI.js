@@ -60,6 +60,13 @@ class PublicationUI {
       .join(', ');
   }
 
+  toDateInputValue(value) {
+    if (!value) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toISOString().slice(0, 10);
+  }
+
   getJournalFields(data = {}) {
     return `
       <div class="mb-3">
@@ -77,7 +84,7 @@ class PublicationUI {
       <div class="row">
         <div class="col-md-6 mb-3">
           <label class="form-label">Publication Date</label>
-          <input type="date" class="form-control" id="publicationDate" value="${data.publicationDate || ''}">
+          <input type="date" class="form-control" id="publicationDate" value="${this.toDateInputValue(data.publicationDate)}">
         </div>
         <div class="col-md-6 mb-3">
           <label class="form-label">Year</label>
@@ -159,16 +166,16 @@ class PublicationUI {
       <div class="row">
         <div class="col-md-6 mb-3">
           <label class="form-label">Grant Date</label>
-          <input type="date" class="form-control" id="grantDate" value="${data.grantDate || ''}">
+          <input type="date" class="form-control" id="grantDate" value="${this.toDateInputValue(data.grantDate)}">
         </div>
         <div class="col-md-6 mb-3">
           <label class="form-label">Publication Date</label>
-          <input type="date" class="form-control" id="publicationDate" value="${data.publicationDate || ''}">
+          <input type="date" class="form-control" id="publicationDate" value="${this.toDateInputValue(data.publicationDate)}">
         </div>
       </div>
       <div class="mb-3">
-        <label class="form-label">Inventors <small>(comma-separated names)</small></label>
-        <input type="text" class="form-control" id="inventors" value="${this.normalizePeopleList(data.inventors) || (data.inventors || '')}" placeholder="e.g., John Doe, Jane Smith">
+        <label class="form-label">Inventors * <small>(comma-separated names)</small></label>
+        <input type="text" class="form-control" id="inventors" value="${this.normalizePeopleList(data.inventors) || (data.inventors || '')}" placeholder="e.g., John Doe, Jane Smith" required>
         <small class="text-muted d-block">Enter inventor names separated by commas</small>
       </div>
     `;
@@ -211,6 +218,43 @@ class PublicationUI {
     `;
   }
 
+  getBookChapterFields(data = {}) {
+    return `
+      <div class="mb-3">
+        <label class="form-label">Chapter Title *</label>
+        <input type="text" class="form-control" id="chapterTitle" value="${data.chapterTitle || ''}" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Book Title *</label>
+        <input type="text" class="form-control" id="bookTitle" value="${data.bookTitle || ''}" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Authors * <small>(comma-separated)</small></label>
+        <input type="text" class="form-control" id="authors" value="${this.normalizePeopleList(data.authors) || (data.authors || '')}" required>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Publisher *</label>
+          <input type="text" class="form-control" id="publisher" value="${data.publisher || ''}" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Year *</label>
+          <input type="number" class="form-control" id="year" value="${data.year || ''}" required>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Scopus</label>
+          <input type="text" class="form-control" id="scopus" value="${data.scopus || ''}">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">DOI</label>
+          <input type="text" class="form-control" id="doi" value="${data.doi || ''}">
+        </div>
+      </div>
+    `;
+  }
+
   // ==================== PUBLIC METHODS ====================
   showCreateModal(type) {
     this.currentType = type;
@@ -222,14 +266,16 @@ class PublicationUI {
       'journal': 'Add Journal Paper',
       'conference': 'Add Conference Paper',
       'patent': 'Add Patent',
-      'book': 'Add Book/Chapter'
+      'book': 'Add Book',
+      'bookChapter': 'Add Book Chapter'
     };
 
     const fieldBuilders = {
       'journal': this.getJournalFields,
       'conference': this.getConferenceFields,
       'patent': this.getPatentFields,
-      'book': this.getBookFields
+      'book': this.getBookFields,
+      'bookChapter': this.getBookChapterFields
     };
 
     document.getElementById('modalTitle').textContent = titles[type] || 'Add Publication';
@@ -248,14 +294,16 @@ class PublicationUI {
       'journal': 'Edit Journal Paper',
       'conference': 'Edit Conference Paper',
       'patent': 'Edit Patent',
-      'book': 'Edit Book/Chapter'
+      'book': 'Edit Book',
+      'bookChapter': 'Edit Book Chapter'
     };
 
     const fieldBuilders = {
       'journal': this.getJournalFields,
       'conference': this.getConferenceFields,
       'patent': this.getPatentFields,
-      'book': this.getBookFields
+      'book': this.getBookFields,
+      'bookChapter': this.getBookChapterFields
     };
 
     document.getElementById('modalTitle').textContent = titles[type] || 'Edit Publication';
