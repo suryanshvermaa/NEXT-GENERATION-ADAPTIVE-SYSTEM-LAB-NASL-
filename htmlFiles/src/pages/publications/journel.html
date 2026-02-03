@@ -437,17 +437,18 @@
     <script>
       const container = document.getElementById("journalContainer");
       document.getElementById("addButton").style.display = "none";
-      const type = "journal"
+      const type = "journal";
 
-      // 1. Get user role from localStorage
+      // Role + current user (used to optionally filter like profile page)
       let userRole = null;
       let userData = null;
+      let currentUserId = null;
       try {
         userData = JSON.parse(localStorage.getItem("user"));
-        userRole = userData?.role;
-        console.log("User role:", userRole);
+        userRole = userData?.role || null;
+        currentUserId = userData?.id || null;
       } catch (err) {
-        console.error("Error reading user role from localStorage:", err);
+        console.error("Error reading user from localStorage:", err);
       }
 
       if (userRole === "ADMIN" || userRole === "USER") {
@@ -462,10 +463,12 @@
         currentPage = page;
         container.innerHTML = '<p style="text-align: center; padding: 40px;">Loading...</p>';
         
-        // 2. Fetch and render journal papers
-        fetch(
-    `${window.NASL.API_BASE}/api/journal-paper/get-all?page=${page}&limit=${limit}`
-        )
+        const url = currentUserId
+          ? `${window.NASL.API_BASE}/api/journal-paper/get-all-by-user-id/${encodeURIComponent(currentUserId)}?page=${page}&limit=${limit}`
+          : `${window.NASL.API_BASE}/api/journal-paper/get-all?page=${page}&limit=${limit}`;
+
+        // Fetch and render journal papers
+        fetch(url)
         .then((response) => {
           if (!response.ok) throw new Error("Failed to fetch journal papers");
           return response.json();
@@ -493,17 +496,17 @@
             const card = document.createElement("div");
             card.className = "card";
 
-            // Format authors array to display as string
-            const authorsDisplay = Array.isArray(paper.authors) 
-              ? paper.authors.join(", ") 
-              : paper.authors;
+            // Match profile page rendering (supports string[] or object[])
+            const authorsDisplay = Array.isArray(paper.authors)
+              ? paper.authors.map((auth) => (typeof auth === 'string' ? auth : auth?.name || auth)).join(", ")
+              : (paper.authors || "N/A");
 
             // 4. Inject card HTML with modern design
             card.innerHTML = `
             <div class="card-content">
               <h2 style="font-size: 1.3rem; margin-bottom: 12px; color: #1a1a1a; font-weight: 600;">
                 <i class="fas fa-file-alt" style="color: #254D70; margin-right: 8px;"></i>
-                ${paper.title}
+                ${paper.title || "Untitled"}
               </h2>
               <p style="margin-bottom: 8px; color: #555;">
                 <i class="fas fa-users" style="color: #254D70; margin-right: 6px; width: 16px;"></i>

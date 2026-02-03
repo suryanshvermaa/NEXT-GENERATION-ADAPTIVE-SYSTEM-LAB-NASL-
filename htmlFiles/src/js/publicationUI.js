@@ -51,6 +51,15 @@ class PublicationUI {
   }
 
   // ==================== FORM BUILDERS ====================
+  normalizePeopleList(value) {
+    if (!Array.isArray(value)) return value || '';
+    return value
+      .map((person) => (typeof person === 'string' ? person : (person?.name || person?.email || '')))
+      .map((s) => String(s).trim())
+      .filter(Boolean)
+      .join(', ');
+  }
+
   getJournalFields(data = {}) {
     return `
       <div class="mb-3">
@@ -63,7 +72,7 @@ class PublicationUI {
       </div>
       <div class="mb-3">
         <label class="form-label">Authors * <small>(comma-separated)</small></label>
-        <input type="text" class="form-control" id="authors" value="${Array.isArray(data.authors) ? data.authors.join(', ') : (data.authors || '')}" required>
+        <input type="text" class="form-control" id="authors" value="${this.normalizePeopleList(data.authors) || (data.authors || '')}" required>
       </div>
       <div class="row">
         <div class="col-md-6 mb-3">
@@ -104,7 +113,7 @@ class PublicationUI {
       </div>
       <div class="mb-3">
         <label class="form-label">Authors * <small>(comma-separated)</small></label>
-        <input type="text" class="form-control" id="authors" value="${Array.isArray(data.authors) ? data.authors.join(', ') : (data.authors || '')}" required>
+        <input type="text" class="form-control" id="authors" value="${this.normalizePeopleList(data.authors) || (data.authors || '')}" required>
       </div>
       <div class="mb-3">
         <label class="form-label">Location *</label>
@@ -159,7 +168,7 @@ class PublicationUI {
       </div>
       <div class="mb-3">
         <label class="form-label">Inventors <small>(comma-separated names)</small></label>
-        <input type="text" class="form-control" id="inventors" value="${Array.isArray(data.inventors) ? data.inventors.join(', ') : (data.inventors || '')}" placeholder="e.g., John Doe, Jane Smith">
+        <input type="text" class="form-control" id="inventors" value="${this.normalizePeopleList(data.inventors) || (data.inventors || '')}" placeholder="e.g., John Doe, Jane Smith">
         <small class="text-muted d-block">Enter inventor names separated by commas</small>
       </div>
     `;
@@ -173,7 +182,7 @@ class PublicationUI {
       </div>
       <div class="mb-3">
         <label class="form-label">Authors * <small>(comma-separated)</small></label>
-        <input type="text" class="form-control" id="authors" value="${Array.isArray(data.authors) ? data.authors.join(', ') : (data.authors || '')}" required>
+        <input type="text" class="form-control" id="authors" value="${this.normalizePeopleList(data.authors) || (data.authors || '')}" required>
       </div>
       <div class="row">
         <div class="col-md-6 mb-3">

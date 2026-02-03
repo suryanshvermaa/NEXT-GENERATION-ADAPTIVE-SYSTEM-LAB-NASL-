@@ -341,7 +341,7 @@
     <div class="container" id="patentContainer"></div>
 
     <a
-      href="../forms_html/journal.html"
+      href="../forms_html/patents.html"
       id="addButton"
       class="btn btn-success mx-auto mb-4"
       style="max-width: 200px; display: none"
@@ -445,15 +445,18 @@
     <script>
       const container = document.getElementById("patentContainer");
       document.getElementById("addButton").style.display = "none";
-      const type = "patent"
-      // 1. Get user role from localStorage
-      // let userRole = null;
+      const type = "patent";
+
+      // Role + current user (used to optionally filter like profile page)
+      let userRole = null;
+      let userData = null;
+      let currentUserId = null;
       try {
-        // const userData = JSON.parse(localStorage.getItem("user"));
-        userRole = userData?.role;
-        console.log("User role:", userRole);
+        userData = JSON.parse(localStorage.getItem("user"));
+        userRole = userData?.role || null;
+        currentUserId = userData?.id || null;
       } catch (err) {
-        console.error("Error reading user role from localStorage:", err);
+        console.error("Error reading user from localStorage:", err);
       }
 
       if (userRole === "ADMIN" || userRole=== "USER") {
@@ -467,10 +470,12 @@
       function fetchPatents(page = 1) {
         currentPage = page;
         container.innerHTML = '<p>Loading...</p>';
-        
-        fetch(
-    `${window.NASL.API_BASE}/api/patent/get-all?page=${page}&limit=${limit}`
-        )
+
+        const url = currentUserId
+          ? `${window.NASL.API_BASE}/api/patent/get-all-by-user-id/${encodeURIComponent(currentUserId)}?page=${page}&limit=${limit}`
+          : `${window.NASL.API_BASE}/api/patent/get-all?page=${page}&limit=${limit}`;
+
+        fetch(url)
         .then((response) => {
           if (!response.ok) throw new Error("Failed to fetch patents");
           return response.json();
@@ -510,10 +515,10 @@
         `;
             }
 
-            // Format inventors array to display
-            const inventorsDisplay = Array.isArray(patent.inventors) 
-              ? patent.inventors.join(", ") 
-              : patent.inventors;
+            // Match profile page rendering (supports string[] or object[])
+            const inventorsDisplay = Array.isArray(patent.inventors)
+              ? patent.inventors.map((inv) => (typeof inv === 'string' ? inv : inv?.name || inv)).join(", ")
+              : (patent.inventors || "N/A");
 
             // Format dates
             const grantDateFormatted = patent.grantDate ? new Date(patent.grantDate).toLocaleDateString() : 'N/A';
@@ -631,9 +636,6 @@
 
       // Initial load
       fetchPatents(1);
-        .catch((error) => {
-          console.error("Error loading patents:", error);
-        });
     </script>
   </body>
 </html>

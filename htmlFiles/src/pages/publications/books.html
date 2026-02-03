@@ -341,12 +341,12 @@
     <div class="container" id="journalContainer"></div>
 
     <a
-      href="../forms_html/journal.html"
+      href="../forms_html/books.html"
       id="addButton"
       class="btn btn-success mx-auto mb-4"
       style="max-width: 200px; display: none"
     >
-      + Add Conference Papers
+      + Add Books
     </a>
 
     <footer class="text-center text-lg-start text-white">
@@ -445,16 +445,18 @@
     <script>
       const container = document.getElementById("journalContainer");
       document.getElementById("addButton").style.display = "none";
-      const type = "books"
+      const type = "book";
 
-      // 1. Get user role from localStorage
-      // let userRole = null;
+      // Role + current user (used to optionally filter like profile page)
+      let userRole = null;
+      let userData = null;
+      let currentUserId = null;
       try {
-        // const userData = JSON.parse(localStorage.getItem("user"));
-        userRole = userData?.role;
-        console.log("User role:", userRole);
+        userData = JSON.parse(localStorage.getItem("user"));
+        userRole = userData?.role || null;
+        currentUserId = userData?.id || null;
       } catch (err) {
-        console.error("Error reading user role from localStorage:", err);
+        console.error("Error reading user from localStorage:", err);
       }
 
       if (userRole === "ADMIN" || userRole === "USER") {
@@ -468,10 +470,12 @@
       function fetchBooks(page = 1) {
         currentPage = page;
         container.innerHTML = '<p>Loading...</p>';
-        
-        fetch(
-    `${window.NASL.API_BASE}/api/book/get-all?page=${page}&limit=${limit}`
-        )
+
+        const url = currentUserId
+          ? `${window.NASL.API_BASE}/api/book/get-all-by-user-id/${encodeURIComponent(currentUserId)}?page=${page}&limit=${limit}`
+          : `${window.NASL.API_BASE}/api/book/get-all?page=${page}&limit=${limit}`;
+
+        fetch(url)
         .then((response) => {
           if (!response.ok) throw new Error("Failed to fetch books");
           return response.json();
@@ -512,10 +516,10 @@
         `;
             }
 
-            // Format authors array to display as string
-            const authorsDisplay = Array.isArray(book.authors) 
-              ? book.authors.join(", ") 
-              : book.authors;
+            // Match profile page rendering (supports string[] or object[])
+            const authorsDisplay = Array.isArray(book.authors)
+              ? book.authors.map((auth) => (typeof auth === 'string' ? auth : auth?.name || auth)).join(", ")
+              : (book.authors || "N/A");
 
             // 4. Inject card HTML with modern UI and icons
             card.innerHTML = `
@@ -636,9 +640,6 @@
 
       // Initial load
       fetchBooks(1);
-        .catch((error) => {
-          console.error("Error loading journal papers:", error);
-        });
     </script>
   </body>
 </html>
