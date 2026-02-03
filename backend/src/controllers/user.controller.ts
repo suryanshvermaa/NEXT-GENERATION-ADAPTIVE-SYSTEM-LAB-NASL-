@@ -69,12 +69,12 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
 			designation: designationEnum,
 		},
 	});
+	let emailWarning: string | null = null;
 	try {
 		await sendMailToCreatedUser(user.email, plainPassword);
 	} catch (err) {
-		// Make the failure visible to the frontend instead of a generic ECONNREFUSED.
-		const message = err instanceof Error ? err.message : "Failed to send account email";
-		throw new AppError(message, 502);
+		// Do not block user creation on SMTP/network issues.
+		emailWarning = err instanceof Error ? err.message : "Failed to send account email";
 	}
 	return response(res, 201, `${name} is ceated successfully`, {
 		user: {
@@ -82,6 +82,7 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
 			email: user.email,
 			role: user.role,
 		},
+		emailWarning,
 	});
 });
 

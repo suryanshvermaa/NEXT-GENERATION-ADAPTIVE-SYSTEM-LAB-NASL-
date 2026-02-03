@@ -65,8 +65,23 @@
         placeholder="Enter your password"
       />
 
-      <button type="submit">Submit</button>
+      <button type="submit" id="submitBtn">Submit</button>
     </form>
+
+    <!-- Loading modal -->
+    <div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-body d-flex align-items-center gap-3">
+            <div class="spinner-border" role="status" aria-hidden="true"></div>
+            <div>
+              <div class="fw-semibold" id="loadingTitle">Creating...</div>
+              <div class="text-muted" style="font-size: 0.95rem" id="loadingSubtitle">Please wait, don't close this page.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script src="../js/file.js"></script>
 
@@ -86,6 +101,30 @@
       // 1. Get the upload URL
       async function submitForm(e) {
         e.preventDefault();
+
+        const submitBtn = document.getElementById("submitBtn");
+        const loadingEl = document.getElementById("loadingModal");
+        const loadingTitle = document.getElementById("loadingTitle");
+        const loadingSubtitle = document.getElementById("loadingSubtitle");
+        const loadingModal = loadingEl ? new bootstrap.Modal(loadingEl) : null;
+
+        const setLoading = (title, subtitle) => {
+          if (loadingTitle) loadingTitle.textContent = title;
+          if (loadingSubtitle) loadingSubtitle.textContent = subtitle;
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Creating...";
+          }
+          loadingModal?.show();
+        };
+
+        const clearLoading = () => {
+          loadingModal?.hide();
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Submit";
+          }
+        };
 
         const token = localStorage.getItem("authToken"); // assuming you're using token auth
         const name = document.getElementById("name").value.trim();
@@ -107,6 +146,7 @@
           return;
         } else {
           try {
+            setLoading("Uploading image...", "Preparing profile image upload");
             // 1. Get the upload URL
             const uploadRes = await fetch(
               `${window.NASL.API_BASE}/api/image/uploadURL`,
@@ -127,6 +167,7 @@
             const { imageUploadingUrl, imageUrl } = data;
 
             // 2. Upload the image to the upload URL
+            setLoading("Uploading image...", "Uploading file to storage");
             await fetch(imageUploadingUrl, {
               method: "PUT",
               headers: {
@@ -137,6 +178,7 @@
             profileImg = imageUrl;
           } catch (error) {
             console.error("Image upload failed:", error);
+            clearLoading();
             alert("Failed to upload image.");
             return;
           }
@@ -151,6 +193,7 @@
           role: "USER",
         };
         try {
+          setLoading("Creating account...", "Saving user details and sending email");
           const res = await fetch(
             `${window.NASL.API_BASE}/api/user/createUser`,
             {
@@ -162,17 +205,26 @@
               body: JSON.stringify(payload),
             }
           );
-          const result = await res.json();
+          const result = await res.json().catch(() => ({}));
 
           if (res.ok) {
             console.log(result);
-            alert("User created successfully!");
+            clearLoading();
+            const warning = result?.data?.emailWarning;
+            if (warning) {
+              alert(`User created successfully, but email failed: ${warning}`);
+            } else {
+              alert("User created successfully!");
+            }
             window.location.reload();
           } else {
-            alert(result.message || "Failed to create user.");
+            clearLoading();
+            const msg = result?.message || "Failed to create user.";
+            alert(`Create user failed (HTTP ${res.status}): ${msg}`);
           }
         } catch (error) {
           console.error("User creation failed:", error);
+          clearLoading();
           alert("Something went wrong.");
         }
       }
