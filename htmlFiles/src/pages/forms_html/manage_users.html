@@ -68,6 +68,19 @@
               </select>
             </div>
             <div class="col-12 col-md-4">
+              <label class="form-label">Role</label>
+              <select class="form-select" id="roleSelect">
+                <option value="all" selected>All roles</option>
+                <option value="ADMIN">ADMIN</option>
+                <option value="BTECH">BTECH</option>
+                <option value="MTECH">MTECH</option>
+                <option value="PHD">PHD</option>
+                <option value="INVESTIGATOR">INVESTIGATOR</option>
+                <option value="INTERN">INTERN</option>
+                <option value="ALUMNI">ALUMNI</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-4">
               <div class="text-md-end">
                 <div class="muted" id="statusText">Ready</div>
               </div>
@@ -161,6 +174,7 @@
         const usersTbody = document.getElementById("usersTbody");
         const pageInput = document.getElementById("pageInput");
         const limitSelect = document.getElementById("limitSelect");
+        const roleSelect = document.getElementById("roleSelect");
         const statusText = document.getElementById("statusText");
         const pageInfo = document.getElementById("pageInfo");
 
@@ -211,7 +225,7 @@
           return d.toLocaleString();
         }
 
-        async function fetchUsers(page, limit) {
+        async function fetchUsers(page, limit, role) {
           // Abort any previous in-flight list request.
           try {
             if (activeListAbort) activeListAbort.abort();
@@ -220,7 +234,13 @@
           }
           activeListAbort = new AbortController();
 
-          const url = `${window.NASL.API_BASE}/api/user/getUserForAdminSection?page=${encodeURIComponent(page)}&limit=${encodeURIComponent(limit)}`;
+          const params = new URLSearchParams();
+          params.set("page", String(page));
+          params.set("limit", String(limit));
+          if (role && String(role).toLowerCase() !== "all") {
+            params.set("role", String(role));
+          }
+          const url = `${window.NASL.API_BASE}/api/user/getUserForAdminSection?${params.toString()}`;
           const res = await fetch(url, {
             method: "GET",
             headers: {
@@ -286,14 +306,15 @@
         async function load() {
           const page = Math.max(1, parseInt(pageInput.value || "1", 10) || 1);
           const limit = Math.max(1, parseInt(limitSelect.value || "10", 10) || 10);
+          const role = roleSelect && roleSelect.value ? roleSelect.value : "all";
 
           pageInput.value = String(page);
           statusText.textContent = "Loading…";
-          pageInfo.textContent = `Page ${page}`;
+          pageInfo.textContent = role && String(role).toLowerCase() !== "all" ? `Page ${page} • Role ${role}` : `Page ${page}`;
 
-          setLoading("Loading users…", `Fetching page ${page} (limit ${limit})`);
+          setLoading("Loading users…", role && String(role).toLowerCase() !== "all" ? `Fetching page ${page} (limit ${limit}) • Role ${role}` : `Fetching page ${page} (limit ${limit})`);
           try {
-            const users = await fetchUsers(page, limit);
+            const users = await fetchUsers(page, limit, role);
             renderRows(users);
             statusText.textContent = `Loaded ${users.length} user(s).`;
           } catch (err) {
@@ -325,6 +346,13 @@
           pageInput.value = "1";
           load();
         });
+
+        if (roleSelect) {
+          roleSelect.addEventListener("change", () => {
+            pageInput.value = "1";
+            load();
+          });
+        }
 
         usersTbody.addEventListener("click", async (e) => {
           const btn = e.target && e.target.closest ? e.target.closest("button[data-action]") : null;
