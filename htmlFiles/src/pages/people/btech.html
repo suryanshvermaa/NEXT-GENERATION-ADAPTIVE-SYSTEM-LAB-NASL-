@@ -304,46 +304,11 @@
   <script src="/js/config.js"></script>
   <script src="../js/navbar.js"></script>
   <script src="../js/footer.js"></script>
+  <script src="../js/peoplePagination.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-    const token = localStorage.getItem("authToken"); // optional if endpoint needs auth
-    const container = document.querySelector(".cards-container");
-    const designation = "BTech";
-
-  fetch(`${window.NASL.API_BASE}/api/user/getPeople?designation=${encodeURIComponent(designation)}`)
-    .then(res => {
-      if (!res.ok) throw new Error("Failed to fetch PhD people");
-      return res.json();
-    })
-    .then(result => {
-      console.log(result.data.people)
-      const users  = result.data.people;
-
-      users.forEach(user => {
-        const card = document.createElement("div");
-        card.className = "card-box";
-
-        card.innerHTML = `
-          <div class="card-image-wrapper">
-            <img src="${user.profileImage || '/assets/default-avatar.svg'}" alt="${user.name}" class="card-image" />
-          </div>
-          <div class="card-description">
-            <h3>${user.name || "Unnamed"}</h3>
-            <p>${user.about || "No description provided."}</p>
-          </div>
-          <div class="card-action">
-            <a href="../users/personal.html?userId=${encodeURIComponent(user.id)}" class="btn view-profile-btn">View Profile</a>
-          </div>
-        `;
-
-        container.appendChild(card);
-      });
-    })
-    .catch(err => {
-      console.error("Error loading PhD users:", err);
-      container.innerHTML = `<p class="text-danger">Failed to load profiles.</p>`;
+      initPeoplePagination({ designation: "BTech", limit: 10 });
     });
-  });
   </script>
 </body>
 </html>
