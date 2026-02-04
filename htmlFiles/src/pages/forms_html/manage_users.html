@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Users - NASL</title>
+    <link rel="stylesheet" href="/css/admin_style.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <style>
+      body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+      .page-wrap { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
+      .muted { color: rgba(33, 37, 41, 0.7); }
+      .table thead th { white-space: nowrap; }
+      .table td { vertical-align: middle; }
+      .badge-role { font-size: 0.85rem; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+      .sticky-actions { position: sticky; top: 0; background: #fff; z-index: 1; }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrap">
+      <div class="d-flex align-items-start align-items-md-center justify-content-between gap-3 flex-column flex-md-row">
+        <div>
+          <h1 class="h3 mb-1">Manage Users</h1>
+          <div class="muted">List users and delete accounts (Admin only).</div>
+        </div>
+        <div class="d-flex gap-2">
+          <a class="btn btn-outline-secondary" href="/admin/admin.html">
+            <i class="fa-solid fa-arrow-left me-2"></i>Back to Dashboard
+          </a>
+          <button class="btn btn-primary" id="refreshBtn">
+            <i class="fa-solid fa-rotate me-2"></i>Refresh
+          </button>
+        </div>
+      </div>
+
+      <div class="card mt-4">
+        <div class="card-body">
+          <div class="row g-3 align-items-end">
+            <div class="col-12 col-md-4">
+              <label class="form-label">Page</label>
+              <div class="input-group">
+                <button class="btn btn-outline-secondary" id="prevBtn" type="button">Prev</button>
+                <input class="form-control" id="pageInput" type="number" min="1" value="1" />
+                <button class="btn btn-outline-secondary" id="nextBtn" type="button">Next</button>
+              </div>
+            </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label">Limit</label>
+              <select class="form-select" id="limitSelect">
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="text-md-end">
+                <div class="muted" id="statusText">Ready</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive mt-4">
+            <table class="table table-hover align-middle">
+              <thead class="table-light sticky-actions">
+                <tr>
+                  <th style="width: 70px">ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th style="width: 110px">Role</th>
+                  <th>Designation</th>
+                  <th style="width: 170px">Created</th>
+                  <th style="width: 120px" class="text-end">Action</th>
+                </tr>
+              </thead>
+              <tbody id="usersTbody">
+                <tr>
+                  <td colspan="7" class="text-center muted py-4">Loading…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <div class="muted" id="pageInfo">Page 1</div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-secondary" id="prevBtn2" type="button">Prev</button>
+              <button class="btn btn-outline-secondary" id="nextBtn2" type="button">Next</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading overlay (simple + reliable) -->
+    <div
+      id="loadingOverlay"
+      class="position-fixed top-0 start-0 w-100 h-100 d-none"
+      style="background: rgba(0, 0, 0, 0.2); z-index: 2000"
+      aria-hidden="true"
+    >
+      <div class="d-flex justify-content-center align-items-center w-100 h-100">
+        <div class="bg-white rounded-3 shadow p-3 d-flex align-items-center gap-3" style="min-width: 320px">
+          <div class="spinner-border" role="status" aria-hidden="true"></div>
+          <div>
+            <div class="fw-semibold" id="loadingTitle">Loading…</div>
+            <div class="text-muted" style="font-size: 0.95rem" id="loadingSubtitle">Please wait.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.min.js"
+      integrity="sha384-RuyvpeZCxMJCqVUGFI0Do1mQrods/hhxYlcVfGPOfQtPJh0JCw12tUAZ/Mv10S7D"
+      crossorigin="anonymous"
+    ></script>
+    <script src="/js/config.js"></script>
+
+    <script>
+      (function () {
+        const token = localStorage.getItem("authToken");
+        let storedUser = null;
+        try {
+          storedUser = JSON.parse(localStorage.getItem("user"));
+        } catch {
+          storedUser = null;
+        }
+
+        const isAdmin = storedUser && storedUser.role === "ADMIN";
+        if (!token) {
+          alert("Unauthorized. Please login first.");
+          window.location.href = "/users/login.html";
+          return;
+        }
+        if (!isAdmin) {
+          alert("Forbidden. Admin access required.");
+          window.location.href = "/index.html";
+          return;
+        }
+
+        const usersTbody = document.getElementById("usersTbody");
+        const pageInput = document.getElementById("pageInput");
+        const limitSelect = document.getElementById("limitSelect");
+        const statusText = document.getElementById("statusText");
+        const pageInfo = document.getElementById("pageInfo");
+
+        const loadingEl = document.getElementById("loadingOverlay");
+        const loadingTitle = document.getElementById("loadingTitle");
+        const loadingSubtitle = document.getElementById("loadingSubtitle");
+
+        // Prevent stuck loaders when multiple fetches happen.
+        let pendingLoads = 0;
+        let activeListAbort = null;
+
+        const setLoading = (title, subtitle) => {
+          if (loadingTitle) loadingTitle.textContent = title;
+          if (loadingSubtitle) loadingSubtitle.textContent = subtitle;
+          pendingLoads += 1;
+          if (loadingEl) {
+            loadingEl.classList.remove("d-none");
+            loadingEl.setAttribute("aria-hidden", "false");
+          }
+        };
+        const clearLoading = () => {
+          pendingLoads = Math.max(0, pendingLoads - 1);
+          if (pendingLoads === 0 && loadingEl) {
+            loadingEl.classList.add("d-none");
+            loadingEl.setAttribute("aria-hidden", "true");
+          }
+        };
+
+        function escapeHtml(str) {
+          return String(str ?? "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+        }
+
+        function roleBadge(role) {
+          const r = String(role || "").toUpperCase();
+          const cls = r === "ADMIN" ? "bg-danger" : "bg-secondary";
+          return `<span class="badge ${cls} badge-role">${escapeHtml(r || "USER")}</span>`;
+        }
+
+        function fmtDate(value) {
+          if (!value) return "";
+          const d = new Date(value);
+          if (Number.isNaN(d.getTime())) return escapeHtml(value);
+          return d.toLocaleString();
+        }
+
+        async function fetchUsers(page, limit) {
+          // Abort any previous in-flight list request.
+          try {
+            if (activeListAbort) activeListAbort.abort();
+          } catch {
+            // ignore
+          }
+          activeListAbort = new AbortController();
+
+          const url = `${window.NASL.API_BASE}/api/user/getUserForAdminSection?page=${encodeURIComponent(page)}&limit=${encodeURIComponent(limit)}`;
+          const res = await fetch(url, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            signal: activeListAbort.signal,
+          });
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            const msg = json && json.message ? json.message : "Failed to fetch users";
+            throw new Error(`${msg} (HTTP ${res.status})`);
+          }
+          const users = json && json.data && Array.isArray(json.data.users) ? json.data.users : [];
+          return users;
+        }
+
+        async function deleteUser(userId) {
+          const res = await fetch(`${window.NASL.API_BASE}/api/user/deleteUser`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ userId }),
+          });
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            const msg = json && json.message ? json.message : "Delete failed";
+            throw new Error(`${msg} (HTTP ${res.status})`);
+          }
+          return json;
+        }
+
+        function renderRows(users) {
+          if (!users || users.length === 0) {
+            usersTbody.innerHTML = `<tr><td colspan="7" class="text-center muted py-4">No users found.</td></tr>`;
+            return;
+          }
+
+          usersTbody.innerHTML = users
+            .map((u) => {
+              const id = u.id;
+              const disableDelete = Number(id) === Number(storedUser && storedUser.id);
+              const deleteBtn = disableDelete
+                ? `<button class="btn btn-sm btn-outline-secondary" disabled title="You can't delete your own account here">Delete</button>`
+                : `<button class="btn btn-sm btn-outline-danger" data-action="delete" data-user-id="${escapeHtml(id)}">Delete</button>`;
+
+              return `
+                <tr>
+                  <td class="mono">${escapeHtml(id)}</td>
+                  <td>${escapeHtml(u.name)}</td>
+                  <td>${escapeHtml(u.email)}</td>
+                  <td>${roleBadge(u.role)}</td>
+                  <td>${escapeHtml(u.designation)}</td>
+                  <td>${escapeHtml(fmtDate(u.createdAt))}</td>
+                  <td class="text-end">${deleteBtn}</td>
+                </tr>
+              `;
+            })
+            .join("");
+        }
+
+        async function load() {
+          const page = Math.max(1, parseInt(pageInput.value || "1", 10) || 1);
+          const limit = Math.max(1, parseInt(limitSelect.value || "10", 10) || 10);
+
+          pageInput.value = String(page);
+          statusText.textContent = "Loading…";
+          pageInfo.textContent = `Page ${page}`;
+
+          setLoading("Loading users…", `Fetching page ${page} (limit ${limit})`);
+          try {
+            const users = await fetchUsers(page, limit);
+            renderRows(users);
+            statusText.textContent = `Loaded ${users.length} user(s).`;
+          } catch (err) {
+            // Ignore abort errors (caused by quick successive loads)
+            if (err && (err.name === "AbortError" || String(err.message || "").includes("aborted"))) {
+              return;
+            }
+            console.error(err);
+            usersTbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">${escapeHtml(err.message || "Failed to load")}</td></tr>`;
+            statusText.textContent = "Error";
+          } finally {
+            clearLoading();
+          }
+        }
+
+        function setPage(nextPage) {
+          pageInput.value = String(Math.max(1, nextPage));
+          load();
+        }
+
+        document.getElementById("refreshBtn").addEventListener("click", load);
+        document.getElementById("prevBtn").addEventListener("click", () => setPage((parseInt(pageInput.value || "1", 10) || 1) - 1));
+        document.getElementById("nextBtn").addEventListener("click", () => setPage((parseInt(pageInput.value || "1", 10) || 1) + 1));
+        document.getElementById("prevBtn2").addEventListener("click", () => document.getElementById("prevBtn").click());
+        document.getElementById("nextBtn2").addEventListener("click", () => document.getElementById("nextBtn").click());
+
+        pageInput.addEventListener("change", load);
+        limitSelect.addEventListener("change", () => {
+          pageInput.value = "1";
+          load();
+        });
+
+        usersTbody.addEventListener("click", async (e) => {
+          const btn = e.target && e.target.closest ? e.target.closest("button[data-action]") : null;
+          if (!btn) return;
+
+          const action = btn.getAttribute("data-action");
+          if (action !== "delete") return;
+
+          const userId = btn.getAttribute("data-user-id");
+          if (!userId) return;
+
+          const ok = confirm(`Delete user ID ${userId}? This cannot be undone.`);
+          if (!ok) return;
+
+          btn.disabled = true;
+          const oldText = btn.textContent;
+          btn.textContent = "Deleting…";
+
+          setLoading("Deleting user…", `User ID ${userId}`);
+          try {
+            await deleteUser(userId);
+            statusText.textContent = `Deleted user ${userId}.`;
+            await load();
+          } catch (err) {
+            console.error(err);
+            alert(err.message || "Delete failed");
+            statusText.textContent = "Delete failed";
+          } finally {
+            clearLoading();
+            btn.disabled = false;
+            btn.textContent = oldText;
+          }
+        });
+
+        load();
+      })();
+    </script>
+  </body>
+</html>

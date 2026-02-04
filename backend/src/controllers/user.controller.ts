@@ -386,19 +386,20 @@ export const deleteUser = asyncHandler(
 /**
 *
 * @description creating user
-* @route POST /api/user/getUserForAdminSection?page=1&limit=10
+* @route POST /api/user/getUserForAdminSection?page=1&limit=10&role=role
 * @access Private (Admin only)
 * @param req
 * @param res
 */
 export const getUserForAdminSection = asyncHandler(
    async (req: Request, res: Response) => {
-		const { page, limit } = req.query;
+		const { page, limit, role="all" } = req.query;
 		const pageNumber = parseInt(page as string) || 1;
 		const limitNumber = parseInt(limit as string) || 10;
 		const skip = (pageNumber - 1) * limitNumber;
 
 	   const users = await prisma.user.findMany({
+		where: role !== "all" ? { role: role as User["role"] } : {},
 		   select: {
 			   id: true,
 			   name: true,

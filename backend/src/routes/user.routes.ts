@@ -24,6 +24,6 @@ userRouter
 	.get("/getPeople", getPeopleByDesignation) // query param: designation, page, limit
 	.get("/profile/:userId", profile) // param: userId - Public route
 	.delete("/deleteUser",auth,authorizePermission(PERMISSIONS.DELETE_USER),deleteUser)
-	.get("/getUserForAdminSection",getUserForAdminSection); // query param: page, limit
+	.get("/getUserForAdminSection",getUserForAdminSection); // query param: page, limit,role
 
 export default userRouter;
