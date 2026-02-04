@@ -1,7 +1,9 @@
 import { Router } from "express";
 import {
 	createUser,
+	deleteUser,
 	getPeopleByDesignation,
+	getUserForAdminSection,
 	login,
 	loginWithGoogle,
 	profile,
@@ -20,6 +22,8 @@ userRouter
 	.put("/updateProfile", auth, updateProfile)
 	.get("/search", searchingUserByEmail) // query param: query
 	.get("/getPeople", getPeopleByDesignation) // query param: designation, page, limit
-	.get("/profile/:userId", profile); // param: userId - Public route
+	.get("/profile/:userId", profile) // param: userId - Public route
+	.delete("/deleteUser",auth,authorizePermission(PERMISSIONS.DELETE_USER),deleteUser)
+	.get("/getUserForAdminSection",getUserForAdminSection); // query param: page, limit
 
 export default userRouter;

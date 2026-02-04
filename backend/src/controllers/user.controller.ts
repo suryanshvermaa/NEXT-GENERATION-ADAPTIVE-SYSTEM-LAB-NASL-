@@ -355,3 +355,61 @@ export const getPeopleByDesignation = asyncHandler(async (req: Request, res: Res
 	}
 	response(res, 200, "People found successfully", { people });
 });
+
+/**
+*
+* @description deleting user
+* @route DELETE /api/user/deleteUser
+* @access Private (Admin only)
+* @param req
+* @param res
+*/
+export const deleteUser = asyncHandler(
+   async (req: Request, res: Response) => {
+	const { userId } = req.body;
+	if (!userId) throw new AppError("Please provide userId", 400);
+	const user = await prisma.user.findUnique({
+		where: {
+			id: Number(userId),
+		},
+	});
+	if (!user) throw new AppError("User not found", 404);
+	await prisma.user.delete({
+		where: {
+			id: Number(userId),
+		},
+	});
+	return response(res, 200, "User deleted successfully",{});
+   }
+);
+
+/**
+*
+* @description creating user
+* @route POST /api/user/getUserForAdminSection?page=1&limit=10
+* @access Private (Admin only)
+* @param req
+* @param res
+*/
+export const getUserForAdminSection = asyncHandler(
+   async (req: Request, res: Response) => {
+		const { page, limit } = req.query;
+		const pageNumber = parseInt(page as string) || 1;
+		const limitNumber = parseInt(limit as string) || 10;
+		const skip = (pageNumber - 1) * limitNumber;
+
+	   const users = await prisma.user.findMany({
+		   select: {
+			   id: true,
+			   name: true,
+			   email: true,
+			   role: true,
+			   designation: true,
+			   createdAt: true,
+		   },
+		   skip,
+		   take: limitNumber,
+	   });
+	   return response(res, 200, "Users fetched successfully",{users});
+   }
+);
