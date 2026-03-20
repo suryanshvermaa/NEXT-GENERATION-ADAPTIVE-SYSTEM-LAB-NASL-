@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { AppError } from "../../utils/error";
 import prisma from "../../config/db";
 import response from "../../utils/response";
-import { deleteImage, signedUrl } from "../../s3";
+import { deleteImage, getObjectKey, signedUrl } from "../../s3";
 
 /**
  *
@@ -18,11 +18,12 @@ export const createReasearchArea = asyncHandler(
 		const { name, description, imageURL } = req.body;
 		if (!name || !description || !imageURL)
 			throw new AppError("All fields are required", 400);
+		const imageKey = getObjectKey(imageURL);
 		const researchArea = await prisma.researchArea.create({
 			data: {
 				name,
 				description,
-				imageURL,
+				imageURL: imageKey,
 				createdBy: req.user?.userId as number,
 			},
 		});
@@ -31,7 +32,7 @@ export const createReasearchArea = asyncHandler(
 		response(res, 201, "research Area created", {
 			researchArea: {
 				...researchArea,
-				imageURL: await signedUrl(imageURL, 3),
+				imageURL: await signedUrl(imageKey, 3),
 			},
 		});
 	}
@@ -50,6 +51,7 @@ export const updateResearchArea = asyncHandler(
 		const { name, description, imageURL, id } = req.body;
 		if (!id || !name || !description || !imageURL)
 			throw new AppError("all fields are required", 400);
+		const newImageKey = getObjectKey(imageURL);
 		const existingResearchArea = await prisma.researchArea.findUnique({
 			where: {
 				id: id as number,
@@ -60,15 +62,16 @@ export const updateResearchArea = asyncHandler(
 		if(req.user?.role !== "ADMIN" && existingResearchArea.createdBy !== req.user?.userId){
 			throw new AppError("You are not authorized to update this research area", 403);
 		}
-		if (existingResearchArea.imageURL&&existingResearchArea.imageURL !== imageURL) {
-			await deleteImage(existingResearchArea.imageURL);
+		const prevImageKey = existingResearchArea.imageURL ? getObjectKey(existingResearchArea.imageURL) : "";
+		if (prevImageKey && prevImageKey !== newImageKey) {
+			await deleteImage(prevImageKey);
 		}
 		const updatedResearchArea = await prisma.researchArea.update({
 			where: {
 				id: id as number,
 			},
 			data: {
-				imageURL,
+				imageURL: newImageKey,
 				name,
 				description,
 			},
@@ -78,7 +81,7 @@ export const updateResearchArea = asyncHandler(
 		response(res, 201, "research Area updated", {
 			updatedResearchArea: {
 				...updatedResearchArea,
-				imageURL: await signedUrl(imageURL, 3),
+				imageURL: await signedUrl(newImageKey, 3),
 			},
 		});
 	}

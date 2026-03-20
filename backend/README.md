@@ -48,6 +48,7 @@ Copy `.env.example` to `.env` and fill the values:
 - `S3_ENDPOINT` — S3 endpoint (e.g. `http://localhost:9000` for MinIO, or Supabase S3 endpoint)
 - `S3_REGION` — S3 region (string)
 - `S3_BUCKET` — Bucket name where media is stored
+- `S3_PUBLIC_BASE_URL` — Optional public base URL for media (e.g. `https://cdn.example.com`); used to return a stable public URL for a key
 - Google OAuth (used by `src/auth/googleAuth.ts`):
     - `CLIENT_ID`
     - `CLIENT_SECRET`
@@ -136,6 +137,12 @@ npm run createAdmin
 - Upload flow: request a presigned PUT URL via `POST /api/image/uploadURL` and then upload directly from client
 - Access: server generates short-lived signed GET URLs for media on responses
 - Delete: `DELETE /api/image/deleteImage`
+
+Provider-agnostic storage:
+
+- The API accepts either a full URL or an object key (recommended) for image fields.
+- New writes normalize URLs into object keys before saving, so you can switch providers (Tebi/R2/etc.) without rewriting DB records.
+- Optional one-time migration: `npm run migrateStorageUrls`
 
 The S3 client is configured with `forcePathStyle: true`, so path-style URLs are expected and supported (works well with MinIO and Supabase S3).
 

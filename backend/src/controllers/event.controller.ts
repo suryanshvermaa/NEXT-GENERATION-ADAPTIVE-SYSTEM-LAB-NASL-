@@ -3,7 +3,7 @@ import prisma from "../config/db";
 import response from "../utils/response";
 import { AppError } from "../utils/error";
 import asyncHandler from "../utils/asyncHandler";
-import { deleteImage, signedUrl } from "../s3";
+import { deleteImage, getObjectKey, signedUrl } from "../s3";
 
 /**
  *
@@ -18,16 +18,17 @@ export const createEvent = asyncHandler(async (req: Request, res: Response) => {
 	if (!event || !description || !imageURL) {
 		throw new AppError("Please provide all required fields", 400);
 	}
+	const imageKey = getObjectKey(imageURL);
 	const newEvent = await prisma.event.create({
 		data: {
 			event,
 			description,
-			imageURL,
+			imageURL: imageKey,
 			createdBy: Number(req.user!.userId),
 		},
 	});
 	return response(res, 201, "Event created successfully", {
-		newEvent: { ...newEvent, imageURL: await signedUrl(imageURL, 3) },
+		newEvent: { ...newEvent, imageURL: await signedUrl(imageKey, 3) },
 	});
 });
 
@@ -45,6 +46,7 @@ export const updateEvent = asyncHandler(async (req: Request, res: Response) => {
 	if (!event || !description || !imageURL) {
 		throw new AppError("Please provide all required fields", 400);
 	}
+	const newImageKey = getObjectKey(imageURL);
 	const existingEvent = await prisma.event.findFirst({where: { id: Number(id) }});
 	if(!existingEvent){
 		throw new AppError("Event not found", 404);
@@ -52,22 +54,22 @@ export const updateEvent = asyncHandler(async (req: Request, res: Response) => {
 	if(req.user!.role!=="ADMIN" && existingEvent.createdBy !== Number(req.user!.userId)){
 		throw new AppError("You are not authorized to update this event", 403);
 	}
-	const prevImageURL = existingEvent.imageURL;
-	if (prevImageURL !== imageURL) {
-		await deleteImage(prevImageURL!);
+	const prevImageKey = existingEvent.imageURL ? getObjectKey(existingEvent.imageURL) : "";
+	if (prevImageKey && prevImageKey !== newImageKey) {
+		await deleteImage(prevImageKey);
 	}
 	const updatedEvent = await prisma.event.update({
 		where: { id: Number(id) },
 		data: {
 			event,
 			description,
-			imageURL,
+			imageURL: newImageKey,
 		},
 	});
 	return response(res, 200, "Event updated successfully", {
 		updatedEvent: {
 			...updatedEvent,
-			imageURL: await signedUrl(imageURL, 3),
+			imageURL: await signedUrl(newImageKey, 3),
 		},
 	});
 });

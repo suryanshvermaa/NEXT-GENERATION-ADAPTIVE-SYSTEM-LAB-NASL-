@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { AppError } from "../../utils/error";
 import prisma from "../../config/db";
 import response from "../../utils/response";
-import { deleteImage, signedUrl } from "../../s3";
+import { deleteImage, getObjectKey, signedUrl } from "../../s3";
 
 /**
  *
@@ -18,11 +18,12 @@ export const createResearchFacility = asyncHandler(
 		const { name, description, imageURL } = req.body;
 		if (!name || !description)
 			throw new AppError("All fields are required", 400);
+		const imageKey = imageURL ? getObjectKey(imageURL) : imageURL;
 		const researchFacility = await prisma.researchFacility.create({
 			data: {
 				name,
 				description,
-				imageURL,
+				imageURL: imageKey,
 				createdBy: req.user?.userId as number,
 			},
 		});
@@ -31,7 +32,7 @@ export const createResearchFacility = asyncHandler(
 		response(res, 201, "research Facility created", {
 			researchFacility: {
 				...researchFacility,
-				imageURL: await signedUrl(imageURL, 3),
+				imageURL: imageKey ? await signedUrl(imageKey, 3) : null,
 			},
 		});
 	}
@@ -50,6 +51,7 @@ export const updateResearchFacility = asyncHandler(
 		const { name, description, imageURL, id } = req.body;
 		if (!id || !name || !description)
 			throw new AppError("all fields are required", 400);
+		const newImageKey = imageURL ? getObjectKey(imageURL) : imageURL;
 		const existingresearchFacility = await prisma.researchFacility.findUnique({
 			where: {
 				id: id as number,
@@ -60,18 +62,16 @@ export const updateResearchFacility = asyncHandler(
 		}
 		if (!existingresearchFacility)
 			throw new AppError("researchFacility not found", 404);
-		if (
-			existingresearchFacility.imageURL &&
-			existingresearchFacility.imageURL !== imageURL
-		) {
-			await deleteImage(existingresearchFacility.imageURL);
+		const prevImageKey = existingresearchFacility.imageURL ? getObjectKey(existingresearchFacility.imageURL) : "";
+		if (prevImageKey && newImageKey && prevImageKey !== newImageKey) {
+			await deleteImage(prevImageKey);
 		}
 		const updatedresearchFacility = await prisma.researchFacility.update({
 			where: {
 				id: id as number,
 			},
 			data: {
-				imageURL,
+				imageURL: newImageKey,
 				name,
 				description,
 			},
@@ -81,7 +81,7 @@ export const updateResearchFacility = asyncHandler(
 		response(res, 201, "research Facility updated", {
 			updatedresearchFacility: {
 				...updatedresearchFacility,
-				imageURL: await signedUrl(imageURL, 3),
+				imageURL: newImageKey ? await signedUrl(newImageKey, 3) : null,
 			},
 		});
 	}

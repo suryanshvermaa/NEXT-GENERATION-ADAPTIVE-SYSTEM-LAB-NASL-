@@ -6,7 +6,7 @@ import prisma from "../config/db";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { createToken } from "../middlewares/auth.middleware";
-import { signedUrl } from "../s3";
+import { getObjectKey, signedUrl } from "../s3";
 import { getUserInfo } from "../auth/googleAuth";
 import { sendMailToCreatedUser } from "../mail/sendMail";
 import { Prisma, User } from "../../generated/prisma";
@@ -59,12 +59,13 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
 	// Never email/store raw passwords; store hash and email a temporary password.
 	const plainPassword = password || crypto.randomBytes(9).toString("base64url");
 	const pass = await bcrypt.hash(plainPassword, 10);
+	const profileImageKey = profileImage ? getObjectKey(profileImage) : "";
 	const user = await prisma.user.create({
 		data: {
 			name,
 			email,
 			password: pass,
-			profileImage,
+			profileImage: profileImageKey,
 			role: role as User["role"],
 			designation: designationEnum,
 		},
@@ -240,9 +241,13 @@ export const updateProfile = asyncHandler(
 			return {
 				platform: social.platform,
 				url: social.url,
-				iconURL: social.icon ?? null,
+				iconURL: social.icon ? getObjectKey(social.icon) : null,
 			};
 		});
+		const normalizedProfileImage =
+			typeof profileImage === "string" && profileImage
+				? getObjectKey(profileImage)
+				: profileImage;
 		const updatedUser = await prisma.user.update({
 			where: {
 				id: req.user!.userId as number,
@@ -250,7 +255,7 @@ export const updateProfile = asyncHandler(
 			data: {
 				name,
 				email,
-				profileImage,
+				profileImage: normalizedProfileImage,
 				contactNumber: String(contactNumber),
 				// only add new socials after deleting old ones
 				Social: {

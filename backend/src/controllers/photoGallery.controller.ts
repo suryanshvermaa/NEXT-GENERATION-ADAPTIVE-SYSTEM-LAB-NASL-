@@ -3,7 +3,7 @@ import asyncHandler from "../utils/asyncHandler";
 import { AppError } from "../utils/error";
 import prisma from "../config/db";
 import response from "../utils/response";
-import { deleteImage, signedUrl } from "../s3";
+import { deleteImage, getObjectKey, signedUrl } from "../s3";
 /**
  *
  * @description upload a photo to the gallery
@@ -15,9 +15,10 @@ import { deleteImage, signedUrl } from "../s3";
 export const addImage = asyncHandler(async (req: Request, res: Response) => {
 	const { imageUrl, tags, groupMoment = false } = req.body;
 	if (!imageUrl) throw new AppError("image Url and tags both required", 400);
+	const imageKey = getObjectKey(imageUrl);
 	const galleryImage = await prisma.photoGallery.create({
 		data: {
-			imageURL: imageUrl,
+			imageURL: imageKey,
 			tags: (tags as string).split(",").map((tag) => tag.trim()),
 			groupMoment,
 		},
@@ -26,7 +27,7 @@ export const addImage = asyncHandler(async (req: Request, res: Response) => {
 	response(res, 201, "gallery image added", {
 		galleryImage: {
 			...galleryImage,
-			imageUrl: await signedUrl(imageUrl, 3),
+			imageUrl: await signedUrl(imageKey, 3),
 		},
 	});
 });

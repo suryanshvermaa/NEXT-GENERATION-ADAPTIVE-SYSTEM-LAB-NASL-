@@ -1,4 +1,4 @@
-import { deleteImage, uploadImageURL } from "../s3";
+import { createUploadUrl, deleteImage } from "../s3";
 import asyncHandler from "../utils/asyncHandler";
 import { AppError } from "../utils/error";
 import response from "../utils/response";
@@ -15,10 +15,12 @@ import { Request, Response } from "express";
 export const uploadImage = asyncHandler(async (req: Request, res: Response) => {
 	const { imageName } = req.body;
 	if (!imageName) throw new AppError("imageName is required!", 400);
-	const uploadUrl = await uploadImageURL(imageName);
+	const { uploadUrl, key, publicUrl } = await createUploadUrl(imageName);
 	response(res, 201, "image url created successfully", {
 		imageUploadingUrl: uploadUrl,
 		imageUrl: uploadUrl.split("?")[0],
+		imageKey: key,
+		imagePublicUrl: publicUrl,
 	});
 });
 

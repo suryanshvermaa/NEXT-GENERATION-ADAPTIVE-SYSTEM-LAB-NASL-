@@ -11,7 +11,8 @@
 		"start": "node dist/index.js",
 		"postinstall": "prisma generate",
 		"format": "prettier . --write",
-		"createAdmin": "node scripts/admin.js"
+		"createAdmin": "node scripts/admin.js",
+		"migrateStorageUrls": "tsx scripts/migrate-storage-urls.ts"
 	},
 	"keywords": [],
 	"author": "",

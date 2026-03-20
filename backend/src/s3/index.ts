@@ -8,6 +8,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import "dotenv/config";
 
 const Bucket = process.env.S3_BUCKET;
+const PublicBaseUrl = process.env.S3_PUBLIC_BASE_URL;
 
 function sanitizePart(part: string): string {
     return part
@@ -70,18 +71,53 @@ const getKeyFromUrl = (imageUrlOrKey: string): string => {
 	}
 };
 
+export const getObjectKey = (imageUrlOrKey: string): string => {
+	return getKeyFromUrl(imageUrlOrKey);
+};
+
+export const getPublicObjectUrl = (imageUrlOrKey: string): string | null => {
+	if (!imageUrlOrKey) return null;
+	const key = getKeyFromUrl(imageUrlOrKey);
+	if (!key) return null;
+	if (!PublicBaseUrl) return null;
+	return `${PublicBaseUrl.replace(/\/+$/, "")}/${key.replace(/^\/+/, "")}`;
+};
+
+export type UploadUrlResult = {
+	uploadUrl: string;
+	key: string;
+	publicUrl: string | null;
+};
+
+export const createUploadUrl = async (
+	imageName: string
+): Promise<UploadUrlResult> => {
+	imageName = sanitizePart(imageName);
+	const key = `nasl/${Date.now().toString() + imageName}`;
+	const putImageCommand = new PutObjectCommand({
+		Bucket,
+		Key: key,
+	});
+	const uploadUrl = await getSignedUrl(s3client, putImageCommand, {
+		expiresIn: 60 * 5,
+	});
+	if (!uploadUrl) throw new Error("signed url not found");
+
+	return {
+		uploadUrl,
+		key,
+		publicUrl: getPublicObjectUrl(key),
+	};
+};
+
 export const uploadImageURL = async (imageName: string): Promise<string> => {
 	return new Promise(async (resolve, reject) => {
-		imageName=sanitizePart(imageName);
-		const putImageCommand = new PutObjectCommand({
-			Bucket,
-			Key: `nasl/${Date.now().toString() + imageName}`,
-		});
-		const signedUrl = await getSignedUrl(s3client, putImageCommand, {
-			expiresIn: 60 * 5,
-		});
-		if (!signedUrl) reject("signed url not found");
-		resolve(signedUrl);
+		try {
+			const { uploadUrl } = await createUploadUrl(imageName);
+			resolve(uploadUrl);
+		} catch (err) {
+			reject(err);
+		}
 	});
 };
 

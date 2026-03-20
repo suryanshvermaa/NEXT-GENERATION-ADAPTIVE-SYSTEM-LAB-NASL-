@@ -7,7 +7,14 @@ import eslintPluginTs from "@typescript-eslint/eslint-plugin";
 
 export default defineConfig([
 	{
-		ignores: ["node_modules", "./dist"],
+		ignores: [
+			"node_modules",
+			"./dist",
+			"./generated",
+			"./postgres_data",
+			"./minio_data",
+			"./.vercel",
+		],
 	},
 	{
 		files: ["**/src*.{js,mjs,cjs,ts}"],
